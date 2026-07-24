@@ -4,6 +4,7 @@ import { config, operatorConfigured } from "./config.js";
 import { asyncRoute, getClient } from "./hedera.js";
 import { setupRouter } from "./routes/setup.js";
 import { tokensRouter } from "./routes/tokens.js";
+import { hcsRouter } from "./routes/hcs.js";
 
 const app = express();
 app.use(express.json());
@@ -41,6 +42,7 @@ app.get(
 
 app.use(setupRouter);
 app.use(tokensRouter);
+app.use(hcsRouter);
 
 // Errors: non-2xx with {"error", "detail"} per CONTRACTS §2.
 app.use((err, _req, res, _next) => {
