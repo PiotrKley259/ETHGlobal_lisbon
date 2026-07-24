@@ -128,9 +128,10 @@ shows three regions; sidecar `/health` ok against testnet.
 #### Track A1 — `backend/vol_engine/` — the quant core (P1) **[independent — pure math, fixtures only]**
 Build order inside the track = test-first, per the spec.
 
-- [ ] **A1.1** `pricing.py`: Black–Scholes price + closed-form Greeks (delta, gamma,
+- [x] **A1.1** `pricing.py`: Black–Scholes price + closed-form Greeks (delta, gamma,
   vega, theta, rho), call & put. `tests/test_pricing.py` **first**, against known
-  BSM values (e.g. Hull textbook cases + put-call parity + deep ITM/OTM limits).
+  BSM values (Hull case, reference ATM Greeks set, parity grid, ITM/OTM limits,
+  expiry intrinsic, validation) — 12 tests green.
 - [ ] **A1.2** `vol.py`: hourly log returns → close-to-close σ (baseline) and
   Parkinson high/low σ (upgrade), annualized `sqrt(8760)`; windows 24h/7d/30d;
   `get_regime` percentile vs trailing 30d with **caller-supplied bands** (defaults
