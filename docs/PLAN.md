@@ -76,7 +76,7 @@ Dependencies run *down* the page; inside a stage, everything is parallel.
 
 The only serial stage. Done when both people can run their half offline.
 
-- [ ] **S0.1** This commit: `docs/PLAN.md`, `docs/CONTRACTS.md`, `CLAUDE.md`, `.env.example`.
+- [x] **S0.1** This commit: `docs/PLAN.md`, `docs/CONTRACTS.md`, `CLAUDE.md`, `.env.example`.
 - [ ] **S0.2** Keys & accounts (do in parallel on two laptops). Keys live **only**
   in each person's local `.env` (copied from `.env.example`, exact var names from
   CONTRACTS §5 — e.g. `GRAPH_API_KEY`, not `API_KEY`). Never in git, never in
@@ -97,7 +97,7 @@ The only serial stage. Done when both people can run their half offline.
   practicing hygiene is free, and judges read repos. If it ever leaks into a
   commit: portal.hedera.com → new account, update `.env`s, done (don't try to
   scrub history mid-hackathon).
-- [ ] **S0.3** Capture fixtures (P1, ~20 min): one gateway query for 720 hourly
+- [x] **S0.3** Capture fixtures (P1, ~20 min): one gateway query for 720 hourly
   candles of the ETH/USDC 0.05% pool (exact query + verified endpoint/IDs in
   CONTRACTS §6 — `first: 720` fits one page) → `fixtures/pool_hour_datas.json`,
   `fixtures/spot.json`. Sanity-check `close` ≈ current ETH/USD (it is
