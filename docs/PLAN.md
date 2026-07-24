@@ -168,38 +168,38 @@ Build order inside the track = test-first, per the spec.
 #### Track B1 — `hedera-sidecar/` — Hedera adapter (P2) **[independent — tests straight against testnet]**
 Use **`@hiero-ledger/sdk`** (the Hiero rename of `@hashgraph/sdk`, identical API).
 Verified constraints are in CONTRACTS §2 — read that box before B1.2/B1.4.
-- [ ] **B1.1** Client setup, env loading, `/health`, `/setup` (stablecoin + topic +
+- [x] **B1.1** Client setup, env loading, `/health`, `/setup` (stablecoin + topic +
   customer acct created with `maxAutomaticTokenAssociations(-1)`), `state.json`
   persistence.
-- [ ] **B1.2** `/tokens/mint-series` (fungible HTS token per series; option terms as
+- [x] **B1.2** `/tokens/mint-series` (fungible HTS token per series; option terms as
   terse JSON ≤100 bytes in memo/metadata) + `/tokens/transfer` (association-safe).
-- [ ] **B1.3** `/hcs/log` — submit JSON ≤1024 bytes to topic; return sequence number.
-- [ ] **B1.4** `/settlement/schedule` (`setExpirationTime` + `setWaitForExpiry(true)`,
+- [x] **B1.3** `/hcs/log` — submit JSON ≤1024 bytes to topic; return sequence number.
+- [x] **B1.4** `/settlement/schedule` (`setExpirationTime` + `setWaitForExpiry(true)`,
   treasury signs at create) + `/settlement/execute` per CONTRACTS §2 settlement
   model (scheduled tx = on-chain commitment; execute = actual payoff transfer +
   HCS settlement record). **Both idempotent per `token_id`** (CONTRACTS §2
   idempotency box — the worker retries; the sidecar must never pay twice; test by
   calling execute twice in `smoke.sh` and asserting one transfer + `replayed`).
   `/treasury/balances`.
-- [ ] **B1.5** `smoke.sh`: curl script that runs the whole lifecycle end to end
+- [x] **B1.5** `smoke.sh`: curl script that runs the whole lifecycle end to end
   (mint → log → schedule → execute) and prints Hashscan links. This is Lane B's
   test suite *and* the demo rehearsal.
 
 #### Track B2 — `frontend/` — React app (P2) **[independent — runs against mock server]**
-- [ ] **B2.1** SSE client + chat column: streamed tokens, tool-call chips
+- [x] **B2.1** SSE client + chat column: streamed tokens, tool-call chips
   (name flashes while running, collapses to a badge with summary on result).
-- [ ] **B2.2** Pricing panel: spot, 3 vol bars (24h/7d/30d), regime badge, rate
+- [x] **B2.2** Pricing panel: spot, 3 vol bars (24h/7d/30d), regime badge, rate
   source line; on `quote`: price + Greeks grid. Renders whatever the `panel`
   event carries — nulls collapse gracefully.
-- [ ] **B2.2b** Settings menu: gear icon in the panel → two regime-threshold
+- [x] **B2.2b** Settings menu: gear icon in the panel → two regime-threshold
   inputs (calm / stressed boundaries, `0 < calm < elevated < 1`) against
   `GET/POST /settings`; regime badge tooltip shows the active bands ("stressed =
   top 20%" is a user choice, not our constant).
-- [ ] **B2.3** Payoff diagram (strategy quotes): P/L vs terminal price from
+- [x] **B2.3** Payoff diagram (strategy quotes): P/L vs terminal price from
   `payoff.prices/pnl`, breakevens and max P/L marked. Hand-rolled SVG or recharts
   — whichever is faster; it must read instantly (this is the "options for
   non-experts" money shot).
-- [ ] **B2.4** Chain activity strip: dark terminal-style append-only log of `chain`
+- [x] **B2.4** Chain activity strip: dark terminal-style append-only log of `chain`
   events with Hashscan links + status pills (`armed` → `paid`).
 - [ ] **B2.5** Aesthetic pass LAST: quant-terminal, muted, monospace. No time on
   styling before Stage 3 gate.

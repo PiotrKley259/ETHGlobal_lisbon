@@ -1,0 +1,17 @@
+{
+  "name": "hedera-sidecar",
+  "version": "0.1.0",
+  "private": true,
+  "description": "OptoPuts Hedera adapter: HTS mint, HCS log, scheduled settlement (CONTRACTS §2)",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js"
+  },
+  "dependencies": {
+    "@hiero-ledger/sdk": "^2.86.2",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1"
+  }
+}
