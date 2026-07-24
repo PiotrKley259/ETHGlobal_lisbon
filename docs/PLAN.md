@@ -77,9 +77,26 @@ Dependencies run *down* the page; inside a stage, everything is parallel.
 The only serial stage. Done when both people can run their half offline.
 
 - [ ] **S0.1** This commit: `docs/PLAN.md`, `docs/CONTRACTS.md`, `CLAUDE.md`, `.env.example`.
-- [ ] **S0.2** Keys & accounts (do in parallel on two laptops):
+- [ ] **S0.2** Keys & accounts (do in parallel on two laptops). Keys live **only**
+  in each person's local `.env` (copied from `.env.example`, exact var names from
+  CONTRACTS §5 — e.g. `GRAPH_API_KEY`, not `API_KEY`). Never in git, never in
+  chat logs that get screen-shared.
   - P1: Anthropic API key · The Graph gateway key (Subgraph Studio, free plan)
   - P2: Hedera testnet account via portal.hedera.com (operator = treasury); note ID + key
+
+  Who needs what locally:
+  | key | P1 (.env) | P2 (.env) |
+  |---|---|---|
+  | `ANTHROPIC_API_KEY` | ✔ (agent loop) | — |
+  | `GRAPH_API_KEY` | ✔ (fixtures, engine) | — |
+  | `HEDERA_OPERATOR_ID/KEY` | only from Stage 3 (worker → sidecar runs on P2's machine until then) | ✔ |
+
+  The **treasury key is the only credential that must be shared** (P2 → P1 for
+  Stage 3 integration): pass it out-of-band (password manager / AirDrop /
+  Signal), not via git, Discord, or the team doc. It's throwaway testnet — but
+  practicing hygiene is free, and judges read repos. If it ever leaks into a
+  commit: portal.hedera.com → new account, update `.env`s, done (don't try to
+  scrub history mid-hackathon).
 - [ ] **S0.3** Capture fixtures (P1, ~20 min): one gateway query for 720 hourly
   candles of the ETH/USDC 0.05% pool (exact query + verified endpoint/IDs in
   CONTRACTS §6 — `first: 720` fits one page) → `fixtures/pool_hour_datas.json`,
