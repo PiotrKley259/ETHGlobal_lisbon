@@ -160,7 +160,7 @@ Verified constraints are in CONTRACTS §2 — read that box before B1.2/B1.4.
 - [x] **B1.2** `/tokens/mint-series` (fungible HTS token per series; option terms as
   terse JSON ≤100 bytes in memo/metadata) + `/tokens/transfer` (association-safe).
 - [x] **B1.3** `/hcs/log` — submit JSON ≤1024 bytes to topic; return sequence number.
-- [ ] **B1.4** `/settlement/schedule` (`setExpirationTime` + `setWaitForExpiry(true)`,
+- [x] **B1.4** `/settlement/schedule` (`setExpirationTime` + `setWaitForExpiry(true)`,
   treasury signs at create) + `/settlement/execute` per CONTRACTS §2 settlement
   model (scheduled tx = on-chain commitment; execute = actual payoff transfer +
   HCS settlement record). **Both idempotent per `token_id`** (CONTRACTS §2
