@@ -224,6 +224,10 @@ aave/protocol-subgraphs schema):
   { symbol variableBorrowRate liquidityRate lastUpdateTimestamp }`
 - `variableBorrowRate` is **APR in ray**: `/1e27` → decimal APR → `r_cc = ln(1+r)`.
 - Filter by `underlyingAsset` (lowercase), **not** `symbol` (duplicate symbols exist).
+- **Verified live 2026-07-24:** `variableBorrowRate = 38943706239048578172608273`
+  → 3.894% APR → `r_cc ≈ 0.0382`. Use this as the known-value regression case for
+  the ray-conversion unit test. The `RISK_FREE_RATE_CONSTANT=0.04` fallback is
+  within ~20bps of the live rate — defensible as shipped.
 - Trap: subgraph `JCNWRypm…` ("Aave V3 Ethereum") is the **Messari-schema** deployment
   (`Market`/`InterestRate`, no ray `Reserve`) — do not use it.
 
