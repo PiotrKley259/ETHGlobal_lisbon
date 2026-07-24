@@ -17,7 +17,7 @@ dependencies = [
 dev = ["pytest>=8.0"]
 
 [tool.pytest.ini_options]
-testpaths = ["vol_engine/tests", "graph", "agent"]
+testpaths = ["vol_engine/tests", "graph", "agent", "tests"]
 
 [tool.uv]
 package = false

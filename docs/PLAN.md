@@ -218,10 +218,13 @@ renders all four surfaces correctly against the mock server.
   §3 events, panel refresh after every tool batch, error tool_results let the
   agent recover, 8-round guard. Desk persona enforces compute-nothing +
   flat-market disambiguation. Dispatch tests offline (48 green).
-- [ ] **I1.2 (P1)** `app.py`: `POST /chat` streaming SSE per CONTRACTS §3; emit
-  `panel` after every engine tool result; `GET /panel` hydration; `GET/POST
-  /settings` (regime bands, validated, in-memory) + `set_regime_bands` agent tool
-  — settings changes recompute the regime and refresh the panel.
+- [x] **I1.2 (P1)** `app.py`: `POST /chat` streaming SSE per CONTRACTS §3 with
+  conversation store; panel emitted after every tool batch; `GET /panel`
+  hydration; `GET/POST /settings` validated + regime recompute; `/health`.
+  Endpoint tests offline (52 green) + **two live smokes passed**: protective-put
+  quote (4 tools, all numbers tool-sourced) and income-from-calm → SHORT
+  straddle with credit/breakevens/unbounded-loss on the panel. Backend side of
+  Gate G2 is proven; G2 closes when P2 points the frontend at :8000 (I1.3).
 - [ ] **I1.3 (P2)** Point frontend at real backend (one env var swap — protocol is
   identical to mock). Fix drift. Keep chain strip on mock until Stage 3.
 - [ ] **I1.4 (both, 30 min)** Script and run the three demo prompts end to end:
