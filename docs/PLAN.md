@@ -152,13 +152,14 @@ Build order inside the track = test-first, per the spec.
 > integration pass for shared types in `vol_engine/types.py`.
 
 #### Track A2 — `backend/graph/subgraph.py` — data adapter (P1) **[independent]**
-- [ ] **A2.1** httpx GraphQL client with retry; `get_price_history(hours)`,
-  `get_spot()` per CONTRACTS; `OFFLINE_MODE=1` reads `fixtures/` (same code path,
-  swapped transport — the fixture IS a recorded response).
-- [ ] **A2.2** In-memory cache: history 10 min TTL, spot 30 s TTL. Pricing never
-  triggers network (spec constraint: `price_option` deterministic & network-free).
-- [ ] **A2.3** `get_risk_free_rate()` returning the constant (fallback_level 2);
-  Aave upgrade is Stage 4.
+- [x] **A2.1** httpx GraphQL client; `get_price_history(hours)` (asc candles,
+  strings→floats), `get_spot()` per CONTRACTS; `OFFLINE_MODE=1` reads `fixtures/`
+  through the same code path. Verified live + offline.
+- [x] **A2.2** In-memory TTL cache: history 10 min, spot 30 s, rate 1 h —
+  pricing never triggers network. Cache test proves single fixture read.
+- [x] **A2.3** `get_risk_free_rate()`: live Aave v3 USDC borrow (ray→APR→ln(1+r),
+  fallback_level 0, verified 3.82% cc) with constant fallback (level 2) —
+  already ahead of baseline; Stage 4 adds only the FRED middle tier + its tests.
 
 #### Track B1 — `hedera-sidecar/` — Hedera adapter (P2) **[independent — tests straight against testnet]**
 Use **`@hiero-ledger/sdk`** (the Hiero rename of `@hashgraph/sdk`, identical API).
