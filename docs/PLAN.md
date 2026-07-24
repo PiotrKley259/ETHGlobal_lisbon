@@ -139,10 +139,12 @@ Build order inside the track = test-first, per the spec.
   GBM recovers known σ, Parkinson exact analytic case, spike→stressed,
   band-relabeling, validation — 9 tests green. Also `select_sigma_window`
   (baseline tenor-matching; Stage 4 replaces with `sigma_for_horizon`).
-- [ ] **A1.3** `strategies.py`: the 8-structure library as declarative leg templates;
-  `price_strategy` = signed sum of `price_option` legs; payoff grid, breakevens
-  (sign changes on the grid + refine), max profit/loss. Tests: butterfly = tent
-  (max at K_mid), spread caps, straddle V, net Greeks = sum of legs.
+- [x] **A1.3** `strategies.py`: the 8-structure library as declarative leg templates;
+  `price_strategy` = signed sum of priced legs; 121-pt payoff grid, interpolated
+  breakevens, max P/L evaluated exactly at strike kinks with unbounded-side
+  detection (None) and S_T=0 floor extrapolation. Tests: butterfly tent, spread
+  caps, straddle breakevens K±premium, long/short mirror, leg cancellation,
+  resolve_named — 10 tests green (suite: 30).
 - [ ] **A1.4** `server.py`: FastMCP wrapper exposing every CONTRACTS §1 tool.
   Thin — zero logic, just schema-faithful marshalling.
 
