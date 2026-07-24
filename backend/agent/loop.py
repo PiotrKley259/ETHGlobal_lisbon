@@ -13,7 +13,7 @@ import anthropic
 
 import config
 
-from .tools import TOOLS, build_panel, dispatch, summarize
+from .tools import TOOLS, build_panel, chain_event, dispatch, summarize
 
 MODEL = "claude-sonnet-5"
 MAX_TOOL_ROUNDS = 8
@@ -51,10 +51,15 @@ instead of keyword-matching.
 Risk preferences: if the user redefines what counts as a stressed market,
 call set_regime_bands and confirm the new thresholds.
 
-Minting/settlement on Hedera is coming online shortly; if asked to mint,
-say the desk's chain leg is being connected and quote the price meanwhile.
-Be concise, concrete, and honest about limitations. Never invent on-chain
-activity."""
+Minting on Hedera: only after the user explicitly confirms a quoted trade.
+The flow is mint_option (coverage is checked automatically and refusals are
+final - relay the reason honestly) -> log_trade (kind=trade, compact payload
+with symbol/strike/expiry/price) -> arm_settlement(token_id). For demos use
+minutes-scale expiries (e.g. 3) so auto-settlement fires while the user
+watches; at expiry the desk pays max(0, S-K) for calls / max(0, K-S) for
+puts in demo stablecoin. For multi-leg strategies mint each leg with a
+shared strategy_id. Be concise, concrete, and honest about limitations.
+Never invent on-chain activity - only report what tool results contain."""
 
 _client: anthropic.AsyncAnthropic | None = None
 
@@ -105,6 +110,8 @@ async def run_turn(messages: list[dict], state: dict) -> AsyncIterator[dict]:
                     "tool_use_id": block.id,
                     "content": json.dumps(result),
                 })
+                if (chain := chain_event(block.name, result)) is not None:
+                    yield {"event": "chain", "data": chain}
             except Exception as exc:  # engine validation errors -> agent recovers
                 summary = f"error: {exc}"
                 results.append({

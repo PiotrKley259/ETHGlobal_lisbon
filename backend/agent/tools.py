@@ -6,9 +6,13 @@ Chain tools (mint/settle via the sidecar) are added in Stage 3 (I2.2).
 """
 from __future__ import annotations
 
+import time
+import uuid
 from typing import Any
 
 from vol_engine import api
+
+from . import risk, settlement, sidecar
 
 _LEG_SCHEMA = {
     "type": "object",
@@ -92,6 +96,42 @@ TOOLS: list[dict] = [
         },
     },
     {
+        "name": "mint_option",
+        "description": "Mint a quoted option series as an HTS token on Hedera testnet. Coverage is checked automatically and the mint is REFUSED if the treasury cannot cover it. Use expiry_minutes for demo-scale expiries. Only call after the user confirms they want the trade.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "type": {"type": "string", "enum": ["call", "put"]},
+                "K": {"type": "number", "description": "strike in USD"},
+                "qty": {"type": "number", "default": 1.0},
+                "expiry_minutes": {"type": "number", "description": "minutes until expiry (demo-scale, e.g. 3)"},
+                "strategy_id": {"type": "string", "description": "shared id when minting legs of one strategy"},
+            },
+            "required": ["type", "K", "expiry_minutes"],
+        },
+    },
+    {
+        "name": "log_trade",
+        "description": "Write a tamper-proof record (quote/trade/settlement) to the Hedera Consensus Service audit log.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "kind": {"type": "string", "enum": ["quote", "trade", "settlement"]},
+                "payload": {"type": "object", "description": "compact JSON record of the event"},
+            },
+            "required": ["kind", "payload"],
+        },
+    },
+    {
+        "name": "arm_settlement",
+        "description": "Arm on-chain auto-settlement for a minted series (Scheduled Transaction commitment; the desk pays max(0, S-K) for calls / max(0, K-S) for puts at expiry). Call right after mint_option.",
+        "input_schema": {
+            "type": "object",
+            "properties": {"token_id": {"type": "string"}},
+            "required": ["token_id"],
+        },
+    },
+    {
         "name": "set_regime_bands",
         "description": "Update the user's regime thresholds when they express a risk preference (e.g. 'only the top 20% counts as stressed' -> calm 0.33, elevated 0.80). Requires 0 < calm < elevated < 1.",
         "input_schema": {
@@ -143,6 +183,21 @@ def dispatch(name: str, args: dict[str, Any], state: dict) -> dict:
             args["name"], S=api.get_spot()["price"], T_days=args["T_days"]
         )
         return {"legs": legs}
+    if name == "mint_option":
+        return _mint_option(args)
+    if name == "log_trade":
+        return sidecar.hcs_log(args["kind"], args["payload"])
+    if name == "arm_settlement":
+        token_id = args["token_id"]
+        series = next(
+            (s for s in settlement.open_series() if s["token_id"] == token_id), None)
+        if series is None:
+            raise ValueError(f"unknown series {token_id!r} — mint it first")
+        result = sidecar.schedule_settlement(
+            token_id, series["expiry_ts"],
+            risk.compute_max_payout(series["type"], series["K"], series["qty"]))
+        settlement.mark_armed(token_id)
+        return result
     if name == "set_regime_bands":
         calm, elevated = float(args["calm"]), float(args["elevated"])
         if not (0.0 < calm < elevated < 1.0):
@@ -150,6 +205,53 @@ def dispatch(name: str, args: dict[str, Any], state: dict) -> dict:
         state["settings"]["regime_bands"] = {"calm": calm, "elevated": elevated}
         return {"regime_bands": state["settings"]["regime_bands"]}
     raise ValueError(f"unknown tool {name!r}")
+
+
+def _mint_option(args: dict) -> dict:
+    """Coverage-gated mint: refuse (raise -> is_error tool result) when the
+    treasury can't cover the worst case. Registers exposure + settlement terms."""
+    opt_type, K = args["type"], float(args["K"])
+    qty = float(args.get("qty", 1.0))
+    expiry_ts = int(time.time() + float(args["expiry_minutes"]) * 60)
+
+    max_payout = risk.compute_max_payout(opt_type, K, qty)
+    coverage = risk.check_coverage(max_payout)
+    if not coverage["ok"]:
+        raise ValueError(f"mint refused: {coverage.get('reason', 'not covered')} "
+                         f"(treasury ${coverage['treasury_balance_usd']:,.0f}, "
+                         f"open exposure ${coverage['open_exposure_usd']:,.0f})")
+
+    symbol = f"OPT-{'C' if opt_type == 'call' else 'P'}-{K:.0f}-{uuid.uuid4().hex[:4]}"
+    result = sidecar.mint_series(
+        symbol=symbol,
+        name=f"ETH {opt_type} {K:.0f} exp {expiry_ts}",
+        option={"type": opt_type, "strike": K, "expiry_ts": expiry_ts, "qty": qty,
+                **({"strategy_id": args["strategy_id"]} if args.get("strategy_id") else {})},
+    )
+    token_id = result["token_id"]
+    risk.register_exposure(token_id, max_payout)
+    settlement.register_series(token_id, opt_type, K, qty, expiry_ts, symbol)
+    return {**result, "symbol": symbol, "expiry_ts": expiry_ts,
+            "max_payout_usd": max_payout, "coverage": coverage}
+
+
+def chain_event(name: str, result: dict) -> dict | None:
+    """CONTRACTS §3 chain event derived from a chain-tool result (None for
+    engine tools)."""
+    if name == "mint_option":
+        return {"kind": "mint", "label": result["symbol"], "id": result["token_id"],
+                "tx_id": result.get("tx_id", ""),
+                "hashscan_url": result.get("hashscan_url", ""), "status": "ok"}
+    if name == "log_trade":
+        return {"kind": "hcs", "label": f"log #{result.get('sequence_number', '?')}",
+                "id": result.get("topic_id", ""), "tx_id": result.get("tx_id", ""),
+                "hashscan_url": result.get("hashscan_url", ""), "status": "ok"}
+    if name == "arm_settlement":
+        return {"kind": "schedule", "label": "settlement armed",
+                "id": result.get("schedule_id", ""), "tx_id": result.get("tx_id", ""),
+                "hashscan_url": result.get("hashscan_url", ""),
+                "status": result.get("status", "armed")}
+    return None
 
 
 def summarize(name: str, result: dict) -> str:
@@ -177,6 +279,12 @@ def summarize(name: str, result: dict) -> str:
         if name == "set_regime_bands":
             b = result["regime_bands"]
             return f"calm<{b['calm']:.2f}, stressed≥{b['elevated']:.2f}"
+        if name == "mint_option":
+            return f"{result['symbol']} → {result['token_id']}"
+        if name == "log_trade":
+            return f"HCS seq #{result.get('sequence_number', '?')}"
+        if name == "arm_settlement":
+            return f"armed ({result.get('schedule_id', '?')})"
     except Exception:
         pass
     return "done"

@@ -32,9 +32,10 @@ def test_every_declared_tool_dispatches(state):
         "resolve_strategy": {"name": "short_straddle", "T_days": 7.0},
         "set_regime_bands": {"calm": 0.2, "elevated": 0.8},
     }
+    chain_tools = {"mint_option", "log_trade", "arm_settlement"}  # test_chain.py
     declared = {t["name"] for t in tools.TOOLS}
-    assert declared == set(args)
-    for name in declared:
+    assert declared == set(args) | chain_tools
+    for name in set(args):
         result = tools.dispatch(name, args[name], state)
         assert isinstance(result, dict)
         assert tools.summarize(name, result)  # chip text never empty
@@ -71,4 +72,4 @@ def test_set_regime_bands_validates(state):
 
 def test_unknown_tool_raises(state):
     with pytest.raises(ValueError):
-        tools.dispatch("mint_option", {}, state)  # Stage 3, not wired yet
+        tools.dispatch("teleport_funds", {}, state)

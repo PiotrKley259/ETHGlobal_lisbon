@@ -9,8 +9,10 @@ Run: cd backend && uv run uvicorn app:app --reload   (port 8000)
 """
 from __future__ import annotations
 
+import asyncio
 import json
 import uuid
+from contextlib import asynccontextmanager
 
 import uvicorn
 from fastapi import FastAPI, HTTPException
@@ -19,10 +21,21 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
 import config
+from agent import settlement
 from agent.loop import run_turn
 from agent.tools import build_panel, default_state
 
-app = FastAPI(title="OptoPuts backend")
+_pending_chain: list[dict] = []  # settle events from the worker, flushed on next stream
+
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    worker = asyncio.create_task(settlement.worker_loop(_pending_chain))
+    yield
+    worker.cancel()
+
+
+app = FastAPI(title="OptoPuts backend", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"]
 )
@@ -53,6 +66,8 @@ async def chat(req: ChatRequest):
 
     async def stream():
         global _last_panel
+        while _pending_chain:  # settlements that fired between turns
+            yield _sse("chain", _pending_chain.pop(0))
         try:
             async for event in run_turn(messages, _state):
                 if event["event"] == "panel":

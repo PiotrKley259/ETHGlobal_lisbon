@@ -245,15 +245,19 @@ is a complete, submittable Graph-track demo. Tag it: `git tag demo-graph`.
   $10k per-series cap, open-exposure ledger, put payout K·qty vs capped calls);
   **fails closed** when the sidecar is unreachable. Tested against a mocked
   sidecar (57 green) — snaps onto the real one untouched.
-- [ ] **I2.2 (P1)** Chain tools in the agent: `mint_option` (per leg; multi-leg =
-  one HTS token per leg under a shared `strategy_id`, per spec — no composite
-  token), `log_quote/trade` to HCS, `arm_settlement`. Forward every sidecar
-  response as a `chain` SSE event.
-- [ ] **I2.3 (P1)** Settlement worker: asyncio task in `app.py`; at `expiry_ts`
-  fetch spot, compute `max(0, S−K)` (put reversed), call `/settlement/execute`,
-  emit `chain` event `settle/paid`. Retry on timeout without fear — the sidecar
-  is idempotent per `token_id` (CONTRACTS §2). Demo options get minutes-scale
-  expiries so settlement fires **during** the demo.
+- [x] **I2.2 (P1)** Chain tools in the agent: `mint_option` (coverage-gated in
+  dispatch — refusal happens before any chain call; shared `strategy_id` for
+  multi-leg), `log_trade` to HCS, `arm_settlement`; `agent/sidecar.py` client
+  per CONTRACTS §2; every chain-tool result forwarded as a `chain` SSE event.
+  Tested against a faked sidecar — snaps onto the real one when P2 lands it.
+- [x] **I2.3 (P1)** Settlement worker: `agent/settlement.py` registry +
+  `execute_due()` (payoff from live spot, exposure released, idempotent
+  client-side; sidecar idempotency covers retries) + asyncio loop in app
+  lifespan. Settle events queue in `_pending_chain` and flush at the start of
+  the next `/chat` stream. Tests: put settles at K−S from fixtures, unarmed/
+  unexpired skipped, double-sweep no-op (63 green). *Note for I2.5 rehearsal:
+  if the strip needs settle events with no chat open, propose adding a
+  `GET /chain` poll endpoint to CONTRACTS §3 as a joint commit.*
 - [ ] **I2.4 (P2)** Chain strip on real events; `armed → paid` transition; Hashscan
   links verified clickable for token, topic, schedule, and settlement tx.
 - [ ] **I2.5 (both)** Full rehearsal: quote → explain → mint → HCS log → armed →
