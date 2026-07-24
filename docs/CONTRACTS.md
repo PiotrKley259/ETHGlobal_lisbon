@@ -41,12 +41,22 @@ Annualization factor: `sqrt(8760)` on hourly log returns.
 ```
 `shape ∈ contango | backwardation | flat` (flat if endpoints within 2 vol pts).
 
-### `get_regime() -> Regime`
+### `get_regime(bands: {"calm": float, "elevated": float} | None = None) -> Regime`
 ```json
-{"regime": "elevated", "percentile": 0.81, "window": "7d"}
+{"regime": "elevated", "percentile": 0.81, "window": "7d",
+ "bands": {"calm": 0.33, "elevated": 0.66}}
 ```
-Percentile of current 7d vol within its trailing 30d distribution.
-Bands: `<0.33 calm`, `<0.66 elevated`, else `stressed`.
+Percentile of current 7d vol within its trailing 30d distribution. `bands` are the
+**user-configurable** regime thresholds: `percentile < calm → calm`,
+`< elevated → elevated`, else `stressed`. Defaults `{0.33, 0.66}`; validation
+`0 < calm < elevated < 1`. The engine never stores them — the backend passes the
+current settings on every call, and the response echoes the bands used so the UI
+can always explain the badge.
+
+### `set_regime_bands(calm: float, elevated: float) -> Settings`   *(agent tool, backend-owned)*
+Lets the user set thresholds conversationally ("only the top 20% counts as
+stressed" → `{calm: 0.33, elevated: 0.80}`). Writes the same settings object as
+`POST /settings`; returns the updated Settings and triggers a fresh `panel` event.
 
 ### `get_risk_free_rate() -> Rate`
 ```json
@@ -162,6 +172,16 @@ Response: `text/event-stream` (SSE). Event types (each `data:` line is one JSON 
 
 Also: `GET /panel` returns the latest `panel` object (page-load hydration), and
 `GET /health` returns `{"ok": true, "offline_mode": false}`.
+
+**Settings** (user preferences, held by the backend in memory, defaults on restart):
+```json
+// GET /settings  and  POST /settings (partial update ok) — Settings object:
+{"regime_bands": {"calm": 0.33, "elevated": 0.66}}
+```
+`POST` validates `0 < calm < elevated < 1` (else 422). After any settings change
+(menu or agent tool), the backend recomputes the regime and pushes/serves an
+updated `panel`. The frontend settings menu (gear icon in the pricing panel) is
+the UI for this endpoint; the regime badge tooltip shows the active bands.
 
 **Mock server:** `backend/mock_server.py` serves this exact protocol from
 `fixtures/` with canned responses for 3 scripted prompts + scripted chain events.

@@ -112,7 +112,9 @@ Build order inside the track = test-first, per the spec.
   BSM values (e.g. Hull textbook cases + put-call parity + deep ITM/OTM limits).
 - [ ] **A1.2** `vol.py`: hourly log returns → close-to-close σ (baseline) and
   Parkinson high/low σ (upgrade), annualized `sqrt(8760)`; windows 24h/7d/30d;
-  `get_regime` percentile vs trailing 30d. Tests on synthetic series with known σ.
+  `get_regime` percentile vs trailing 30d with **caller-supplied bands** (defaults
+  0.33/0.66, echoed in the response — user-configurable, CONTRACTS §1/§3). Tests
+  on synthetic series with known σ; regime tests incl. custom bands + validation.
 - [ ] **A1.3** `strategies.py`: the 8-structure library as declarative leg templates;
   `price_strategy` = signed sum of `price_option` legs; payoff grid, breakevens
   (sign changes on the grid + refine), max profit/loss. Tests: butterfly = tent
@@ -155,6 +157,10 @@ Verified constraints are in CONTRACTS §2 — read that box before B1.2/B1.4.
 - [ ] **B2.2** Pricing panel: spot, 3 vol bars (24h/7d/30d), regime badge, rate
   source line; on `quote`: price + Greeks grid. Renders whatever the `panel`
   event carries — nulls collapse gracefully.
+- [ ] **B2.2b** Settings menu: gear icon in the panel → two regime-threshold
+  inputs (calm / stressed boundaries, `0 < calm < elevated < 1`) against
+  `GET/POST /settings`; regime badge tooltip shows the active bands ("stressed =
+  top 20%" is a user choice, not our constant).
 - [ ] **B2.3** Payoff diagram (strategy quotes): P/L vs terminal price from
   `payoff.prices/pnl`, breakevens and max P/L marked. Hand-rolled SVG or recharts
   — whichever is faster; it must read instantly (this is the "options for
@@ -179,7 +185,9 @@ renders all four surfaces correctly against the mock server.
   tension: *profit from calm* → short premium vs *protect against a break* → long
   straddle — ask, don't keyword-match).
 - [ ] **I1.2 (P1)** `app.py`: `POST /chat` streaming SSE per CONTRACTS §3; emit
-  `panel` after every engine tool result; `GET /panel` hydration.
+  `panel` after every engine tool result; `GET /panel` hydration; `GET/POST
+  /settings` (regime bands, validated, in-memory) + `set_regime_bands` agent tool
+  — settings changes recompute the regime and refresh the panel.
 - [ ] **I1.3 (P2)** Point frontend at real backend (one env var swap — protocol is
   identical to mock). Fix drift. Keep chain strip on mock until Stage 3.
 - [ ] **I1.4 (both, 30 min)** Script and run the three demo prompts end to end:
