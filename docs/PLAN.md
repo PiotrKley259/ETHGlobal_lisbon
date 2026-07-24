@@ -103,10 +103,11 @@ The only serial stage. Done when both people can run their half offline.
   `fixtures/spot.json`. Sanity-check `close` ≈ current ETH/USD (it is
   `token0Price`, already USD — no inversion). From here on, **everything Python
   develops offline**.
-- [ ] **S0.4** Scaffold skeletons so imports/paths exist: `backend/` (uv/venv,
-  `pyproject.toml`, empty modules, `pytest` green on a trivial test), `hedera-sidecar/`
-  (npm init, express + @hashgraph/sdk, `/health` returns ok), `frontend/`
-  (`npm create vite@latest -- --template react-ts`, renders three empty regions).
+- [ ] **S0.4** Scaffold skeletons so imports/paths exist: **backend ✅ (P1 done:
+  uv + pyproject, all modules stubbed with task pointers, pytest green)**;
+  still open for P2: `hedera-sidecar/` (npm init, express + @hiero-ledger/sdk,
+  `/health` returns ok), `frontend/` (`npm create vite@latest -- --template
+  react-ts`, renders three empty regions).
 - [ ] **S0.5** `backend/mock_server.py` (P1, ~45 min): serves the full SSE protocol
   from `fixtures/chat_scripts.json` — 3 canned conversations + canned chain events.
   This unblocks the entire frontend lane. Keep it dumb: replay with 300ms delays.
