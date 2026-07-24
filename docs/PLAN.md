@@ -132,11 +132,13 @@ Build order inside the track = test-first, per the spec.
   vega, theta, rho), call & put. `tests/test_pricing.py` **first**, against known
   BSM values (Hull case, reference ATM Greeks set, parity grid, ITM/OTM limits,
   expiry intrinsic, validation) — 12 tests green.
-- [ ] **A1.2** `vol.py`: hourly log returns → close-to-close σ (baseline) and
+- [x] **A1.2** `vol.py`: hourly log returns → close-to-close σ (baseline) and
   Parkinson high/low σ (upgrade), annualized `sqrt(8760)`; windows 24h/7d/30d;
   `get_regime` percentile vs trailing 30d with **caller-supplied bands** (defaults
-  0.33/0.66, echoed in the response — user-configurable, CONTRACTS §1/§3). Tests
-  on synthetic series with known σ; regime tests incl. custom bands + validation.
+  0.33/0.66, echoed in the response — user-configurable, CONTRACTS §1/§3). Tests:
+  GBM recovers known σ, Parkinson exact analytic case, spike→stressed,
+  band-relabeling, validation — 9 tests green. Also `select_sigma_window`
+  (baseline tenor-matching; Stage 4 replaces with `sigma_for_horizon`).
 - [ ] **A1.3** `strategies.py`: the 8-structure library as declarative leg templates;
   `price_strategy` = signed sum of `price_option` legs; payoff grid, breakevens
   (sign changes on the grid + refine), max profit/loss. Tests: butterfly = tent
