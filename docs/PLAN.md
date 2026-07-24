@@ -77,7 +77,7 @@ Dependencies run *down* the page; inside a stage, everything is parallel.
 The only serial stage. Done when both people can run their half offline.
 
 - [x] **S0.1** This commit: `docs/PLAN.md`, `docs/CONTRACTS.md`, `CLAUDE.md`, `.env.example`.
-- [ ] **S0.2** Keys & accounts (do in parallel on two laptops). Keys live **only**
+- [x] **S0.2** Keys & accounts (do in parallel on two laptops). Keys live **only**
   in each person's local `.env` (copied from `.env.example`, exact var names from
   CONTRACTS §5 — e.g. `GRAPH_API_KEY`, not `API_KEY`). Never in git, never in
   chat logs that get screen-shared.
@@ -103,7 +103,7 @@ The only serial stage. Done when both people can run their half offline.
   `fixtures/spot.json`. Sanity-check `close` ≈ current ETH/USD (it is
   `token0Price`, already USD — no inversion). From here on, **everything Python
   develops offline**.
-- [ ] **S0.4** Scaffold skeletons so imports/paths exist: **backend ✅ (P1 done:
+- [x] **S0.4** Scaffold skeletons so imports/paths exist: **backend ✅ (P1 done:
   uv + pyproject, all modules stubbed with task pointers, pytest green)**;
   still open for P2: `hedera-sidecar/` (npm init, express + @hiero-ledger/sdk,
   `/health` returns ok), `frontend/` (`npm create vite@latest -- --template
@@ -114,7 +114,7 @@ The only serial stage. Done when both people can run their half offline.
   `/panel`, `/settings`, `/health`. Numbers derived from the real fixtures
   (spot $1,858.67; vols 33%/37%/53%). **Frontend lane is unblocked** —
   `cd backend && uv run python mock_server.py` → port 8000.
-- [ ] **S0.6** P2 runs sidecar `POST /setup` once when ready: creates demo stablecoin
+- [x] **S0.6** P2 runs sidecar `POST /setup` once when ready: creates demo stablecoin
   (e.g. `dUSDC`, 6 decimals, mint 50,000 to treasury), HCS topic, customer account;
   IDs land in `hedera-sidecar/state.json` (gitignored) and are echoed for the README.
 
@@ -225,9 +225,13 @@ renders all four surfaces correctly against the mock server.
   quote (4 tools, all numbers tool-sourced) and income-from-calm → SHORT
   straddle with credit/breakevens/unbounded-loss on the panel. Backend side of
   Gate G2 is proven; G2 closes when P2 points the frontend at :8000 (I1.3).
-- [ ] **I1.3 (P2)** Point frontend at real backend (one env var swap — protocol is
-  identical to mock). Fix drift. Keep chain strip on mock until Stage 3.
-- [ ] **I1.4 (both, 30 min)** Script and run the three demo prompts end to end:
+- [x] **I1.3** Frontend's API_BASE already defaults to :8000 — running the real
+  app.py instead of the mock IS the swap. Zero drift found.
+- [x] **I1.4** Three demo prompts run through the live stack (backend :8000 +
+  Vite :5173): 9d put $11.78 @ curve-interpolated 41.9%; flat-market prompt →
+  short-premium read + expiry clarification → 7d short straddle $75.16 credit
+  in the same conversation; two-week flat view → 14d short straddle $138.06.
+  Panel carries quote/strategy/curve throughout. Original script:
   1. "Protect my ETH below $2,800 through next Friday" → put quote + Greeks + regime.
   2. "ETH stays flat — I want to profit from the calm" → agent surfaces the
      short-straddle vs long-straddle tension, prices the short straddle, payoff tent.
