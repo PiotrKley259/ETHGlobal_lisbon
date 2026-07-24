@@ -1,0 +1,54 @@
+/* OptoPuts — quant-terminal: dark, muted, monospace. */
+:root {
+  --bg: #0d1117;
+  --bg-raised: #151b23;
+  --border: #2a3340;
+  --text: #c9d1d9;
+  --text-dim: #8b949e;
+  --accent: #58a6ff;
+  --green: #3fb950;
+  --amber: #d29922;
+  --red: #f85149;
+  --mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 13px;
+}
+
+.app {
+  display: grid;
+  grid-template-columns: minmax(380px, 1.2fr) minmax(340px, 1fr);
+  grid-template-rows: 1.6fr 1fr;
+  grid-template-areas:
+    "chat panel"
+    "chat chain";
+  gap: 10px;
+  height: 100vh;
+  padding: 10px;
+}
+
+.region {
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.chat-region { grid-area: chat; }
+.panel-region { grid-area: panel; }
+.chain-region { grid-area: chain; }
+
+.region-title {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-dim);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
