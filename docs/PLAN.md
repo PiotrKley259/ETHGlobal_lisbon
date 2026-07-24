@@ -146,7 +146,10 @@ Verified constraints are in CONTRACTS §2 — read that box before B1.2/B1.4.
 - [ ] **B1.4** `/settlement/schedule` (`setExpirationTime` + `setWaitForExpiry(true)`,
   treasury signs at create) + `/settlement/execute` per CONTRACTS §2 settlement
   model (scheduled tx = on-chain commitment; execute = actual payoff transfer +
-  HCS settlement record). `/treasury/balances`.
+  HCS settlement record). **Both idempotent per `token_id`** (CONTRACTS §2
+  idempotency box — the worker retries; the sidecar must never pay twice; test by
+  calling execute twice in `smoke.sh` and asserting one transfer + `replayed`).
+  `/treasury/balances`.
 - [ ] **B1.5** `smoke.sh`: curl script that runs the whole lifecycle end to end
   (mint → log → schedule → execute) and prints Hashscan links. This is Lane B's
   test suite *and* the demo rehearsal.
@@ -212,8 +215,9 @@ is a complete, submittable Graph-track demo. Tag it: `git tag demo-graph`.
   response as a `chain` SSE event.
 - [ ] **I2.3 (P1)** Settlement worker: asyncio task in `app.py`; at `expiry_ts`
   fetch spot, compute `max(0, S−K)` (put reversed), call `/settlement/execute`,
-  emit `chain` event `settle/paid`. Demo options get minutes-scale expiries so
-  settlement fires **during** the demo.
+  emit `chain` event `settle/paid`. Retry on timeout without fear — the sidecar
+  is idempotent per `token_id` (CONTRACTS §2). Demo options get minutes-scale
+  expiries so settlement fires **during** the demo.
 - [ ] **I2.4 (P2)** Chain strip on real events; `armed → paid` transition; Hashscan
   links verified clickable for token, topic, schedule, and settlement tx.
 - [ ] **I2.5 (both)** Full rehearsal: quote → explain → mint → HCS log → armed →

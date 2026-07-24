@@ -132,6 +132,24 @@ settlement commitment; at expiry the backend settlement worker computes the payo
 from spot and calls `/settlement/execute`, which performs the stablecoin transfer
 and logs the settlement record to HCS.
 
+**Idempotency (settled: yes for settlement, keyed on `token_id`):** the backend
+worker is at-least-once (retries on timeout, refires after restart), so the
+sidecar is the exactly-once boundary for anything that moves money:
+- `POST /settlement/execute` — **idempotent per `token_id`**. Before transferring,
+  the sidecar checks `state.json`; if a settlement record exists it does NOT pay
+  again and replays the stored response with `"replayed": true` added (HTTP 200).
+  Write order: mark `settling` in `state.json` → transfer → record `{tx_id,
+  paid_usd, ts}` → respond. A crash between transfer and record is the residual
+  window; acceptable for the demo, noted in README limitations.
+- `POST /settlement/schedule` — idempotent per `token_id`: one schedule per
+  series; duplicate call returns the existing `schedule_id` (`"replayed": true`).
+- `POST /tokens/mint-series` — idempotent per `symbol` (duplicate returns the
+  existing `token_id`) so a retried mint can't create twin series.
+- `POST /hcs/log` — **deliberately NOT idempotent**: it's an append-only audit
+  log; a duplicate message is harmless and honest (two records of one event beats
+  a dedupe bug that drops one). `/setup` is idempotent as a whole: if
+  `state.json` exists it returns the existing IDs untouched.
+
 **Verified Hedera constraints (HIP-423 era, v0.57+ — long-term scheduling is live):**
 - Scheduled tx max future expiration **62 days**; default **30 min** if
   `expirationTime` unset. Use `.setExpirationTime(...)` + `.setWaitForExpiry(true)`
