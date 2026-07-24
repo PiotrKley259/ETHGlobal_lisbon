@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { getPanel, streamChat } from "./api";
 import { Chat } from "./components/Chat";
 import type { ChatMessage } from "./components/Chat";
+import { ChainStrip } from "./components/ChainStrip";
 import { PricingPanel } from "./components/PricingPanel";
 import type { ChainEvent, PanelState, SseEvent } from "./types";
 import "./App.css";
@@ -103,8 +104,7 @@ function App() {
       </section>
       <section className="region chain-region">
         <header className="region-title">chain activity</header>
-        {/* B2.4 replaces this with <ChainStrip events={chainEvents} /> */}
-        <p className="placeholder">{chainEvents.length} chain events</p>
+        <ChainStrip events={chainEvents} />
       </section>
     </div>
   );

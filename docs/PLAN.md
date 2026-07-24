@@ -185,7 +185,7 @@ Verified constraints are in CONTRACTS §2 — read that box before B1.2/B1.4.
   `payoff.prices/pnl`, breakevens and max P/L marked. Hand-rolled SVG or recharts
   — whichever is faster; it must read instantly (this is the "options for
   non-experts" money shot).
-- [ ] **B2.4** Chain activity strip: dark terminal-style append-only log of `chain`
+- [x] **B2.4** Chain activity strip: dark terminal-style append-only log of `chain`
   events with Hashscan links + status pills (`armed` → `paid`).
 - [ ] **B2.5** Aesthetic pass LAST: quant-terminal, muted, monospace. No time on
   styling before Stage 3 gate.
