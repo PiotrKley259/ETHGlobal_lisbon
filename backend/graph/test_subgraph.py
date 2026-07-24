@@ -74,3 +74,50 @@ def test_ray_conversion_pinned_to_live_aave_value():
 def test_apr_to_cc_known_value():
     assert subgraph.apr_to_cc(0.05) == pytest.approx(math.log(1.05), abs=1e-12)
     assert subgraph.apr_to_cc(0.0) == 0.0
+
+
+# --- fallback chain (online mode, each network layer faked) -----------------
+
+FRED_CSV = "DATE,DGS1MO\n2026-07-22,4.35\n2026-07-23,4.40\n2026-07-24,.\n"
+
+
+def test_fred_csv_parser_skips_missing_observations():
+    assert subgraph.parse_fred_csv(FRED_CSV) == pytest.approx(0.0440)
+    with pytest.raises(ValueError):
+        subgraph.parse_fred_csv("DATE,DGS1MO\n2026-07-24,.\n")
+
+
+def test_fallback_level_1_when_aave_down_fred_up(monkeypatch):
+    monkeypatch.setattr(config, "OFFLINE_MODE", False)
+    monkeypatch.setattr(subgraph, "_gateway",
+                        lambda *a: (_ for _ in ()).throw(RuntimeError("gw down")))
+
+    class FakeResp:
+        text = FRED_CSV
+        def raise_for_status(self): pass
+
+    monkeypatch.setattr(subgraph.httpx, "get", lambda *a, **k: FakeResp())
+    r = subgraph.get_risk_free_rate()
+    assert r["fallback_level"] == 1
+    assert r["source"] == "fred-dgs1mo-cached"
+    assert r["rate_cc"] == pytest.approx(math.log(1.044), abs=1e-9)
+
+
+def test_fallback_level_2_when_everything_down(monkeypatch):
+    monkeypatch.setattr(config, "OFFLINE_MODE", False)
+    monkeypatch.setattr(subgraph, "_gateway",
+                        lambda *a: (_ for _ in ()).throw(RuntimeError("gw down")))
+    monkeypatch.setattr(subgraph.httpx, "get",
+                        lambda *a, **k: (_ for _ in ()).throw(RuntimeError("fred down")))
+    r = subgraph.get_risk_free_rate()
+    assert r["fallback_level"] == 2 and r["source"] == "constant"
+
+
+def test_fallback_level_0_when_aave_up(monkeypatch):
+    monkeypatch.setattr(config, "OFFLINE_MODE", False)
+    monkeypatch.setattr(subgraph, "_gateway", lambda *a: {"reserves": [{
+        "symbol": "USDC", "variableBorrowRate": "38943706239048578172608273",
+        "lastUpdateTimestamp": 1784924327}]})
+    r = subgraph.get_risk_free_rate()
+    assert r["fallback_level"] == 0
+    assert r["rate_cc"] == pytest.approx(0.038204, abs=1e-4)

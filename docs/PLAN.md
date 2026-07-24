@@ -279,10 +279,12 @@ terminal.
    contango curve vs $34.29 at 30d headline vol (−33%). 74 tests green.
 2. - [ ] **(P2)** Panel upgrade: fitted curve over the three bars, quoted (T, σ)
    marked on it — the price visibly comes *from* the curve.
-3. - [ ] **(P1)** `get_risk_free_rate()` via Aave v3 subgraph (USDC reserve
-   variable borrow rate, ray→decimal `/1e27`, `r_cc = ln(1+r)`), hourly cache,
-   fallback chain Aave → cached FRED → constant with `fallback_level` surfaced.
-   Tests: ray conversion, ln conversion vs known value, each fallback branch.
+3. - [x] **(P1)** `get_risk_free_rate()` full fallback chain: Aave v3 (level 0,
+   live-verified 3.82% cc) → FRED DGS1MO via public fredgraph.csv (level 1,
+   live-verified 3.75% cc, '.'-observation handling) → constant (level 2).
+   Tests: ray + ln conversions vs known values, csv parser, all three branches
+   forced via monkeypatch (78 green). OFFLINE_MODE still goes straight to
+   constant — no network at all.
 4. - [ ] **(P1)** Subgraph MCP as the agent's second MCP server for ad-hoc
    questions ("what was the pool's busiest hour this week?") — The Graph's hosted
    server at `subgraphs.mcp.thegraph.com/sse`, auth = the same gateway API key as

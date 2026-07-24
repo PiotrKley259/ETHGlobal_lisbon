@@ -127,10 +127,38 @@ def apr_to_cc(apr: float) -> float:
     return math.log(1.0 + apr)
 
 
+_FRED_CSV_URL = "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS1MO"
+
+
+def parse_fred_csv(text: str) -> float:
+    """Latest DGS1MO observation from fredgraph.csv (percent -> decimal APR).
+    Missing observations are '.' — walk back to the last real value."""
+    for line in reversed(text.strip().splitlines()):
+        parts = line.split(",")
+        if len(parts) == 2 and parts[1] not in (".", "", "DGS1MO", "VALUE"):
+            try:
+                return float(parts[1]) / 100.0
+            except ValueError:
+                continue
+    raise ValueError("no numeric observation in FRED csv")
+
+
+def _fred_rate() -> dict:
+    resp = httpx.get(_FRED_CSV_URL, timeout=10.0, follow_redirects=True)
+    resp.raise_for_status()
+    return {
+        "rate_cc": apr_to_cc(parse_fred_csv(resp.text)),
+        "source": "fred-dgs1mo-cached",
+        "observed_at": int(time.time()),
+        "fallback_level": 1,
+    }
+
+
 def get_risk_free_rate() -> dict:
     """USDC borrow rate from Aave v3 (the desk's true financing rate — the
-    payoff is stablecoin-settled). Fallback: constant from config.
-    fallback_level: 0 = live Aave, 2 = constant. (FRED tier is Stage 4.)"""
+    payoff is stablecoin-settled). Fallback chain per spec:
+    Aave subgraph (0) → cached FRED DGS1MO (1) → constant (2).
+    OFFLINE_MODE goes straight to the constant (no network at all)."""
     if (hit := _cache_get("rate")) is not None:
         return hit
     if not config.OFFLINE_MODE:
@@ -144,7 +172,10 @@ def get_risk_free_rate() -> dict:
                 "fallback_level": 0,
             })
         except Exception:
-            pass  # fall through to constant
+            try:
+                return _cache_put("rate", RATE_TTL_S, _fred_rate())
+            except Exception:
+                pass  # fall through to constant
     return _cache_put("rate", RATE_TTL_S, {
         "rate_cc": apr_to_cc(config.RISK_FREE_RATE_CONSTANT),
         "source": "constant",
