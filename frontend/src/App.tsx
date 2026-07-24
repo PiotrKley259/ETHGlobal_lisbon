@@ -1,7 +1,8 @@
-import { useRef, useState } from "react";
-import { streamChat } from "./api";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { getPanel, streamChat } from "./api";
 import { Chat } from "./components/Chat";
 import type { ChatMessage } from "./components/Chat";
+import { PricingPanel } from "./components/PricingPanel";
 import type { ChainEvent, PanelState, SseEvent } from "./types";
 import "./App.css";
 
@@ -14,6 +15,15 @@ function App() {
   const [panel, setPanel] = useState<PanelState | null>(null);
   const [chainEvents, setChainEvents] = useState<ChainEvent[]>([]);
   const conversationId = useRef<string | null>(null);
+
+  // Hydrate the panel on load and after settings changes (the backend
+  // recomputes the regime when bands change — CONTRACTS §3).
+  const hydratePanel = useCallback(() => {
+    getPanel()
+      .then(setPanel)
+      .catch(() => {}); // backend not up yet — panel stays empty
+  }, []);
+  useEffect(hydratePanel, [hydratePanel]);
 
   const applyEvent = (evt: SseEvent) => {
     switch (evt.event) {
@@ -89,8 +99,7 @@ function App() {
       </section>
       <section className="region panel-region">
         <header className="region-title">pricing panel</header>
-        {/* B2.2 replaces this with <PricingPanel panel={panel} /> */}
-        {panel === null && <p className="placeholder">no data yet</p>}
+        <PricingPanel panel={panel} onSettingsSaved={hydratePanel} />
       </section>
       <section className="region chain-region">
         <header className="region-title">chain activity</header>

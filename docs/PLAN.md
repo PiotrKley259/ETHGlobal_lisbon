@@ -174,10 +174,10 @@ Verified constraints are in CONTRACTS §2 — read that box before B1.2/B1.4.
 #### Track B2 — `frontend/` — React app (P2) **[independent — runs against mock server]**
 - [x] **B2.1** SSE client + chat column: streamed tokens, tool-call chips
   (name flashes while running, collapses to a badge with summary on result).
-- [ ] **B2.2** Pricing panel: spot, 3 vol bars (24h/7d/30d), regime badge, rate
+- [x] **B2.2** Pricing panel: spot, 3 vol bars (24h/7d/30d), regime badge, rate
   source line; on `quote`: price + Greeks grid. Renders whatever the `panel`
   event carries — nulls collapse gracefully.
-- [ ] **B2.2b** Settings menu: gear icon in the panel → two regime-threshold
+- [x] **B2.2b** Settings menu: gear icon in the panel → two regime-threshold
   inputs (calm / stressed boundaries, `0 < calm < elevated < 1`) against
   `GET/POST /settings`; regime badge tooltip shows the active bands ("stressed =
   top 20%" is a user choice, not our constant).
