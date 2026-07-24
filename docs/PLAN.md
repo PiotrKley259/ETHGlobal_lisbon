@@ -241,8 +241,10 @@ is a complete, submittable Graph-track demo. Tag it: `git tag demo-graph`.
 
 ### Stage 3 — Integration II: on-chain lifecycle (H20–H30) · both
 
-- [ ] **I2.1 (P1)** `agent/risk.py`: `check_coverage` (treasury balance via sidecar,
-  per-series cap, open-exposure ledger in memory); agent refuses uncovered mints.
+- [x] **I2.1 (P1)** `agent/risk.py`: `check_coverage` (treasury balance via sidecar,
+  $10k per-series cap, open-exposure ledger, put payout K·qty vs capped calls);
+  **fails closed** when the sidecar is unreachable. Tested against a mocked
+  sidecar (57 green) — snaps onto the real one untouched.
 - [ ] **I2.2 (P1)** Chain tools in the agent: `mint_option` (per leg; multi-leg =
   one HTS token per leg under a shared `strategy_id`, per spec — no composite
   token), `log_quote/trade` to HCS, `arm_settlement`. Forward every sidecar
