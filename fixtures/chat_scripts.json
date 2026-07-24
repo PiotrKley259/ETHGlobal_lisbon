@@ -1,0 +1,1662 @@
+{
+ "default": "protective_put",
+ "initial_panel": {
+  "spot": {
+   "price": 1858.67,
+   "ts": 1784926800,
+   "source": "uniswap-v3-subgraph"
+  },
+  "vols": [
+   {
+    "sigma_annual": 0.3332,
+    "window": "24h",
+    "estimator": "close",
+    "n_obs": 24
+   },
+   {
+    "sigma_annual": 0.3661,
+    "window": "7d",
+    "estimator": "close",
+    "n_obs": 168
+   },
+   {
+    "sigma_annual": 0.5257,
+    "window": "30d",
+    "estimator": "close",
+    "n_obs": 719
+   }
+  ],
+  "regime": {
+   "regime": "elevated",
+   "percentile": 0.64,
+   "window": "7d",
+   "bands": {
+    "calm": 0.33,
+    "elevated": 0.66
+   }
+  },
+  "rate": {
+   "rate_cc": 0.0382,
+   "source": "aave-v3-subgraph",
+   "observed_at": 1784926800,
+   "fallback_level": 0
+  },
+  "quote": null,
+  "strategy": null,
+  "curve": null
+ },
+ "scripts": [
+  {
+   "name": "protective_put",
+   "match": [
+    "protect",
+    "put",
+    "insurance",
+    "downside"
+   ],
+   "events": [
+    {
+     "event": "tool_call",
+     "data": {
+      "name": "get_spot",
+      "args": {}
+     }
+    },
+    {
+     "event": "tool_result",
+     "data": {
+      "name": "get_spot",
+      "summary": "$1,858.67"
+     }
+    },
+    {
+     "event": "tool_call",
+     "data": {
+      "name": "estimate_vol",
+      "args": {
+       "window": "7d"
+      }
+     }
+    },
+    {
+     "event": "tool_result",
+     "data": {
+      "name": "estimate_vol",
+      "summary": "sigma=37% (7d, close)"
+     }
+    },
+    {
+     "event": "tool_call",
+     "data": {
+      "name": "get_regime",
+      "args": {}
+     }
+    },
+    {
+     "event": "tool_result",
+     "data": {
+      "name": "get_regime",
+      "summary": "elevated (64th pct)"
+     }
+    },
+    {
+     "event": "tool_call",
+     "data": {
+      "name": "price_option",
+      "args": {
+       "K": 1770.0,
+       "T_days": 7.0,
+       "type": "put"
+      }
+     }
+    },
+    {
+     "event": "tool_result",
+     "data": {
+      "name": "price_option",
+      "summary": "$30.16 @ sigma 37%"
+     }
+    },
+    {
+     "event": "panel",
+     "data": {
+      "spot": {
+       "price": 1858.67,
+       "ts": 1784926800,
+       "source": "uniswap-v3-subgraph"
+      },
+      "vols": [
+       {
+        "sigma_annual": 0.3332,
+        "window": "24h",
+        "estimator": "close",
+        "n_obs": 24
+       },
+       {
+        "sigma_annual": 0.3661,
+        "window": "7d",
+        "estimator": "close",
+        "n_obs": 168
+       },
+       {
+        "sigma_annual": 0.5257,
+        "window": "30d",
+        "estimator": "close",
+        "n_obs": 719
+       }
+      ],
+      "regime": {
+       "regime": "elevated",
+       "percentile": 0.64,
+       "window": "7d",
+       "bands": {
+        "calm": 0.33,
+        "elevated": 0.66
+       }
+      },
+      "rate": {
+       "rate_cc": 0.0382,
+       "source": "aave-v3-subgraph",
+       "observed_at": 1784926800,
+       "fallback_level": 0
+      },
+      "quote": {
+       "price": 30.16,
+       "qty": 1.0,
+       "inputs": {
+        "S": 1858.67,
+        "K": 1770.0,
+        "T_days": 7.0,
+        "r_cc": 0.0382,
+        "sigma": 0.3661,
+        "sigma_source": "7d"
+       },
+       "greeks": {
+        "delta": -0.28,
+        "gamma": 0.0021,
+        "vega": 2.9,
+        "theta": -4.1,
+        "rho": -0.9
+       }
+      },
+      "strategy": null,
+      "curve": null
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "A "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "1770-strike "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "put "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "expiring "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "in "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "7 "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "days "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "costs "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "about "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "$30.16 "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "per "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "ETH. "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "That "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "is "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "your "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "floor: "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "below "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "$1770 "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "the "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "desk "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "pays "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "you "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "the "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "difference "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "in "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "dUSDC "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "at "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "expiry. "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "Pricing "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "uses "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "7-day "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "realized "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "vol "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "of "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "37% "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "from "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "Uniswap "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "trade "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "history "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "- "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "the "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "regime "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "is "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "elevated, "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "so "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "protection "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "is "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "pricier "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "than "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "last "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "week. "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "Delta "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "-0.28 "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "means "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "it "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "behaves "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "like "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "being "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "short "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "~0.3 "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "ETH. "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "Want "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "me "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "to "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "mint "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "this "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "series "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "on "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "Hedera? "
+     }
+    },
+    {
+     "event": "done",
+     "data": {
+      "conversation_id": "mock-1"
+     }
+    }
+   ]
+  },
+  {
+   "name": "short_straddle",
+   "match": [
+    "flat",
+    "calm",
+    "profit",
+    "premium",
+    "sideways"
+   ],
+   "events": [
+    {
+     "event": "token",
+     "data": {
+      "delta": "Quick "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "check "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "- "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "two "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "opposite "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "trades "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "fit "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "'ETH "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "stays "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "flat': "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "collect "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "premium "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "now "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "and "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "lose "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "if "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "it "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "breaks "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "out "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "(short "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "straddle), "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "or "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "pay "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "premium "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "for "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "protection "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "against "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "a "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "breakout "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "(long "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "straddle). "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "You "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "said "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "profit "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "from "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "calm, "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "so "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "I "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "will "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "price "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "the "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "short "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "straddle. "
+     }
+    },
+    {
+     "event": "tool_call",
+     "data": {
+      "name": "estimate_vol",
+      "args": {
+       "window": "7d"
+      }
+     }
+    },
+    {
+     "event": "tool_result",
+     "data": {
+      "name": "estimate_vol",
+      "summary": "sigma=37% (7d, close)"
+     }
+    },
+    {
+     "event": "tool_call",
+     "data": {
+      "name": "price_strategy",
+      "args": {
+       "legs": [
+        {
+         "type": "call",
+         "side": "short",
+         "K": 1860.0,
+         "T_days": 7.0,
+         "qty": 1
+        },
+        {
+         "type": "put",
+         "side": "short",
+         "K": 1860.0,
+         "T_days": 7.0,
+         "qty": 1
+        }
+       ]
+      }
+     }
+    },
+    {
+     "event": "tool_result",
+     "data": {
+      "name": "price_strategy",
+      "summary": "credit $75.39, breakevens 1784.61/1935.39"
+     }
+    },
+    {
+     "event": "panel",
+     "data": {
+      "spot": {
+       "price": 1858.67,
+       "ts": 1784926800,
+       "source": "uniswap-v3-subgraph"
+      },
+      "vols": [
+       {
+        "sigma_annual": 0.3332,
+        "window": "24h",
+        "estimator": "close",
+        "n_obs": 24
+       },
+       {
+        "sigma_annual": 0.3661,
+        "window": "7d",
+        "estimator": "close",
+        "n_obs": 168
+       },
+       {
+        "sigma_annual": 0.5257,
+        "window": "30d",
+        "estimator": "close",
+        "n_obs": 719
+       }
+      ],
+      "regime": {
+       "regime": "elevated",
+       "percentile": 0.64,
+       "window": "7d",
+       "bands": {
+        "calm": 0.33,
+        "elevated": 0.66
+       }
+      },
+      "rate": {
+       "rate_cc": 0.0382,
+       "source": "aave-v3-subgraph",
+       "observed_at": 1784926800,
+       "fallback_level": 0
+      },
+      "quote": null,
+      "strategy": {
+       "net_cost": -75.39,
+       "net_greeks": {
+        "delta": 0.01,
+        "gamma": -0.0042,
+        "vega": -5.8,
+        "theta": 8.2,
+        "rho": 0.0
+       },
+       "legs": [],
+       "payoff": {
+        "prices": [
+         1581.0,
+         1594.95,
+         1608.9,
+         1622.85,
+         1636.8,
+         1650.75,
+         1664.7,
+         1678.65,
+         1692.6,
+         1706.55,
+         1720.5,
+         1734.45,
+         1748.4,
+         1762.35,
+         1776.3,
+         1790.25,
+         1804.2,
+         1818.15,
+         1832.1,
+         1846.05,
+         1860.0,
+         1873.95,
+         1887.9,
+         1901.85,
+         1915.8,
+         1929.75,
+         1943.7,
+         1957.65,
+         1971.6,
+         1985.55,
+         1999.5,
+         2013.45,
+         2027.4,
+         2041.35,
+         2055.3,
+         2069.25,
+         2083.2,
+         2097.15,
+         2111.1,
+         2125.05,
+         2139.0
+        ],
+        "pnl": [
+         -203.61,
+         -189.66,
+         -175.71,
+         -161.76,
+         -147.81,
+         -133.86,
+         -119.91,
+         -105.96,
+         -92.01,
+         -78.06,
+         -64.11,
+         -50.16,
+         -36.21,
+         -22.26,
+         -8.31,
+         5.64,
+         19.59,
+         33.54,
+         47.49,
+         61.44,
+         75.39,
+         61.44,
+         47.49,
+         33.54,
+         19.59,
+         5.64,
+         -8.31,
+         -22.26,
+         -36.21,
+         -50.16,
+         -64.11,
+         -78.06,
+         -92.01,
+         -105.96,
+         -119.91,
+         -133.86,
+         -147.81,
+         -161.76,
+         -175.71,
+         -189.66,
+         -203.61
+        ]
+       },
+       "breakevens": [
+        1784.61,
+        1935.39
+       ],
+       "max_profit": 75.39,
+       "max_loss": null
+      },
+      "curve": null
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "Selling "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "the "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "1860 "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "straddle "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "collects "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "$75.39 "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "up "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "front. "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "You "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "keep "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "all "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "of "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "it "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "if "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "ETH "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "pins "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "1860 "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "at "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "expiry; "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "you "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "break "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "even "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "at "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "1785 "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "and "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "1935, "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "and "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "lose "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "beyond "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "- "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "the "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "inverted-V "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "payoff "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "on "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "the "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "panel. "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "Max "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "profit "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "$75.39, "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "loss "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "unbounded, "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "so "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "treasury "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "coverage "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "rules "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "cap "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "the "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "size. "
+     }
+    },
+    {
+     "event": "done",
+     "data": {
+      "conversation_id": "mock-1"
+     }
+    }
+   ]
+  },
+  {
+   "name": "mint_flow",
+   "match": [
+    "mint",
+    "buy it",
+    "do it",
+    "confirm"
+   ],
+   "events": [
+    {
+     "event": "tool_call",
+     "data": {
+      "name": "check_coverage",
+      "args": {
+       "max_payout_usd": 800
+      }
+     }
+    },
+    {
+     "event": "tool_result",
+     "data": {
+      "name": "check_coverage",
+      "summary": "ok - treasury $50,000"
+     }
+    },
+    {
+     "event": "tool_call",
+     "data": {
+      "name": "mint_option",
+      "args": {
+       "symbol": "OPT-P-1770-7D"
+      }
+     }
+    },
+    {
+     "event": "chain",
+     "data": {
+      "kind": "mint",
+      "label": "OPT-P-1770-7D",
+      "id": "0.0.5001234",
+      "tx_id": "0.0.4991002-1784926800-123456789",
+      "hashscan_url": "https://hashscan.io/testnet/token/0.0.5001234",
+      "status": "ok"
+     }
+    },
+    {
+     "event": "chain",
+     "data": {
+      "kind": "hcs",
+      "label": "trade log #14",
+      "id": "0.0.5000042",
+      "tx_id": "0.0.4991002-1784926801-223456789",
+      "hashscan_url": "https://hashscan.io/testnet/topic/0.0.5000042",
+      "status": "ok"
+     }
+    },
+    {
+     "event": "chain",
+     "data": {
+      "kind": "schedule",
+      "label": "settlement armed",
+      "id": "0.0.5001300",
+      "tx_id": "0.0.4991002-1784926802-323456789",
+      "hashscan_url": "https://hashscan.io/testnet/schedule/0.0.5001300",
+      "status": "armed"
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "Minted. "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "The "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "put "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "is "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "an "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "HTS "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "token "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "in "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "your "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "account, "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "the "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "trade "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "is "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "logged "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "to "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "the "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "consensus "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "topic, "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "and "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "settlement "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "is "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "armed "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "on-chain "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "- "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "it "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "pays "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "out "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "automatically "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "at "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "expiry. "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "Links "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "on "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "the "
+     }
+    },
+    {
+     "event": "token",
+     "data": {
+      "delta": "right. "
+     }
+    },
+    {
+     "event": "chain",
+     "data": {
+      "kind": "settle",
+      "label": "OPT-P-1770-7D paid $233.70",
+      "id": "0.0.5001234",
+      "tx_id": "0.0.4991002-1785526800-423456789",
+      "hashscan_url": "https://hashscan.io/testnet/transaction/0.0.4991002-1785526800-423456789",
+      "status": "paid"
+     }
+    },
+    {
+     "event": "done",
+     "data": {
+      "conversation_id": "mock-1"
+     }
+    }
+   ]
+  }
+ ]
+}

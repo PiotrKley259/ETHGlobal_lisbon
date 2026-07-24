@@ -108,9 +108,12 @@ The only serial stage. Done when both people can run their half offline.
   still open for P2: `hedera-sidecar/` (npm init, express + @hiero-ledger/sdk,
   `/health` returns ok), `frontend/` (`npm create vite@latest -- --template
   react-ts`, renders three empty regions).
-- [ ] **S0.5** `backend/mock_server.py` (P1, ~45 min): serves the full SSE protocol
-  from `fixtures/chat_scripts.json` — 3 canned conversations + canned chain events.
-  This unblocks the entire frontend lane. Keep it dumb: replay with 300ms delays.
+- [x] **S0.5** `backend/mock_server.py` (P1): serves the full SSE protocol from
+  `fixtures/chat_scripts.json` — 3 canned conversations (protective put /
+  short straddle incl. the disambiguation beat / mint→settle chain flow) +
+  `/panel`, `/settings`, `/health`. Numbers derived from the real fixtures
+  (spot $1,858.67; vols 33%/37%/53%). **Frontend lane is unblocked** —
+  `cd backend && uv run python mock_server.py` → port 8000.
 - [ ] **S0.6** P2 runs sidecar `POST /setup` once when ready: creates demo stablecoin
   (e.g. `dUSDC`, 6 decimals, mint 50,000 to treasury), HCS topic, customer account;
   IDs land in `hedera-sidecar/state.json` (gitignored) and are echoed for the README.
