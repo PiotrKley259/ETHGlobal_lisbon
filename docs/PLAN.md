@@ -262,10 +262,16 @@ is a complete, submittable Graph-track demo. Tag it: `git tag demo-graph`.
   unexpired skipped, double-sweep no-op (63 green). *Note for I2.5 rehearsal:
   if the strip needs settle events with no chat open, propose adding a
   `GET /chain` poll endpoint to CONTRACTS §3 as a joint commit.*
-- [ ] **I2.4 (P2)** Chain strip on real events; `armed → paid` transition; Hashscan
-  links verified clickable for token, topic, schedule, and settlement tx.
-- [ ] **I2.5 (both)** Full rehearsal: quote → explain → mint → HCS log → armed →
-  auto-settle on screen. Tag `demo-full`.
+- [x] **I2.4** Real chain events flow through the strip's SSE feed:
+  mint ok → hcs ok → schedule armed → settle paid ($41.85). All four Hashscan
+  link types verified (token 0.0.9735638, topic 0.0.9735611, schedule
+  0.0.9735640, settlement tx).
+- [x] **I2.5** Full chat-driven rehearsal on real testnet: quote ($1,900 put,
+  3-min expiry) → confirm → mint → HCS log → armed → worker auto-settled
+  $41.85 at expiry (treasury 49,974.50 → 49,932.65), exposure released.
+  smoke.sh also green here. Tagged `demo-full`. Gotchas for demo day: run
+  sidecar with `npm start` (not `dev` — watcher kills /setup requests);
+  run smoke.sh without FORCE_COLOR. Second no-terminal run = part of H.5.
 
 **Gate G3:** the complete story runs end to end twice in a row without touching a
 terminal.
