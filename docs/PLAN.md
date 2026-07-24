@@ -145,8 +145,12 @@ Build order inside the track = test-first, per the spec.
   detection (None) and S_T=0 floor extrapolation. Tests: butterfly tent, spread
   caps, straddle breakevens K±premium, long/short mirror, leg cancellation,
   resolve_named — 10 tests green (suite: 30).
-- [ ] **A1.4** `server.py`: FastMCP wrapper exposing every CONTRACTS §1 tool.
-  Thin — zero logic, just schema-faithful marshalling.
+- [x] **A1.4** `server.py`: FastMCP wrapper exposing every CONTRACTS §1 tool
+  (9 tools incl. resolve_strategy), delegating to the new `vol_engine/api.py`
+  facade — the single place cached Graph data meets the math; agent/tools.py
+  will consume the same facade. Offline end-to-end tests green (43 total).
+  Note: fixture recaptured at **744 candles (31d)** so the 30d window has its
+  required 721 closes.
 
 > A1.1, A1.2, A1.3 share no files → fan out to parallel Claude subagents, then one
 > integration pass for shared types in `vol_engine/types.py`.

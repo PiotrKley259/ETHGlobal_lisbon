@@ -18,5 +18,5 @@ def test_fixtures_present_and_valid():
         (config.FIXTURES_DIR / "pool_hour_datas.json").read_text()
     )["data"]["poolHourDatas"]
     spot = json.loads((config.FIXTURES_DIR / "spot.json").read_text())
-    assert len(candles) == 720
+    assert len(candles) == 744  # 31 days: 30d vol window + headroom
     assert 100 < float(spot["data"]["pool"]["token0Price"]) < 100_000

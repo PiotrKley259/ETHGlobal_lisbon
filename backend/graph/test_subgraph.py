@@ -17,9 +17,9 @@ def offline(monkeypatch):
 
 
 def test_price_history_shape_and_order():
-    h = subgraph.get_price_history()
+    h = subgraph.get_price_history(hours=744)
     assert h["pool"] == config.ETH_USDC_POOL
-    assert len(h["candles"]) == 720
+    assert len(h["candles"]) == 744
     ts = [c["ts"] for c in h["candles"]]
     assert ts == sorted(ts)  # ascending per CONTRACTS §1
     last = h["candles"][-1]
@@ -28,7 +28,7 @@ def test_price_history_shape_and_order():
 
 
 def test_price_history_smaller_window_takes_most_recent():
-    full = subgraph.get_price_history()
+    full = subgraph.get_price_history(hours=744)
     sub = subgraph.get_price_history(hours=24)
     assert len(sub["candles"]) == 24
     assert sub["candles"][-1] == full["candles"][-1]
