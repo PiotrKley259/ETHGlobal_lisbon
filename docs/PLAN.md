@@ -167,7 +167,7 @@ Verified constraints are in CONTRACTS §2 — read that box before B1.2/B1.4.
   idempotency box — the worker retries; the sidecar must never pay twice; test by
   calling execute twice in `smoke.sh` and asserting one transfer + `replayed`).
   `/treasury/balances`.
-- [ ] **B1.5** `smoke.sh`: curl script that runs the whole lifecycle end to end
+- [x] **B1.5** `smoke.sh`: curl script that runs the whole lifecycle end to end
   (mint → log → schedule → execute) and prints Hashscan links. This is Lane B's
   test suite *and* the demo rehearsal.
 
