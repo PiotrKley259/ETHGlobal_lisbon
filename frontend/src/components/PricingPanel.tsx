@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { Greeks, PanelState } from "../types";
+import { PayoffDiagram } from "./PayoffDiagram";
 import { SettingsMenu } from "./SettingsMenu";
 
 interface PricingPanelProps {
@@ -102,6 +103,7 @@ export function PricingPanel({ panel, onSettingsSaved }: PricingPanelProps) {
             </span>
           </div>
           <GreeksGrid greeks={panel.strategy.net_greeks} />
+          <PayoffDiagram strategy={panel.strategy} />
         </div>
       )}
     </div>

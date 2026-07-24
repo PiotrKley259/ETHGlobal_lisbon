@@ -181,7 +181,7 @@ Verified constraints are in CONTRACTS §2 — read that box before B1.2/B1.4.
   inputs (calm / stressed boundaries, `0 < calm < elevated < 1`) against
   `GET/POST /settings`; regime badge tooltip shows the active bands ("stressed =
   top 20%" is a user choice, not our constant).
-- [ ] **B2.3** Payoff diagram (strategy quotes): P/L vs terminal price from
+- [x] **B2.3** Payoff diagram (strategy quotes): P/L vs terminal price from
   `payoff.prices/pnl`, breakevens and max P/L marked. Hand-rolled SVG or recharts
   — whichever is faster; it must read instantly (this is the "options for
   non-experts" money shot).

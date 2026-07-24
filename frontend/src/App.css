@@ -366,3 +366,45 @@ body {
   color: #0d1117;
   font-weight: 600;
 }
+
+/* payoff diagram (B2.3) */
+.payoff {
+  width: 100%;
+  height: auto;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+.payoff-line {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.6;
+}
+
+.payoff-area-profit {
+  fill: rgba(63, 185, 80, 0.18);
+  stroke: none;
+}
+
+.payoff-area-loss {
+  fill: rgba(248, 81, 73, 0.16);
+  stroke: none;
+}
+
+.payoff-zero {
+  stroke: var(--border);
+  stroke-width: 1;
+}
+
+.payoff-be {
+  stroke: var(--amber);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+
+.payoff-tick {
+  fill: var(--text-dim);
+  font-size: 9px;
+  font-family: var(--mono);
+}
