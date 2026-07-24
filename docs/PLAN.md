@@ -303,9 +303,11 @@ terminal.
 
 ### Stage 5 — Hardening & submission (H40–H48) · both
 
-- [ ] **H.1** `OFFLINE_MODE=1` full-demo dry run (conference wifi insurance):
-  fixtures for Graph; chain strip can replay `chat_scripts.json` events if testnet
-  is down. One env var flips the whole app.
+- [x] **H.1** `OFFLINE_MODE=1` dry run passed: health flags offline, panel
+  served from fixtures (spot $1,858.67, contango curve), agent quoted a 7d put
+  at $14.47 off the fixture curve. Only the Anthropic API needs network; if
+  testnet is also down, demo the chain beat from `mock_server.py`'s canned
+  script (the strip renders identically).
 - [ ] **H.2** Record a backup demo video of the full flow.
 - [x] **H.3** README drafted by P1: pitch with live numbers, architecture,
   honest settlement model, run instructions, sponsor-track mapping, and a
@@ -315,8 +317,9 @@ terminal.
   Original scope note: pitch, architecture diagram, honest limitations, path
   to production, sponsor-track
   mapping (Graph / Hedera / AI), run instructions from clean clone.
-- [ ] **H.4** Secrets sweep: `git log -p | grep -iE 'key|secret'` sanity check,
-  `.env` never committed, `.env.example` complete.
+- [x] **H.4** Secrets sweep clean: no API keys or private-key material
+  anywhere in history (all branches), `.env` and `state.json` never tracked,
+  `.env.example` matches CONTRACTS §5.
 - [ ] **H.5** Demo script rehearsed with a timer; `demo-graph` tag is the panic
   fallback.
 
