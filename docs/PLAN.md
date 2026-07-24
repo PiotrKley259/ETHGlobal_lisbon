@@ -154,7 +154,7 @@ Build order inside the track = test-first, per the spec.
 #### Track B1 — `hedera-sidecar/` — Hedera adapter (P2) **[independent — tests straight against testnet]**
 Use **`@hiero-ledger/sdk`** (the Hiero rename of `@hashgraph/sdk`, identical API).
 Verified constraints are in CONTRACTS §2 — read that box before B1.2/B1.4.
-- [ ] **B1.1** Client setup, env loading, `/health`, `/setup` (stablecoin + topic +
+- [x] **B1.1** Client setup, env loading, `/health`, `/setup` (stablecoin + topic +
   customer acct created with `maxAutomaticTokenAssociations(-1)`), `state.json`
   persistence.
 - [ ] **B1.2** `/tokens/mint-series` (fungible HTS token per series; option terms as
