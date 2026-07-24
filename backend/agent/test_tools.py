@@ -25,6 +25,7 @@ def test_every_declared_tool_dispatches(state):
         "estimate_vol": {"window": "7d"},
         "get_regime": {},
         "get_risk_free_rate": {},
+        "get_vol_curve": {},
         "price_option": {"K": 1770.0, "T_days": 7.0, "type": "put"},
         "price_strategy": {"legs": [
             {"type": "call", "side": "long", "K": 1860.0, "T_days": 7.0, "qty": 1}]},

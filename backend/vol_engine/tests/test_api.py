@@ -19,7 +19,7 @@ def test_price_option_full_quote_shape():
     assert q["price"] > 0
     assert q["qty"] == 1.0
     assert q["inputs"]["S"] == pytest.approx(1858.67, abs=0.5)
-    assert q["inputs"]["sigma_source"] == "7d"  # tenor-matched window
+    assert q["inputs"]["sigma_source"] == "curve"  # term-structure sourced
     assert 0.1 < q["inputs"]["sigma"] < 2.0
     assert -1 < q["greeks"]["delta"] < 0  # put
     assert set(q["greeks"]) == {"delta", "gamma", "vega", "theta", "rho"}
@@ -32,10 +32,26 @@ def test_price_option_qty_scales_price_not_greeks():
     assert q3["greeks"] == q1["greeks"]  # per 1 unit by contract
 
 
-def test_tenor_matching_selects_windows():
-    assert api.price_option(1860, 1.0, "call")["inputs"]["sigma_source"] == "24h"
-    assert api.price_option(1860, 7.0, "call")["inputs"]["sigma_source"] == "7d"
-    assert api.price_option(1860, 30.0, "call")["inputs"]["sigma_source"] == "30d"
+def test_pricing_sigma_comes_from_the_curve():
+    # at the tenor points the curve reproduces the window estimates exactly
+    for tenor, window in ((1.0, "24h"), (7.0, "7d"), (30.0, "30d")):
+        q = api.price_option(1860, tenor, "call")
+        assert q["inputs"]["sigma"] == pytest.approx(
+            api.estimate_vol(window)["sigma_annual"], abs=1e-12)
+    # between tenors: interpolated, strictly inside the bracket (contango data)
+    s1 = api.estimate_vol("24h")["sigma_annual"]
+    s7 = api.estimate_vol("7d")["sigma_annual"]
+    mid = api.price_option(1860, 3.0, "call")["inputs"]["sigma"]
+    assert min(s1, s7) < mid < max(s1, s7)
+    # clamped flat beyond the observed range
+    assert api.price_option(1860, 60.0, "call")["inputs"]["sigma"] == \
+        pytest.approx(api.estimate_vol("30d")["sigma_annual"], abs=1e-12)
+
+
+def test_vol_curve_shape_from_fixtures():
+    curve = api.get_vol_curve()
+    assert [p["tenor_days"] for p in curve["points"]] == [1.0, 7.0, 30.0]
+    assert curve["shape"] == "contango"  # 33% -> 53% in the captured data
 
 
 def test_price_strategy_from_named_template():

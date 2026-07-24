@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from graph import subgraph
 
+from .curve import classify_shape, sigma_for_horizon
 from .pricing import bs_greeks, bs_price
 from .strategies import list_strategies as _list_strategies
 from .strategies import price_strategy as _price_strategy
@@ -16,13 +17,14 @@ from .strategies import resolve_named
 from .types import Candle
 from .vol import estimate_vol as _estimate_vol
 from .vol import get_regime as _get_regime
-from .vol import select_sigma_window
 
 __all__ = [
     "get_price_history", "get_spot", "estimate_vol", "get_regime",
-    "get_risk_free_rate", "price_option", "price_strategy",
+    "get_risk_free_rate", "get_vol_curve", "price_option", "price_strategy",
     "list_strategies", "resolve_named",
 ]
+
+CURVE_TENORS = (("24h", 1.0), ("7d", 7.0), ("30d", 30.0))
 
 get_price_history = subgraph.get_price_history
 get_spot = subgraph.get_spot
@@ -50,9 +52,27 @@ def get_regime(bands: dict[str, float] | None = None) -> dict:
     return _get_regime(_candles(), bands).model_dump()
 
 
+def _curve_points(candles: list[Candle]) -> list[tuple[float, float]]:
+    return [
+        (tenor, _estimate_vol(candles, window, "close").sigma_annual)
+        for window, tenor in CURVE_TENORS
+    ]
+
+
+def get_vol_curve() -> dict:
+    """VolCurve per CONTRACTS §1: the three tenor points + the curve's shape.
+    This curve is THE source of sigma for all pricing (sigma_for_horizon)."""
+    points = _curve_points(_candles())
+    return {
+        "points": [{"tenor_days": t, "sigma": s} for t, s in points],
+        "shape": classify_shape(points),
+    }
+
+
 def _sigma_for(T_days: float, candles: list[Candle]) -> tuple[float, str]:
-    window = select_sigma_window(T_days)
-    return _estimate_vol(candles, window, "close").sigma_annual, window
+    """Single source of sigma for pricing: the fitted term-structure curve
+    (variance-time interpolation, flat clamp outside [1d, 30d])."""
+    return sigma_for_horizon(T_days, _curve_points(candles)), "curve"
 
 
 def price_option(

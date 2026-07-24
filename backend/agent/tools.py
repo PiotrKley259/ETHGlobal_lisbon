@@ -50,6 +50,11 @@ TOOLS: list[dict] = [
         "input_schema": {"type": "object", "properties": {}},
     },
     {
+        "name": "get_vol_curve",
+        "description": "The realized-vol term structure (24h/7d/30d points + fitted shape). Pricing sources sigma from this curve; call it when explaining WHY a quote's vol differs from a single headline number, or when the user asks about the vol picture.",
+        "input_schema": {"type": "object", "properties": {}},
+    },
+    {
         "name": "get_risk_free_rate",
         "description": "Continuously-compounded USDC financing rate used in pricing (live Aave v3 borrow rate, or a constant fallback).",
         "input_schema": {"type": "object", "properties": {}},
@@ -165,6 +170,8 @@ def dispatch(name: str, args: dict[str, Any], state: dict) -> dict:
         return api.get_regime(state["settings"]["regime_bands"])
     if name == "get_risk_free_rate":
         return api.get_risk_free_rate()
+    if name == "get_vol_curve":
+        return api.get_vol_curve()
     if name == "price_option":
         quote = api.price_option(
             K=args["K"], T_days=args["T_days"], type=args["type"],
@@ -265,6 +272,10 @@ def summarize(name: str, result: dict) -> str:
             return f"{result['regime']} ({result['percentile']:.0%} pct)"
         if name == "get_risk_free_rate":
             return f"{result['rate_cc']:.2%} cc ({result['source']})"
+        if name == "get_vol_curve":
+            pts = result["points"]
+            return (f"{result['shape']}: "
+                    + "→".join(f"{p['sigma']:.0%}" for p in pts))
         if name == "price_option":
             i = result["inputs"]
             return f"${result['price']:,.2f} @ σ {i['sigma']:.0%} ({i['sigma_source']})"
@@ -299,5 +310,5 @@ def build_panel(state: dict) -> dict:
         "rate": api.get_risk_free_rate(),
         "quote": state["last_quote"],
         "strategy": state["last_strategy"],
-        "curve": None,  # Stage 4: get_vol_curve
+        "curve": api.get_vol_curve(),
     }

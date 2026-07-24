@@ -270,13 +270,13 @@ terminal.
 
 ### Stage 4 — Stretch (H30–H40) · strictly in this order, drop from the bottom
 
-1. - [ ] **(P1)** Vol term structure per spec: `get_vol_curve()` +
-   `sigma_for_horizon(T_days)` — interpolate **linear in variance-time (σ²·T)**,
-   flat clamp outside [1d, 30d]; `price_option` sources σ only from it; expose
-   `shape` (contango/backwardation) and have the agent mention it when it moves a
-   quote. The four spec'd unit tests: exact reproduction at tenors; monotone
-   interpolation; flat clamps; variance-time ≠ naive σ-interpolation on a non-flat
-   curve.
+1. - [x] **(P1)** Vol term structure per spec: `curve.py` variance-time
+   interpolation with flat clamps + all four spec'd unit tests green;
+   `price_option`/`price_strategy` source σ ONLY from `sigma_for_horizon`
+   (`sigma_source: "curve"`); `get_vol_curve` exposed as agent tool, MCP tool,
+   and in `panel.curve` (P2's overlay can consume it now); agent prompt
+   explains shape when material. Live check: 3d ATM call $23.12 off the
+   contango curve vs $34.29 at 30d headline vol (−33%). 74 tests green.
 2. - [ ] **(P2)** Panel upgrade: fitted curve over the three bars, quoted (T, σ)
    marked on it — the price visibly comes *from* the curve.
 3. - [ ] **(P1)** `get_risk_free_rate()` via Aave v3 subgraph (USDC reserve

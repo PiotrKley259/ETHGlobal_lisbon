@@ -40,6 +40,13 @@ def get_regime(bands: dict[str, float] | None = None) -> dict:
 
 
 @mcp.tool()
+def get_vol_curve() -> dict:
+    """Realized-vol term structure: 24h/7d/30d points + shape (contango/
+    backwardation/flat). Pricing sources sigma from this fitted curve."""
+    return api.get_vol_curve()
+
+
+@mcp.tool()
 def get_risk_free_rate() -> dict:
     """Continuously-compounded USDC financing rate (Aave v3; falls back to a
     constant — fallback_level says which source produced it)."""
