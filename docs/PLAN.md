@@ -297,9 +297,13 @@ terminal.
   fixtures for Graph; chain strip can replay `chat_scripts.json` events if testnet
   is down. One env var flips the whole app.
 - [ ] **H.2** Record a backup demo video of the full flow.
-- [ ] **H.3** README: pitch, architecture diagram, honest limitations (realized ≠
-  implied vol; desk is the sole counterparty; scheduled tx amount fixed at
-  creation → worker computes payoff; testnet), path to production, sponsor-track
+- [x] **H.3** README drafted by P1: pitch with live numbers, architecture,
+  honest settlement model, run instructions, sponsor-track mapping, and a
+  limitations→production table (realized ≠ implied vol; desk is the sole
+  counterparty; scheduled tx amount fixed at creation → worker computes
+  payoff; testnet). P2: skim + adjust sidecar/frontend run steps if needed.
+  Original scope note: pitch, architecture diagram, honest limitations, path
+  to production, sponsor-track
   mapping (Graph / Hedera / AI), run instructions from clean clone.
 - [ ] **H.4** Secrets sweep: `git log -p | grep -iE 'key|secret'` sanity check,
   `.env` never committed, `.env.example` complete.
