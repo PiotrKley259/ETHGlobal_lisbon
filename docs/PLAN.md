@@ -212,12 +212,12 @@ renders all four surfaces correctly against the mock server.
 
 ### Stage 2 — Integration I: the Graph-track demo (H14–H20) · mostly P1, P2 finishes B-tracks
 
-- [ ] **I1.1 (P1)** `agent/tools.py`: tool definitions binding CONTRACTS §1 to the
-  engine; `agent/loop.py`: Anthropic SDK tool-use loop (model: `claude-sonnet-5`
-  for speed; system prompt = desk persona + division-of-labor rule + strategy
-  library + view-to-strategy disambiguation instructions, incl. the flat-market
-  tension: *profit from calm* → short premium vs *protect against a break* → long
-  straddle — ask, don't keyword-match).
+- [x] **I1.1 (P1)** `agent/tools.py`: 9 tool schemas bound to the api facade,
+  per-tool chip summaries, `build_panel`, `set_regime_bands` mutating state;
+  `agent/loop.py`: streaming `claude-sonnet-5` tool-use loop yielding CONTRACTS
+  §3 events, panel refresh after every tool batch, error tool_results let the
+  agent recover, 8-round guard. Desk persona enforces compute-nothing +
+  flat-market disambiguation. Dispatch tests offline (48 green).
 - [ ] **I1.2 (P1)** `app.py`: `POST /chat` streaming SSE per CONTRACTS §3; emit
   `panel` after every engine tool result; `GET /panel` hydration; `GET/POST
   /settings` (regime bands, validated, in-memory) + `set_regime_bands` agent tool
