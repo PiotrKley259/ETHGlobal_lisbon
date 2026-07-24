@@ -15,7 +15,7 @@ export function parsePrivateKey(str) {
       /* try next encoding */
     }
   }
-  throw httpError(500, "invalid HEDERA_OPERATOR_KEY", "not DER, ECDSA or ED25519 hex");
+  throw httpError(500, "invalid private key", "not DER, ECDSA or ED25519 hex");
 }
 
 let client = null;

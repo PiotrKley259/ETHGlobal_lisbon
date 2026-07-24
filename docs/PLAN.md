@@ -157,7 +157,7 @@ Verified constraints are in CONTRACTS §2 — read that box before B1.2/B1.4.
 - [x] **B1.1** Client setup, env loading, `/health`, `/setup` (stablecoin + topic +
   customer acct created with `maxAutomaticTokenAssociations(-1)`), `state.json`
   persistence.
-- [ ] **B1.2** `/tokens/mint-series` (fungible HTS token per series; option terms as
+- [x] **B1.2** `/tokens/mint-series` (fungible HTS token per series; option terms as
   terse JSON ≤100 bytes in memo/metadata) + `/tokens/transfer` (association-safe).
 - [ ] **B1.3** `/hcs/log` — submit JSON ≤1024 bytes to topic; return sequence number.
 - [ ] **B1.4** `/settlement/schedule` (`setExpirationTime` + `setWaitForExpiry(true)`,
