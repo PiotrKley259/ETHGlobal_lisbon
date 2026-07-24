@@ -172,7 +172,7 @@ Verified constraints are in CONTRACTS §2 — read that box before B1.2/B1.4.
   test suite *and* the demo rehearsal.
 
 #### Track B2 — `frontend/` — React app (P2) **[independent — runs against mock server]**
-- [ ] **B2.1** SSE client + chat column: streamed tokens, tool-call chips
+- [x] **B2.1** SSE client + chat column: streamed tokens, tool-call chips
   (name flashes while running, collapses to a badge with summary on result).
 - [ ] **B2.2** Pricing panel: spot, 3 vol bars (24h/7d/30d), regime badge, rate
   source line; on `quote`: price + Greeks grid. Renders whatever the `panel`
