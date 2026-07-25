@@ -49,13 +49,11 @@
   <!-- 03 PRICE -->
   <rect x="504" y="150" width="192" height="200" rx="8" fill="#4A1226" stroke="#D96A88" stroke-width="1.8"/>
   <text x="520" y="184" font-size="22" font-weight="600" fill="#E58BA4">03</text>
-  <text x="520" y="208" font-size="14.5" font-weight="600" fill="#F5E6DC">Price it — in code</text>
+  <text x="520" y="208" font-size="14.5" font-weight="600" fill="#F5E6DC">Price it in code</text>
   <text x="520" y="232" font-size="10.5" fill="#E9CFC2">Black–Scholes + Greeks</text>
   <text x="520" y="246" font-size="10.5" fill="#E9CFC2">single legs or 8 strategies</text>
   <text x="520" y="260" font-size="10.5" fill="#E9CFC2">payoff curve · breakevens</text>
-  <text x="520" y="282" font-size="10.5" fill="#E58BA4">the agent computes nothing —</text>
-  <text x="520" y="296" font-size="10.5" fill="#E58BA4">it explains, the engine prices</text>
-  <text x="520" y="330" font-size="9.5" fill="#D96A88" font-family="SFMono-Regular,Menlo,monospace">pure math · MCP · 86 tests</text>
+  <text x="520" y="330" font-size="9.5" fill="#D96A88" font-family="SFMono-Regular,Menlo,monospace">pure math · MCP </text>
 
   <!-- 04 MINT -->
   <rect x="726" y="150" width="192" height="200" rx="8" fill="#3D0E1E" stroke="#7D2C46" stroke-width="1.4"/>
