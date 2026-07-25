@@ -1,7 +1,8 @@
+import { useEffect, useRef, useState } from "react";
 import type { PayoffCurve } from "../types";
 
 const W = 320;
-const H = 200;
+const BASE_H = 200; // fallback aspect before the container is measured
 const PAD = { top: 18, right: 14, bottom: 40, left: 50 };
 
 const fmt = (x: number) =>
@@ -26,6 +27,24 @@ function niceTicks(min: number, max: number, count: number): number[] {
 // price from payoff.prices/pnl, profit green / loss red, real axes with round
 // ticks + gridlines, breakevens and unbounded sides marked. Hand-rolled SVG.
 export function PayoffDiagram({ strategy }: { strategy: PayoffCurve }) {
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const [H, setH] = useState(BASE_H);
+
+  // The chart fills whatever vertical space the panel grants its wrapper:
+  // match the viewBox aspect to the measured box so text stays undistorted.
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => {
+      const r = el.getBoundingClientRect();
+      if (r.width > 0 && r.height > 0) {
+        setH(Math.max(BASE_H, Math.round((r.height / r.width) * W)));
+      }
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
   const { prices, pnl } = strategy.payoff;
   if (prices.length < 2 || pnl.length !== prices.length) return null;
 
@@ -45,10 +64,11 @@ export function PayoffDiagram({ strategy }: { strategy: PayoffCurve }) {
   const area = `${line} L${sx(x1).toFixed(1)},${zeroY.toFixed(1)} L${sx(x0).toFixed(1)},${zeroY.toFixed(1)} Z`;
 
   const xTicks = niceTicks(x0, x1, 4);
-  const yTicks = niceTicks(yMin, yMax, 3);
+  const yTicks = niceTicks(yMin, yMax, Math.max(3, Math.round(H / 70)));
   const axisY = H - PAD.bottom;
 
   return (
+    <div className="payoff-wrap" ref={wrapRef}>
     <svg
       className="payoff"
       viewBox={`0 0 ${W} ${H}`}
@@ -139,5 +159,6 @@ export function PayoffDiagram({ strategy }: { strategy: PayoffCurve }) {
         </text>
       )}
     </svg>
+    </div>
   );
 }

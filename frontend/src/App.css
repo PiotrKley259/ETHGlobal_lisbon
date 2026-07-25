@@ -913,9 +913,22 @@ body {
   background: var(--px-accent2);
 }
 
-/* payoff: dark chart well, vivid conventional green/red for profit/loss */
+/* payoff: dark chart well, vivid conventional green/red for profit/loss.
+   The wrapper soaks up the panel's leftover height so the chart runs to
+   the region floor; the SVG viewBox matches its measured aspect. */
+.desk .quote-block {
+  flex: 1;
+  min-height: 0;
+}
+
+.payoff-wrap {
+  flex: 1;
+  min-height: 180px;
+}
+
 .desk .payoff {
   background: var(--px-panel);
+  height: 100%;
 }
 
 .desk .payoff-area-profit {
