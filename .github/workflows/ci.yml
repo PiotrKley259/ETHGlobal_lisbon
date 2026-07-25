@@ -36,7 +36,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: docker build -t optoputs .
+      # Docker Hub pulls from shared runner IPs flake (timeouts / rate
+      # limits); retry before declaring the build broken.
+      - run: |
+          for attempt in 1 2 3; do
+            docker build -t optoputs . && exit 0
+            echo "::warning::docker build attempt $attempt failed — retrying in 30s"
+            sleep 30
+          done
+          exit 1
 
   # Push-to-deploy: any push to main that passes the three check jobs deploys
   # both halves. Requires two repo secrets (Settings → Secrets → Actions):
