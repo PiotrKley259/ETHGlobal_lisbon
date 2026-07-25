@@ -28,7 +28,37 @@ body {
     "chat chain";
   gap: 10px;
   height: 100vh;
+  height: 100dvh; /* mobile browser chrome shrinks the real viewport */
   padding: 10px;
+}
+
+/* Narrow screens: the two-column desk needs ~750px — below that, stack the
+   regions and let the page scroll instead of crushing the panels. */
+@media (max-width: 860px) {
+  .app {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto;
+    grid-template-areas:
+      "chat"
+      "panel"
+      "chain";
+    height: auto;
+    min-height: 100dvh;
+  }
+
+  .chat-region {
+    height: 72dvh;
+    min-height: 320px;
+  }
+
+  .chain-region {
+    max-height: 40dvh;
+  }
+
+  /* 16px stops iOS Safari from zooming the page on input focus */
+  .chat-input input {
+    font-size: 16px;
+  }
 }
 
 .region {
@@ -210,10 +240,17 @@ body {
 }
 
 .vol-bar-row {
+  /* four cells: window label · bar · ±period move · annualized figure */
   display: grid;
-  grid-template-columns: 34px 1fr 52px;
+  grid-template-columns: 34px minmax(0, 1fr) 56px 68px;
   align-items: center;
   gap: 8px;
+}
+
+.vol-annualized {
+  font-size: 11px;
+  text-align: right;
+  white-space: nowrap;
 }
 
 .vol-label {
@@ -275,7 +312,7 @@ body {
 
 .greeks-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 6px;
 }
 
