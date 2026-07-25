@@ -24,8 +24,8 @@ and auto-settled on Hedera testnet** (HTS + HCS + Scheduled Transactions).
 <p align="center"><img src="docs/deck-slides/slide-4.png" alt="Slide 4 — The Graph as the load-bearing wall: Uniswap v3 vol curve, Aave v3 rate, agent reasons but never computes" width="100%"></p>
 <p align="center"><img src="docs/deck-slides/slide-5.png" alt="Slide 5 — who pays whom: treasury Francesco 0.0.9695676 and customer Piotr 0.0.9651354, five on-chain hops, real $21.88 settlement" width="100%"></p>
 <p align="center"><img src="docs/deck-slides/slide-6.png" alt="Slide 6 — tokenization on Hedera: each option series is an HTS token, no smart contract" width="100%"></p>
-<p align="center"><img src="docs/deck-slides/slide-7.png" alt="Slide 7 — qualification scorecard for both bounties" width="100%"></p>
-<p align="center"><img src="docs/deck-slides/slide-8.png" alt="Slide 8 — close: watch money move in 30 seconds" width="100%"></p>
+<p align="center"><img src="docs/deck-slides/slide-7.png?v=2" alt="Slide 7 — qualification scorecard for both bounties" width="100%"></p>
+<p align="center"><img src="docs/deck-slides/slide-8.png?v=2" alt="Slide 8 — close: watch money move in 30 seconds" width="100%"></p>
 
 The scheduled transfer is the on-chain settlement *commitment*; at expiry a
 backend worker computes the payoff from live spot and triggers
