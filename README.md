@@ -19,12 +19,10 @@ and auto-settled on Hedera testnet** (HTS + HCS + Scheduled Transactions).
   <img src="docs/architecture.svg" alt="OptoPuts architecture: React UI talks SSE to the FastAPI agent core, where the Claude agent-octopus reaches into the vol engine, the Graph adapter (Uniswap v3 + Aave v3 subgraphs), and the Hedera sidecar (HTS mint, HCS log, scheduled settlement); a settlement worker pays max(0, K−S) at expiry." width="100%">
 </p>
 
-Settlement model (honest version): a Hedera **Scheduled Transaction cannot
-compute max(0, S−K) at expiry** — its amount is fixed at creation. So the
-scheduled transfer is the on-chain settlement *commitment*; at expiry a
+The scheduled transfer is the on-chain settlement *commitment*; at expiry a
 backend worker computes the payoff from live spot and triggers
 `/settlement/execute`, which pays out and writes the settlement record to HCS.
-Both settlement endpoints are idempotent per token — the desk can never pay
+Both settlement endpoints are idempotent per token, the desk can never pay
 twice.
 
 ## Run it
