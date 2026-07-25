@@ -16,7 +16,7 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--mono);
-  font-size: 13px;
+  font-size: 16.25px;
 }
 
 .region {
@@ -32,7 +32,7 @@ body {
   padding: 8px 12px;
   border-bottom: 1px solid var(--border);
   color: var(--text-dim);
-  font-size: 11px;
+  font-size: 13.75px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -85,7 +85,7 @@ body {
 }
 
 .chip {
-  font-size: 11px;
+  font-size: 13.75px;
   border: 1px solid var(--border);
   border-radius: 999px;
   padding: 2px 8px;
@@ -120,7 +120,7 @@ body {
   border-radius: 4px;
   color: var(--text);
   font-family: var(--mono);
-  font-size: 13px;
+  font-size: 16.25px;
   padding: 8px 10px;
 }
 
@@ -163,13 +163,13 @@ body {
 }
 
 .big {
-  font-size: 18px;
+  font-size: 22.5px;
   font-weight: 700;
 }
 
 .dim {
   color: var(--text-dim);
-  font-size: 12px;
+  font-size: 15px;
 }
 
 .gear {
@@ -179,7 +179,7 @@ body {
   background: none;
   border: none;
   color: var(--text-dim);
-  font-size: 15px;
+  font-size: 18.75px;
   cursor: pointer;
 }
 
@@ -196,20 +196,20 @@ body {
 .vol-bar-row {
   /* four cells: window label · bar · ±period move · annualized figure */
   display: grid;
-  grid-template-columns: 34px minmax(0, 1fr) 56px 68px;
+  grid-template-columns: 42px minmax(0, 1fr) 70px 85px;
   align-items: center;
   gap: 8px;
 }
 
 .vol-annualized {
-  font-size: 11px;
+  font-size: 13.75px;
   text-align: right;
   white-space: nowrap;
 }
 
 .vol-label {
   color: var(--text-dim);
-  font-size: 11px;
+  font-size: 13.75px;
 }
 
 .vol-track {
@@ -228,13 +228,13 @@ body {
 
 .vol-value {
   text-align: right;
-  font-size: 12px;
+  font-size: 15px;
 }
 
 .regime-badge {
   border-radius: 999px;
   padding: 2px 10px;
-  font-size: 11px;
+  font-size: 13.75px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -282,7 +282,7 @@ body {
   border: 1px solid var(--border);
   border-radius: 4px;
   padding: 4px 2px;
-  font-size: 12px;
+  font-size: 15px;
   cursor: help; /* hover shows the greek's definition */
 }
 
@@ -307,7 +307,7 @@ body {
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 8px 10px;
-  font-size: 11px;
+  font-size: 13.75px;
   line-height: 1.45;
   white-space: normal;
   z-index: 20;
@@ -341,7 +341,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  font-size: 11px;
+  font-size: 13.75px;
   color: var(--text-dim);
   flex: 1;
 }
@@ -358,13 +358,13 @@ body {
 
 .settings-hint {
   margin: 0;
-  font-size: 11px;
+  font-size: 13.75px;
   color: var(--text-dim);
 }
 
 .settings-error {
   margin: 0;
-  font-size: 11px;
+  font-size: 13.75px;
   color: var(--red);
 }
 
@@ -380,7 +380,7 @@ body {
   border-radius: 4px;
   color: var(--text);
   font-family: var(--mono);
-  font-size: 12px;
+  font-size: 15px;
   padding: 4px 10px;
   cursor: pointer;
 }
@@ -430,7 +430,7 @@ body {
 
 .payoff-tick {
   fill: var(--text-dim);
-  font-size: 9px;
+  font-size: 11.25px;
   font-family: var(--mono);
 }
 
@@ -447,13 +447,13 @@ body {
 
 .payoff-axis-title {
   fill: var(--text-dim);
-  font-size: 8.5px;
+  font-size: 10.62px;
   letter-spacing: 0.4px;
 }
 
 .payoff-be-label {
   fill: var(--amber);
-  font-size: 9px;
+  font-size: 11.25px;
   font-family: var(--mono);
 }
 
@@ -463,12 +463,12 @@ body {
   overflow-y: auto;
   padding: 8px 12px;
   background: #090c10;
-  font-size: 12px;
+  font-size: 15px;
 }
 
 .chain-row {
   display: grid;
-  grid-template-columns: 92px 1fr auto 58px;
+  grid-template-columns: 115px 1fr auto 72px;
   align-items: center;
   gap: 10px;
   padding: 4px 0;
@@ -497,7 +497,7 @@ body {
 .pill {
   text-align: center;
   border-radius: 999px;
-  font-size: 10px;
+  font-size: 12.5px;
   font-weight: 700;
   text-transform: uppercase;
   padding: 1px 6px;
@@ -644,7 +644,7 @@ body {
   background: var(--px-ink);
   color: var(--px-fg);
   font-family: var(--font-term);
-  font-size: 18px;
+  font-size: 22.5px;
 }
 
 /* header bar: brand · status · network badge */
@@ -659,7 +659,7 @@ body {
 
 .desk .brand {
   font-family: var(--font-logo);
-  font-size: 14px;
+  font-size: 17.5px;
 }
 
 .status-dot {
@@ -677,7 +677,7 @@ body {
 .net-badge {
   margin-left: auto;
   font-family: var(--font-ui);
-  font-size: 12px;
+  font-size: 15px;
   letter-spacing: 0.1em;
   color: var(--px-fg-dim);
   border: 2px solid var(--px-chrome);
@@ -728,7 +728,7 @@ body {
   list-style: none;
   user-select: none;
   font-family: var(--font-ui);
-  font-size: 12px;
+  font-size: 15px;
   letter-spacing: 0.1em;
   color: var(--px-fg-dim);
   padding: 8px 12px;
@@ -759,7 +759,7 @@ body {
 
 /* chat bubbles per brief: user 6b0f1a tint, assistant 31081f, active fa198b */
 .desk .msg {
-  font-size: 19px;
+  font-size: 23.75px;
   line-height: 1.4;
 }
 
@@ -786,13 +786,13 @@ body {
   flex-direction: column;
   gap: 4px;
   font-family: var(--font-term);
-  font-size: 17px;
+  font-size: 21.25px;
   color: var(--px-fg);
 }
 
 .boot-title {
   font-family: var(--font-logo);
-  font-size: 12px;
+  font-size: 15px;
   color: var(--px-accent);
   margin-bottom: 6px;
 }
@@ -816,7 +816,7 @@ body {
 
 .starter-prompt {
   font-family: var(--font-term);
-  font-size: 16px;
+  font-size: 20px;
   text-align: left;
   color: var(--px-fg);
   background: rgba(107, 15, 26, 0.35);
@@ -841,7 +841,7 @@ body {
 .starter-hint {
   margin: 0;
   font-family: var(--font-ui);
-  font-size: 13px;
+  font-size: 16.25px;
   color: var(--px-fg);
   opacity: 0.7;
 }
@@ -854,7 +854,7 @@ body {
 
 .desk .chip {
   font-family: var(--font-ui);
-  font-size: 11px;
+  font-size: 13.75px;
   border-radius: 0;
   border-width: 2px;
 }
@@ -880,7 +880,7 @@ body {
 
 .desk .chat-input input {
   font-family: var(--font-term);
-  font-size: 18px;
+  font-size: 22.5px;
   border: 2px solid var(--px-chrome);
   border-radius: 0;
   background: var(--px-well);
@@ -893,7 +893,7 @@ body {
 
 .desk .chat-input button {
   font-family: var(--font-logo);
-  font-size: 11px;
+  font-size: 13.75px;
   border-radius: 0;
   border: 2px solid var(--px-chrome);
   background: var(--px-accent);
@@ -939,14 +939,14 @@ body {
 .desk .gear {
   min-width: 44px;
   min-height: 44px;
-  font-size: 32px;
+  font-size: 40px;
   top: 0;
   right: 8px;
 }
 
 /* wide enough that both boundary labels stay on one line, inputs aligned */
 .desk .settings-menu {
-  width: 320px;
+  width: 400px;
 }
 
 .desk .settings-row label {
@@ -964,7 +964,7 @@ body {
 .desk .chain-scroll {
   background: var(--px-panel); /* same surface as the console pane */
   font-family: var(--font-term);
-  font-size: 16px;
+  font-size: 20px;
 }
 
 /* responsive: <768 single column, chat first, rail collapsible below */
@@ -998,7 +998,7 @@ body {
 
   /* 16px stops iOS Safari from zooming the page on input focus */
   .desk .chat-input input {
-    font-size: 16px;
+    font-size: 20px;
   }
 }
 
@@ -1020,7 +1020,7 @@ body {
 /* stable right-rail sections (spec §4.4): plain headers, no collapse */
 .desk .region-title {
   font-family: var(--font-ui);
-  font-size: 12px;
+  font-size: 15px;
   letter-spacing: 0.1em;
   color: var(--px-fg-dim);
   padding: 8px 12px;
@@ -1043,22 +1043,22 @@ body {
 .desk {
   --mono: "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
   font-family: var(--mono);
-  font-size: 13.5px;
+  font-size: 16.88px;
 }
 
 .desk .msg {
-  font-size: 13.5px;
+  font-size: 16.88px;
   line-height: 1.5;
 }
 
 .desk .chat-input input {
   font-family: var(--mono);
-  font-size: 13.5px;
+  font-size: 16.88px;
 }
 
 .desk .chain-scroll {
   font-family: var(--mono);
-  font-size: 12.5px;
+  font-size: 15.62px;
 }
 
 /* ---- responsive tiers (spec §3): no horizontal overflow at any width ---- */
