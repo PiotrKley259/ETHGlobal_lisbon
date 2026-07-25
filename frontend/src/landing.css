@@ -233,7 +233,7 @@
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
   gap: 16px;
 }
 
@@ -258,19 +258,22 @@
 .step h3 {
   margin: 8px 0;
   font-family: var(--font-head);
-  font-size: 18.75px;
+  font-size: 15.5px; /* Silkscreen runs wide — 18.75px overflowed 230px cards */
+  overflow-wrap: anywhere;
 }
 
 .step p {
   margin: 0;
-  font-size: 18.75px;
+  font-size: 15px;
+  line-height: 1.5;
   color: var(--px-fg-dim);
+  overflow-wrap: anywhere;
 }
 
 .step-stack {
   margin-top: 12px !important;
   font-family: var(--font-term);
-  font-size: 18.75px !important;
+  font-size: 16px !important; /* VT323 renders small — 16px reads like ~13px */
   color: var(--px-fg-faint) !important;
 }
 
