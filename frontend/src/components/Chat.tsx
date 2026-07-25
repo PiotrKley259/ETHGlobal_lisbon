@@ -19,18 +19,25 @@ interface ChatProps {
   messages: ChatMessage[];
   busy: boolean;
   connected: boolean; // market feed hydrated — drives the boot-log status line
+  ethSpot: number | null; // live ETH price — personalizes the protect prompt
   onSend: (message: string) => void;
 }
 
-const STARTER_PROMPTS = [
-  "Protect my ETH below $2,800 through next Friday",
+// Protective-put strike pitched at 85% of live spot, rounded to $10.
+const protectStrike = (spot: number | null) =>
+  spot === null
+    ? "$2,800"
+    : `$${(Math.round((spot * 0.85) / 10) * 10).toLocaleString("en-US")}`;
+
+const starterPrompts = (ethSpot: number | null) => [
+  `Protect my ETH below ${protectStrike(ethSpot)} through next Friday`,
   "Price a WBTC straddle expiring in 7 days",
   "What's the vol regime right now?",
 ];
 
 // B2.1 — chat column: streamed tokens plus tool-call chips (name flashes while
 // the tool runs, collapses to a badge with the result summary).
-export function Chat({ messages, busy, connected, onSend }: ChatProps) {
+export function Chat({ messages, busy, connected, ethSpot, onSend }: ChatProps) {
   const [draft, setDraft] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -61,7 +68,7 @@ export function Chat({ messages, busy, connected, onSend }: ChatProps) {
               </span>
             </div>
             <div className="starter-prompts">
-              {STARTER_PROMPTS.map((prompt) => (
+              {starterPrompts(ethSpot).map((prompt) => (
                 <button
                   key={prompt}
                   type="button"

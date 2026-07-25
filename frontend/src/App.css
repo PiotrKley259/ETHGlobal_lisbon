@@ -434,6 +434,13 @@ body {
   font-family: var(--mono);
 }
 
+.payoff-inf {
+  fill: var(--text);
+  font-size: 20px; /* unbounded-side markers read at a glance */
+  font-weight: 700;
+  font-family: var(--mono);
+}
+
 .payoff-axis {
   stroke: var(--text-dim);
   stroke-width: 1;

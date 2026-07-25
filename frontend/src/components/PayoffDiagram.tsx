@@ -129,12 +129,12 @@ export function PayoffDiagram({ strategy }: { strategy: PayoffCurve }) {
 
       {/* unbounded-side badges */}
       {strategy.max_profit === null && (
-        <text x={W - PAD.right - 2} y={PAD.top + 10} className="payoff-tick" textAnchor="end">
+        <text x={W - PAD.right - 2} y={PAD.top + 16} className="payoff-inf" textAnchor="end">
           +∞
         </text>
       )}
       {strategy.max_loss === null && (
-        <text x={W - PAD.right - 2} y={axisY - 4} className="payoff-tick" textAnchor="end">
+        <text x={W - PAD.right - 2} y={axisY - 6} className="payoff-inf" textAnchor="end">
           −∞
         </text>
       )}
