@@ -851,6 +851,7 @@ body {
 .desk .gear {
   min-width: 44px;
   min-height: 44px;
+  font-size: 24px; /* match the spot-row headline visually */
 }
 
 .desk .settings-menu,
