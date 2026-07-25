@@ -991,13 +991,31 @@ body {
   z-index: 2;
 }
 
-/* wide enough that both boundary labels stay on one line, inputs aligned */
+/* compact settings popover in the pixel desk */
 .desk .settings-menu {
-  width: 400px;
+  width: min(320px, calc(100vw - 24px));
+  top: 40px;
+  right: 8px;
+  padding: 10px;
+  gap: 6px;
+}
+
+.desk .settings-row {
+  gap: 6px;
 }
 
 .desk .settings-row label {
-  white-space: nowrap;
+  white-space: normal;
+  font-size: 12.5px;
+}
+
+.desk .settings-hint,
+.desk .settings-error {
+  font-size: 12.5px;
+}
+
+.desk .settings-actions button {
+  font-size: 13px;
 }
 
 .desk .settings-menu,
