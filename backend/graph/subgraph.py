@@ -96,6 +96,18 @@ def get_price_history(hours: int = 720, asset: str = config.DEFAULT_ASSET) -> di
         raw = _gateway(config.UNISWAP_SUBGRAPH_ID,
                        _history_query(cfg["pool"], hours))["poolHourDatas"]
     candles = [_to_usd_candle(c, cfg["invert"]) for c in reversed(raw)]
+    if cfg.get("quote", "USDC") == "WETH":
+        # cross to USD with the same-hour ETH close. Close-to-close returns
+        # compose exactly (r_usd = r_weth + r_eth); intra-hour high/low are
+        # scaled by the hourly ETH close, an approximation that keeps
+        # high >= low (fine for close vol; Parkinson is approximate here).
+        eth_close = {c["ts"]: c["close"]
+                     for c in get_price_history(hours, "ETH")["candles"]}
+        candles = [
+            {**c, "open": c["open"] * e, "high": c["high"] * e,
+             "low": c["low"] * e, "close": c["close"] * e}
+            for c in candles if (e := eth_close.get(c["ts"])) is not None
+        ]
     return _cache_put(key, HISTORY_TTL_S, {
         "pool": cfg["pool"], "asset": asset, "hours": hours, "candles": candles,
     })
@@ -118,8 +130,11 @@ def get_spot(asset: str = config.DEFAULT_ASSET) -> dict:
     data = _load_fixture(f"spot{cfg['fixture_suffix']}.json") if config.OFFLINE_MODE \
         else _gateway(config.UNISWAP_SUBGRAPH_ID, _spot_query(cfg["pool"]))
     price_field = "token1Price" if cfg["invert"] else "token0Price"
+    price = float(data["pool"][price_field])
+    if cfg.get("quote", "USDC") == "WETH":
+        price *= get_spot("ETH")["price"]
     return _cache_put(key, SPOT_TTL_S, {
-        "price": float(data["pool"][price_field]),
+        "price": price,
         "asset": asset,
         "ts": int(data["_meta"]["block"]["timestamp"]),
         "source": "uniswap-v3-subgraph",

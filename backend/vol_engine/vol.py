@@ -26,28 +26,50 @@ def _parkinson(candles: list[Candle]) -> float:
     return math.sqrt(_PARKINSON_K * (sum(sq) / len(sq))) * ANNUALIZE
 
 
-def estimate_vol(candles: list[Candle], window: str, estimator: str = "close") -> Vol:
-    """Annualized realized vol over the trailing `window` of hourly candles.
+MIN_COVERAGE = 0.55  # window must be at least this fraction covered by data
 
-    close-to-close needs hours+1 candles (hours returns); Parkinson needs
-    hours candles (one range per candle).
+
+def _returns_with_dt(candles: list[Candle]) -> list[tuple[float, float]]:
+    out = []
+    for a, b in zip(candles, candles[1:]):
+        dt_h = (b.ts - a.ts) / 3600.0
+        if dt_h > 0:
+            out.append((math.log(b.close / a.close), dt_h))
+    return out
+
+
+def estimate_vol(candles: list[Candle], window: str, estimator: str = "close") -> Vol:
+    """Annualized realized vol over the trailing time `window`.
+
+    Candles are selected by TIMESTAMP (not count), and close-to-close vol is
+    the irregular-sampling estimator sum(r_i^2)/sum(dt_i) — so sparse pools
+    (missing no-trade hours, e.g. LINK) are handled correctly: a return that
+    spans a 3h gap contributes 3h of time to the denominator. Contiguous
+    hourly data reduces to the classic estimator.
     """
     if window not in WINDOW_HOURS:
         raise ValueError(f"window must be one of {sorted(WINDOW_HOURS)}, got {window!r}")
     if estimator not in ("close", "parkinson"):
         raise ValueError(f"estimator must be 'close' or 'parkinson', got {estimator!r}")
     hours = WINDOW_HOURS[window]
+    if not candles:
+        raise ValueError("no candles")
+    end_ts = candles[-1].ts
+    sel = [c for c in candles if c.ts >= end_ts - hours * 3600]
+    span_h = (sel[-1].ts - sel[0].ts) / 3600.0 if len(sel) > 1 else 0.0
+    if len(sel) < 13 or span_h < MIN_COVERAGE * hours:
+        raise ValueError(
+            f"insufficient data for {window} vol: {len(sel)} candles covering "
+            f"{span_h:.0f}h of a {hours}h window")
 
     if estimator == "close":
-        if len(candles) < hours + 1:
-            raise ValueError(f"need {hours + 1} candles for {window} close vol, got {len(candles)}")
-        sigma = _close_to_close([c.close for c in candles[-(hours + 1):]])
-        n_obs = hours
+        rets = _returns_with_dt(sel)
+        var_hourly = sum(r * r for r, _ in rets) / sum(dt for _, dt in rets)
+        sigma = math.sqrt(var_hourly) * ANNUALIZE
+        n_obs = len(rets)
     else:
-        if len(candles) < hours:
-            raise ValueError(f"need {hours} candles for {window} parkinson vol, got {len(candles)}")
-        sigma = _parkinson(candles[-hours:])
-        n_obs = hours
+        sigma = _parkinson(sel)
+        n_obs = len(sel)
 
     return Vol(
         sigma_annual=sigma,

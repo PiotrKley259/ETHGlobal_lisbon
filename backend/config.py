@@ -38,6 +38,22 @@ ASSETS: dict[str, dict] = {
         "invert": True,
         "fixture_suffix": "_wbtc",
     },
+    # WETH-quoted pools (deepest venues for these assets): candles are priced
+    # in WETH and crossed with the ETH/USDC series -> USD. All three have the
+    # asset as token0 (invert) — verified live 2026-07-25. WDOGE was evaluated
+    # and REJECTED: 86% of hours have no trades (744 candles span 7.5 months).
+    "LINK": {
+        "pool": "0xa6cc3c2531fdaa6ae1a3ca84c2855806728693e8",
+        "invert": True, "quote": "WETH", "fixture_suffix": "_link",
+    },
+    "UNI": {
+        "pool": "0x1d42064fc4beb5f8aaf85f4617ae8b3b5b8bd801",
+        "invert": True, "quote": "WETH", "fixture_suffix": "_uni",
+    },
+    "AAVE": {
+        "pool": "0x5ab53ee1d50eef2c1dd3d5402789cd27bb52c1bb",
+        "invert": True, "quote": "WETH", "fixture_suffix": "_aave",
+    },
 }
 DEFAULT_ASSET = "ETH"
 SIDECAR_URL = os.getenv("SIDECAR_URL", "http://localhost:7070")
