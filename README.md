@@ -17,11 +17,18 @@ and auto-settled on Hedera testnet** (HTS + HCS + Scheduled Transactions).
 > max(0, K−S) in demo stablecoin at expiry, automatically.
 
 
-## Architecture
+## Pitch deck
 
-<p align="center">
-  <img src="docs/architecture.svg" alt="Life of a trade: 01 ask in English (React chat, SSE) → 02 measure the market (The Graph: Uniswap vol curve, Aave rate, regime) → 03 price it in code (Black–Scholes, strategies — the agent computes nothing) → 04 mint on confirm (coverage-gated HTS + HCS + scheduled settlement) → 05 settle itself (worker pays max(0, K−S), idempotent). Below: the on-chain trail — token, trade record, armed settlement, payout — all on Hashscan." width="100%">
-</p>
+<p align="center"><b><a href="https://optoputs.vercel.app/pitch-deck.html">&#9654;&#65039; Present live &mdash; arrow keys / swipe to slide</a></b> &middot; <a href="docs/pitch-deck.html">deck source</a></p>
+
+<p align="center"><img src="docs/deck-slides/slide-1.png" alt="Slide 1 — cover: OptoPuts, insurance for your wallet; The Graph AI and Hedera HTS bounty chips" width="100%"></p>
+<p align="center"><img src="docs/deck-slides/slide-2.png" alt="Slide 2 — the problem: options are opaque, AI alone can't be trusted, settlement is a promise" width="100%"></p>
+<p align="center"><img src="docs/deck-slides/slide-3.png" alt="Slide 3 — life of a trade: ask, measure, price, mint, settle" width="100%"></p>
+<p align="center"><img src="docs/deck-slides/slide-4.png" alt="Slide 4 — The Graph as the load-bearing wall: Uniswap v3 vol curve, Aave v3 rate, agent reasons but never computes" width="100%"></p>
+<p align="center"><img src="docs/deck-slides/slide-5.png" alt="Slide 5 — who pays whom: treasury Francesco 0.0.9695676 and customer Piotr 0.0.9651354, five on-chain hops, real $21.88 settlement" width="100%"></p>
+<p align="center"><img src="docs/deck-slides/slide-6.png" alt="Slide 6 — tokenization on Hedera: each option series is an HTS token, no smart contract" width="100%"></p>
+<p align="center"><img src="docs/deck-slides/slide-7.png" alt="Slide 7 — qualification scorecard for both bounties" width="100%"></p>
+<p align="center"><img src="docs/deck-slides/slide-8.png" alt="Slide 8 — close: watch money move in 30 seconds" width="100%"></p>
 
 The scheduled transfer is the on-chain settlement *commitment*; at expiry a
 backend worker computes the payoff from live spot and triggers

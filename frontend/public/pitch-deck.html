@@ -1,0 +1,354 @@
+<title>OptoPuts — Pitch Deck</title>
+<style>
+  :root {
+    --ink: #b8506e;      /* rose ground — the site background */
+    --well: #240610;     /* recessed dark surfaces */
+    --panel: #31081f;    /* card surfaces */
+    --chrome: #6b0f1a;   /* borders, hard shadows */
+    --accent: #fa198b;   /* primary pink */
+    --accent2: #b91372;  /* secondary pink */
+    --fg: #ffeef7;       /* near-white pink-tinted text */
+    --green: #3fb950;    /* P&L profit */
+    --red: #f85149;      /* P&L loss */
+    --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+  }
+  html { scroll-snap-type: y proximity; }
+  body {
+    background: var(--ink);
+    color: var(--fg);
+    font-family: var(--mono);
+    font-size: 16px;
+    line-height: 1.55;
+    margin: 0;
+  }
+  .slide {
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 28px 16px;
+    scroll-snap-align: start;
+    box-sizing: border-box;
+  }
+  .card {
+    width: min(1060px, 100%);
+    background: var(--well);
+    border: 2px solid var(--chrome);
+    box-shadow: 8px 8px 0 rgba(36, 6, 16, 0.55);
+    padding: clamp(24px, 4vw, 52px);
+    box-sizing: border-box;
+  }
+  .eyebrow {
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    margin: 0 0 14px;
+  }
+  h1, h2 { text-wrap: balance; margin: 0; }
+  h1 { font-size: clamp(30px, 5.4vw, 56px); line-height: 1.08; letter-spacing: 0.01em; }
+  h2 { font-size: clamp(22px, 3.4vw, 34px); line-height: 1.15; margin-bottom: 18px; }
+  p  { margin: 0; }
+  .lede { font-size: clamp(16px, 2vw, 20px); max-width: 62ch; }
+  .dim { color: #e9bfd4; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px dotted var(--accent2); }
+  a:hover { border-bottom-style: solid; }
+  a:focus-visible, button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+  .chip {
+    display: inline-block;
+    border: 2px solid var(--accent2);
+    background: rgba(185, 19, 114, 0.18);
+    padding: 6px 12px;
+    font-size: 13.5px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+  .chip.gold { border-color: #ffd966; color: #ffd966; background: rgba(255, 217, 102, 0.08); }
+
+  .row { display: flex; flex-wrap: wrap; gap: 10px; }
+  .stack { display: flex; flex-direction: column; gap: 16px; }
+
+  .panelbox {
+    background: var(--panel);
+    border: 2px solid var(--chrome);
+    padding: 14px 16px;
+  }
+  .panelbox h3 { margin: 0 0 6px; font-size: 15px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+  .panelbox p { font-size: 14.5px; }
+
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+  .grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+
+  .kv { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; font-size: 14.5px; }
+  .kv dt { color: var(--accent); font-weight: 700; white-space: nowrap; }
+  .kv dd { margin: 0; overflow-wrap: anywhere; }
+
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  .tablewrap { overflow-x: auto; }
+  th, td { border: 1px solid var(--chrome); padding: 8px 10px; text-align: left; vertical-align: top; }
+  th { background: var(--panel); text-transform: uppercase; font-size: 12.5px; letter-spacing: 0.08em; color: var(--accent); }
+  td.ok { color: var(--green); font-weight: 700; white-space: nowrap; }
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* account-flow diagram */
+  .flowwrap { overflow-x: auto; padding-bottom: 6px; }
+  .flow {
+    display: grid;
+    grid-template-columns: 1fr 1.25fr 1fr;
+    gap: 14px;
+    min-width: 720px;
+    align-items: stretch;
+  }
+  .acct {
+    background: var(--panel);
+    border: 2px solid var(--accent2);
+    box-shadow: 5px 5px 0 rgba(36, 6, 16, 0.6);
+    padding: 16px;
+  }
+  .acct .who { font-size: 18px; font-weight: 700; }
+  .acct .id { color: var(--accent); font-weight: 700; font-size: 15px; }
+  .acct .role { font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: #e9bfd4; }
+  .acct ul { margin: 10px 0 0; padding-left: 18px; font-size: 13.5px; }
+  .lane { display: flex; flex-direction: column; gap: 10px; justify-content: center; }
+  .hop {
+    border: 2px dashed var(--chrome);
+    background: rgba(49, 8, 31, 0.55);
+    padding: 8px 12px;
+    font-size: 13.5px;
+    position: relative;
+  }
+  .hop b { color: var(--accent); }
+  .hop .dir { font-size: 16px; font-weight: 700; }
+  .hop.pay { border-style: solid; border-color: var(--green); }
+  .hop.pay .dir { color: var(--green); }
+  .ledger {
+    margin-top: 14px;
+    border: 2px solid var(--chrome);
+    background: var(--panel);
+    padding: 12px 14px;
+    font-size: 13.5px;
+  }
+  .ledger b { color: var(--accent); }
+
+  .steps { counter-reset: step; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+  .step { background: var(--panel); border: 2px solid var(--chrome); padding: 14px; }
+  .step::before {
+    counter-increment: step;
+    content: "0" counter(step);
+    display: block;
+    color: var(--accent);
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    margin-bottom: 6px;
+  }
+  .step h3 { margin: 0 0 6px; font-size: 16px; }
+  .step p { font-size: 13.5px; }
+
+  .cover { text-align: center; }
+  .cover .octo { width: 120px; height: auto; image-rendering: pixelated; margin: 0 auto 8px; display: block; }
+  .wordmark { color: var(--accent); font-weight: 700; letter-spacing: 0.06em; }
+
+  .footer-nav {
+    position: fixed;
+    right: 14px;
+    bottom: 14px;
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+  }
+  .footer-nav button {
+    font-family: var(--mono);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--fg);
+    background: var(--panel);
+    border: 2px solid var(--chrome);
+    padding: 8px 13px;
+    cursor: pointer;
+  }
+  .footer-nav button:hover { border-color: var(--accent); }
+  .counter { align-self: center; font-size: 13px; color: var(--fg); background: rgba(36,6,16,.75); padding: 6px 10px; border: 2px solid var(--chrome); }
+
+  @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+
+<!-- 01 · COVER -->
+<section class="slide" id="s1"><div class="card cover stack">
+  <img class="octo" alt="OptoPuts octopus mascot" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAdCAYAAAC9pNwMAAABzUlEQVR4nMWVMWrDMBSGf5XuDqUZggMlNGunOlDwBTL6AD1AbuAz+AY+gA+QMUuhS8EQ711cOjQhg0Nwxk7qEolnRZLlxNAftEhP75Pee3picBd3sGGuzlwMOQDUs6TVcLCOnX23gXkVZqgffwEAw899K1w5hNH/jSu0q04RMqbHBOb1LLkY6gLXgblLPl1VRKkWfqszLn0P0+2xU05Nmm6P2nlbjs80WMd4K386r10NvkT57vA/YJO0YFNeusp0W8D8wHkRpVcfIN8dMN8kWo6tc10Nt3Uva473xffZ3Pv+y2muTdp33KY2UOl7CJYLwBJRa6gBt19JJ+WnMoKNzbyPIqMS0WAgvbn0vYZRX0DRgkkUmLxxnx8DFXlSAEmtKC42WMcy3H2HVydjA1mNY7yM7noD0TADhv+4iFIJLX0Ppe9Z25+qfHeQ+4RW42aVq2AZbgoKlguaJ7kuhqr5JhHvWB76+eGpYXPWQKowAyoAwQTlCarTfTCRh6pHiaxcqsbeTXO/mmMu4MOPV9WuUflqgxBrai5V3zDkmAGgUEYdiLCS3Ml1pQ50RcsM863iVZjxIkr56fS023Fl9CpehZnNeSdgl6tTxxeFjOoPpFnSUYs2Ug4AAAAASUVORK5CYII=" />
+  <p class="eyebrow" style="text-align:center">ETHGlobal Lisbon · 2026</p>
+  <h1><span class="wordmark">OptoPuts</span> — insurance for your wallet.</h1>
+  <p class="lede" style="margin:0 auto">Ask a desk for help to hedge your assets. Tested code prices the option off live on-chain data. Hedera mints, audits, and settles it — automatically, in seconds.</p>
+  <div class="row" style="justify-content:center; margin-top:10px">
+    <span class="chip gold">🏆 Best AI Use Case of The Graph</span>
+    <span class="chip gold">🪙 Tokenization on Hedera (HTS)</span>
+  </div>
+  <p class="dim" style="font-size:14px">live demo: <a href="https://optoputs.vercel.app">optoputs.vercel.app</a> · Hedera testnet · The Graph gateway</p>
+</div></section>
+
+<!-- 02 · PROBLEM / SOLUTION -->
+<section class="slide" id="s2"><div class="card stack">
+  <p class="eyebrow">01 · The problem</p>
+  <h2>Holding ETH is easy. Protecting it isn't.</h2>
+  <div class="grid3">
+    <div class="panelbox"><h3>Options are opaque</h3><p>Strikes, sigma, theta — priced in jargon, sized for professionals, alien to the people who actually need downside cover.</p></div>
+    <div class="panelbox"><h3>AI alone can't be trusted</h3><p>An LLM that invents a price is a liability. Nobody should buy protection priced by vibes.</p></div>
+    <div class="panelbox"><h3>Settlement is a promise</h3><p>Even a correct quote means little if payout depends on someone remembering to pay you.</p></div>
+  </div>
+  <p class="lede"><b>OptoPuts:</b> a chat-driven options desk where <b>the agent computes nothing</b>. deterministic, tested pricing code does the math off live Graph data, and Hedera turns the contract into a token that settles itself.</p>
+</div></section>
+
+<!-- 03 · LIFE OF A TRADE -->
+<section class="slide" id="s3"><div class="card stack">
+  <p class="eyebrow">02 · Life of a trade</p>
+  <h2>Worries in → audited transactions out</h2>
+  <div class="steps">
+    <div class="step"><h3>Ask</h3><p>“Protect my ETH below $1,590 for the next 7 days.” Claude parses intent — and only intent.</p></div>
+    <div class="step"><h3>Measure</h3><p>Uniswap v3 swap history via The Graph becomes a realized-vol curve; Aave v3 sets the financing rate.</p></div>
+    <div class="step"><h3>Price</h3><p>Deterministic Black–Scholes with full Greeks, breakevens, payoff curve. Zero LLM arithmetic.</p></div>
+    <div class="step"><h3>Mint</h3><p>On confirm: coverage-gated HTS token per option series. The desk never sells what the treasury can't pay.</p></div>
+    <div class="step"><h3>Settle</h3><p>At expiry a worker pays max(0, K−S) in stablecoin — idempotent, logged to HCS, visible on Hashscan.</p></div>
+  </div>
+  <p class="dim" style="font-size:14px">Frontend: React/Vite desk terminal · Backend: FastAPI + Claude tool-use agent · Chain: Node sidecar on Hedera testnet</p>
+</div></section>
+
+<!-- 04 · THE GRAPH -->
+<section class="slide" id="s4"><div class="card stack">
+  <p class="eyebrow">03 · Bounty — Best AI Use Case of The Graph</p>
+  <h2>The Graph is the load-bearing wall</h2>
+  <p class="lede">Every number the desk shows is derived live from the gateway. No Graph, no product.</p>
+  <div class="grid2">
+    <div class="panelbox"><h3>Uniswap v3 subgraph</h3><p class="num">Pool swap history → OHLC → <b>realized volatility</b> at 24h / 7d / 30d , annualized + per-window ± moves. Multi-asset: ETH, WBTC, AAVE, ... — including inverted-pool handling.</p><p class="dim" style="margin-top:6px; overflow-wrap:anywhere"></p></div>
+    <div class="panelbox"><h3>Aave v3 subgraph</h3><p class="num">USDC borrow market → continuously-compounded <b>risk-free rate r</b> feeding the pricer, with explicit fallback levels surfaced in the UI.</p><p class="dim" style="margin-top:6px; overflow-wrap:anywhere"></p></div>
+  </div>
+  <div class="panelbox"><h3>The agent reasons over it — it never computes</h3><p>Claude classifies the <b>vol regime</b> (calm / elevated / stressed, percentile vs trailing 30d, user-tunable bands), chooses among 8 strategies to match the user's view, explains Greeks, and refuses uncovered mints. All arithmetic lives in tested Python tools.</p></div>
+  <div class="row">
+    <span class="chip">Effective use of The Graph · 35%</span>
+    <span class="chip">Usefulness &amp; impact · 25%</span>
+    <span class="chip">Technical execution · 20%</span>
+    <span class="chip">Innovation · 10%</span>
+    <span class="chip">Demo &amp; clarity · 10%</span>
+  </div>
+</div></section>
+
+<!-- 05 · ACCOUNTS DIAGRAM -->
+<section class="slide" id="s5"><div class="card stack">
+  <p class="eyebrow">04 · Who pays whom — real accounts, real value</p>
+  <h2>Two humans, one desk, every hop on-chain</h2>
+  <div class="flowwrap"><div class="flow">
+    <div class="acct">
+      <p class="role">Treasury · operator</p>
+      <p class="who">Francesco</p>
+      <p class="id num">0.0.9695676</p>
+      <ul>
+        <li>Mints dUSDC <span class="num">0.0.9749902</span> (50,000, 6&nbsp;dp)</li>
+        <li>Treasury of every option series token</li>
+        <li>Signs mints, schedules, settlements</li>
+      </ul>
+    </div>
+    <div class="lane">
+      <div class="hop"><span class="dir">①&nbsp;→</span> <b>HTS mint</b> — option series token (e.g. <span class="num">OPT-ETH-C-1850</span>), coverage-checked first</div>
+      <div class="hop"><span class="dir">②&nbsp;→</span> <b>Token transfer</b> — buyer receives the option (HIP-904 auto-association, no key custody)</div>
+      <div class="hop"><span class="dir">③&nbsp;→</span> <b>Scheduled tx armed</b> — on-chain settlement commitment at creation</div>
+      <div class="hop pay"><span class="dir">④&nbsp;→</span> <b>Expiry payout</b> — worker computes max(0,&nbsp;S−K) and pays dUSDC, <b>pay-once idempotent</b></div>
+      <div class="hop"><span class="dir">⑤&nbsp;≡</span> <b>Every step → HCS topic <span class="num">0.0.9749905</span></b> — immutable audit trail</div>
+    </div>
+    <div class="acct">
+      <p class="role">Customer · buyer</p>
+      <p class="who">Piotr</p>
+      <p class="id num">0.0.9651354</p>
+      <ul>
+        <li>Real wallet — no throwaway account</li>
+        <li>Holds the option series tokens</li>
+        <li>Receives settlement payouts in dUSDC</li>
+      </ul>
+    </div>
+  </div></div>
+  <div class="ledger num">
+    <b>Settled tonight on testnet:</b> ETH call, K $1,850 · spot at expiry $1,871.88 → <b style="color:var(--green)">$21.88 paid</b> Francesco → Piotr
+    (<a href="https://hashscan.io/testnet/transaction/0.0.9695676-1785010734-564069893">tx 0.0.9695676@1785010734</a>) ·
+    twin put same strike → <b>$0.00</b>, correctly worthless · replay attempt → <b>no double pay</b>
+  </div>
+</div></section>
+
+<!-- 06 · HEDERA / HTS -->
+<section class="slide" id="s6"><div class="card stack">
+  <p class="eyebrow">05 · Bounty — Tokenization on Hedera</p>
+  <h2>Financial contracts as protocol-native tokens</h2>
+  <p class="lede">Each option series is an <b>HTS token — no smart contract</b>. The full derivative lifecycle runs on Hedera primitives:</p>
+  <div class="grid3">
+    <div class="panelbox"><h3>Issue</h3><p>TokenCreate per series (symbol encodes asset/type/strike), treasury-held, minted only after the coverage gate passes.</p></div>
+    <div class="panelbox"><h3>Hold &amp; move</h3><p>Atomic TransferTransaction to the buyer's real wallet; HIP-904 unlimited auto-association — the desk never touches the buyer's keys.</p></div>
+    <div class="panelbox"><h3>Settle &amp; audit</h3><p>Scheduled Transaction commitment at mint; expiry worker executes the stablecoin payout; every quote, trade, settlement logged to HCS.</p></div>
+  </div>
+  <div class="panelbox"><h3>Why it matters</h3><p>This is the tokenization path for any cash-settled contract — options today; invoices, fund shares, carbon forwards tomorrow. Lifecycle + audit trail is exactly the compliance story HTS was built for.</p></div>
+</div></section>
+
+<!-- 07 · QUALIFICATION SCORECARD -->
+<section class="slide" id="s8"><div class="card stack">
+  <p class="eyebrow">07 · Qualification scorecard</p>
+  <h2>Every requirement, answered</h2>
+  <div class="tablewrap"><table>
+    <tr><th style="width:52%">The Graph — requirement</th><th>How OptoPuts meets it</th></tr>
+    <tr><td>Load-bearing source of blockchain data</td><td class="num">Vol curve, regime, spot &amp; rate all derived from Uniswap v3 + Aave v3 subgraphs</td></tr>
+    <tr><td>Live data from a Graph provider — no mocks</td><td>Gateway queries at demo time; fixtures exist for dev only</td></tr>
+    <tr><td>AI reasons over / acts on the data</td><td>Regime classification, strategy selection, coverage-gated on-chain actions</td></tr>
+    <tr><td>Public repo + 2–4 min demo video</td><td>Repo public; scripted 30-second settle loop makes the video</td></tr>
+    <tr><td>Describe subgraphs / endpoints used</td><td>Both subgraph IDs documented (slide 03 + README)</td></tr>
+  </table></div>
+  <div class="tablewrap"><table>
+    <tr><th style="width:52%">Hedera HTS — requirement</th><th>How OptoPuts meets it</th></tr>
+    <tr><td>Create / manage / interact via HTS</td><td>Token per option series + demo stablecoin, via SDK</td></tr>
+    <tr><td>Deploy &amp; demonstrate on testnet</td><td class="num">Live: dUSDC 0.0.9749902 · topic 0.0.9749905 · real $21.88 settlement</td></tr>
+    <tr><td>Public repo, Hashscan-verifiable</td><td>Every mint, schedule and payout links to Hashscan from the desk UI</td></tr>
+    <tr><td>≤5-min video with lifecycle operation</td><td>Create → configure → transfer → scheduled settlement in one take</td></tr>
+    <tr><td>Extra: Scheduled Transactions</td><td class="ok">✓ settlement commitment</td></tr>
+    <tr><td>Extra: external data for pricing</td><td class="ok">✓ The Graph feeds</td></tr>
+  </table></div>
+</div></section>
+
+<!-- 08 · CLOSE -->
+<section class="slide" id="s9"><div class="card cover stack">
+  <img class="octo" alt="" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAdCAYAAAC9pNwMAAABzUlEQVR4nMWVMWrDMBSGf5XuDqUZggMlNGunOlDwBTL6AD1AbuAz+AY+gA+QMUuhS8EQ711cOjQhg0Nwxk7qEolnRZLlxNAftEhP75Pee3picBd3sGGuzlwMOQDUs6TVcLCOnX23gXkVZqgffwEAw899K1w5hNH/jSu0q04RMqbHBOb1LLkY6gLXgblLPl1VRKkWfqszLn0P0+2xU05Nmm6P2nlbjs80WMd4K386r10NvkT57vA/YJO0YFNeusp0W8D8wHkRpVcfIN8dMN8kWo6tc10Nt3Uva473xffZ3Pv+y2muTdp33KY2UOl7CJYLwBJRa6gBt19JJ+WnMoKNzbyPIqMS0WAgvbn0vYZRX0DRgkkUmLxxnx8DFXlSAEmtKC42WMcy3H2HVydjA1mNY7yM7noD0TADhv+4iFIJLX0Ppe9Z25+qfHeQ+4RW42aVq2AZbgoKlguaJ7kuhqr5JhHvWB76+eGpYXPWQKowAyoAwQTlCarTfTCRh6pHiaxcqsbeTXO/mmMu4MOPV9WuUflqgxBrai5V3zDkmAGgUEYdiLCS3Ml1pQ50RcsM863iVZjxIkr56fS023Fl9CpehZnNeSdgl6tTxxeFjOoPpFnSUYs2Ug4AAAAASUVORK5CYII=" />
+  <h2 style="margin:0">Watch money move in 30 seconds.</h2>
+  <p class="lede" style="margin:0 auto">Open the desk → click one starter prompt → confirm → the treasury pays the buyer on-chain while the judges watch.</p>
+  <div class="row" style="justify-content:center">
+    <span class="chip">optoputs.vercel.app</span>
+    <span class="chip">github.com/PiotrKley259/ETHGlobal_lisbon</span>
+  </div>
+  <dl class="kv" style="margin:8px auto 0; max-width:520px">
+    <dt>Team</dt><dd>Piotr (Python desk &amp; pricing) · Francesco (JS chain &amp; frontend)</dd>
+    <dt>Built</dt><dd>entirely during ETHGlobal Lisbon</dd>
+    <dt>Ask</dt><dd>🏆 The Graph AI · 🪙 Hedera Tokenization</dd>
+  </dl>
+</div></section>
+
+<nav class="footer-nav" aria-label="slide navigation">
+  <button id="prev" aria-label="previous slide">◂</button>
+  <span class="counter num" id="counter">1 / 9</span>
+  <button id="next" aria-label="next slide">▸</button>
+</nav>
+
+<script>
+  const slides = [...document.querySelectorAll(".slide")];
+  const counter = document.getElementById("counter");
+  let current = 0;
+  function goTo(i) {
+    current = Math.max(0, Math.min(slides.length - 1, i));
+    slides[current].scrollIntoView();
+  }
+  document.getElementById("prev").addEventListener("click", () => goTo(current - 1));
+  document.getElementById("next").addEventListener("click", () => goTo(current + 1));
+  addEventListener("keydown", (e) => {
+    if (e.key === "ArrowRight" || e.key === "PageDown") { e.preventDefault(); goTo(current + 1); }
+    if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); goTo(current - 1); }
+  });
+  const obs = new IntersectionObserver((entries) => {
+    for (const en of entries) if (en.isIntersecting) {
+      current = slides.indexOf(en.target);
+      counter.textContent = (current + 1) + " / " + slides.length;
+    }
+  }, { threshold: 0.55 });
+  slides.forEach((s) => obs.observe(s));
+</script>
