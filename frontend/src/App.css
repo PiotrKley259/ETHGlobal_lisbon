@@ -827,17 +827,17 @@ body {
   background: var(--px-accent2);
 }
 
-/* payoff: dark chart well so profit/loss read as conventional green/red */
+/* payoff: dark chart well, vivid conventional green/red for profit/loss */
 .desk .payoff {
   background: var(--px-panel);
 }
 
 .desk .payoff-area-profit {
-  fill: rgba(63, 185, 80, 0.4);
+  fill: rgba(63, 185, 80, 0.65);
 }
 
 .desk .payoff-area-loss {
-  fill: rgba(248, 81, 73, 0.45);
+  fill: rgba(248, 81, 73, 0.65);
 }
 
 .desk .payoff-line {
