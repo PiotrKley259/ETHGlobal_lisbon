@@ -54,6 +54,19 @@ def test_vol_curve_shape_from_fixtures():
     assert curve["shape"] == "contango"  # 33% -> 53% in the captured data
 
 
+def test_wbtc_quote_uses_wbtc_market_data():
+    q = api.price_option(K=60_000, T_days=7.0, type="put", asset="WBTC")
+    assert q["inputs"]["S"] == pytest.approx(63_917, rel=0.01)
+    assert q["price"] > 0
+    assert 0.05 < q["inputs"]["sigma"] < 2.0
+    # WBTC's curve is its own, not ETH's
+    eth7 = api.estimate_vol("7d")["sigma_annual"]
+    wbtc7 = api.estimate_vol("7d", asset="WBTC")["sigma_annual"]
+    assert eth7 != pytest.approx(wbtc7, abs=1e-6)
+    assert api.get_vol_curve(asset="WBTC")["shape"] in (
+        "contango", "backwardation", "flat")
+
+
 def test_price_strategy_from_named_template():
     legs = api.resolve_named("short_straddle", S=api.get_spot()["price"], T_days=7.0)
     r = api.price_strategy(legs)

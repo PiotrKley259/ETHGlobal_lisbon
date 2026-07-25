@@ -14,6 +14,14 @@ from vol_engine import api
 
 from . import risk, settlement, sidecar
 
+_ASSET_PROP = {
+    "asset": {
+        "type": "string",
+        "enum": ["ETH", "WBTC"],
+        "description": "underlying (default ETH; WBTC when the user says bitcoin/BTC)",
+    }
+}
+
 _LEG_SCHEMA = {
     "type": "object",
     "properties": {
@@ -29,17 +37,18 @@ _LEG_SCHEMA = {
 TOOLS: list[dict] = [
     {
         "name": "get_spot",
-        "description": "Latest ETH price in USD from the Uniswap v3 ETH/USDC pool. Call this before quoting anything.",
-        "input_schema": {"type": "object", "properties": {}},
+        "description": "Latest price in USD from the asset's Uniswap v3 USDC pool. Call this before quoting anything.",
+        "input_schema": {"type": "object", "properties": {**_ASSET_PROP}},
     },
     {
         "name": "estimate_vol",
-        "description": "Annualized realized volatility of ETH from Uniswap hourly candles. window: 24h, 7d or 30d; estimator close (default) or parkinson.",
+        "description": "Annualized realized volatility from Uniswap hourly candles. window: 24h, 7d or 30d; estimator close (default) or parkinson.",
         "input_schema": {
             "type": "object",
             "properties": {
                 "window": {"type": "string", "enum": ["24h", "7d", "30d"]},
                 "estimator": {"type": "string", "enum": ["close", "parkinson"], "default": "close"},
+                **_ASSET_PROP,
             },
             "required": ["window"],
         },
@@ -47,12 +56,12 @@ TOOLS: list[dict] = [
     {
         "name": "get_regime",
         "description": "Current vol regime (calm/elevated/stressed): where today's 7d vol sits in its trailing 30d distribution, labeled with the user's configured bands.",
-        "input_schema": {"type": "object", "properties": {}},
+        "input_schema": {"type": "object", "properties": {**_ASSET_PROP}},
     },
     {
         "name": "get_vol_curve",
         "description": "The realized-vol term structure (24h/7d/30d points + fitted shape). Pricing sources sigma from this curve; call it when explaining WHY a quote's vol differs from a single headline number, or when the user asks about the vol picture.",
-        "input_schema": {"type": "object", "properties": {}},
+        "input_schema": {"type": "object", "properties": {**_ASSET_PROP}},
     },
     {
         "name": "get_risk_free_rate",
@@ -70,6 +79,7 @@ TOOLS: list[dict] = [
                 "type": {"type": "string", "enum": ["call", "put"]},
                 "qty": {"type": "number", "default": 1.0},
                 "S": {"type": "number", "description": "override spot (normally omit)"},
+                **_ASSET_PROP,
             },
             "required": ["K", "T_days", "type"],
         },
@@ -79,7 +89,8 @@ TOOLS: list[dict] = [
         "description": "Price a multi-leg strategy from explicit legs: net cost (negative = credit), net Greeks, payoff curve with breakevens and max profit/loss. Use resolve_strategy first to turn a named structure into legs.",
         "input_schema": {
             "type": "object",
-            "properties": {"legs": {"type": "array", "items": _LEG_SCHEMA, "minItems": 1}},
+            "properties": {"legs": {"type": "array", "items": _LEG_SCHEMA, "minItems": 1},
+                           **_ASSET_PROP},
             "required": ["legs"],
         },
     },
@@ -96,6 +107,7 @@ TOOLS: list[dict] = [
             "properties": {
                 "name": {"type": "string"},
                 "T_days": {"type": "number"},
+                **_ASSET_PROP,
             },
             "required": ["name", "T_days"],
         },
@@ -111,6 +123,7 @@ TOOLS: list[dict] = [
                 "qty": {"type": "number", "default": 1.0},
                 "expiry_minutes": {"type": "number", "description": "minutes until expiry (demo-scale, e.g. 3)"},
                 "strategy_id": {"type": "string", "description": "shared id when minting legs of one strategy"},
+                **_ASSET_PROP,
             },
             "required": ["type", "K", "expiry_minutes"],
         },
@@ -156,42 +169,48 @@ def default_state() -> dict:
         "settings": {"regime_bands": {"calm": 0.33, "elevated": 0.66}},
         "last_quote": None,
         "last_strategy": None,
+        "asset": "ETH",
     }
 
 
 def dispatch(name: str, args: dict[str, Any], state: dict) -> dict:
     """Execute one tool call against the engine; records quote/strategy in
     state so the panel always shows what produced the latest number."""
+    asset = args.get("asset", state.get("asset", "ETH"))
+    if name in ("get_spot", "estimate_vol", "get_regime", "get_vol_curve",
+                "price_option", "price_strategy", "resolve_strategy",
+                "mint_option"):
+        state["asset"] = asset  # panel follows the asset being worked on
     if name == "get_spot":
-        return api.get_spot()
+        return api.get_spot(asset)
     if name == "estimate_vol":
-        return api.estimate_vol(args["window"], args.get("estimator", "close"))
+        return api.estimate_vol(args["window"], args.get("estimator", "close"), asset)
     if name == "get_regime":
-        return api.get_regime(state["settings"]["regime_bands"])
+        return api.get_regime(state["settings"]["regime_bands"], asset)
     if name == "get_risk_free_rate":
         return api.get_risk_free_rate()
     if name == "get_vol_curve":
-        return api.get_vol_curve()
+        return api.get_vol_curve(asset)
     if name == "price_option":
         quote = api.price_option(
             K=args["K"], T_days=args["T_days"], type=args["type"],
-            qty=args.get("qty", 1.0), S=args.get("S"),
+            qty=args.get("qty", 1.0), S=args.get("S"), asset=asset,
         )
         state["last_quote"], state["last_strategy"] = quote, None
         return quote
     if name == "price_strategy":
-        strat = api.price_strategy(args["legs"])
+        strat = api.price_strategy(args["legs"], asset=asset)
         state["last_strategy"], state["last_quote"] = strat, None
         return strat
     if name == "list_strategies":
         return {"strategies": api.list_strategies()}
     if name == "resolve_strategy":
         legs = api.resolve_named(
-            args["name"], S=api.get_spot()["price"], T_days=args["T_days"]
+            args["name"], S=api.get_spot(asset)["price"], T_days=args["T_days"]
         )
         return {"legs": legs}
     if name == "mint_option":
-        return _mint_option(args)
+        return _mint_option(args, asset)
     if name == "log_trade":
         return sidecar.hcs_log(args["kind"], args["payload"])
     if name == "arm_settlement":
@@ -214,7 +233,7 @@ def dispatch(name: str, args: dict[str, Any], state: dict) -> dict:
     raise ValueError(f"unknown tool {name!r}")
 
 
-def _mint_option(args: dict) -> dict:
+def _mint_option(args: dict, asset: str = "ETH") -> dict:
     """Coverage-gated mint: refuse (raise -> is_error tool result) when the
     treasury can't cover the worst case. Registers exposure + settlement terms."""
     opt_type, K = args["type"], float(args["K"])
@@ -228,16 +247,18 @@ def _mint_option(args: dict) -> dict:
                          f"(treasury ${coverage['treasury_balance_usd']:,.0f}, "
                          f"open exposure ${coverage['open_exposure_usd']:,.0f})")
 
-    symbol = f"OPT-{'C' if opt_type == 'call' else 'P'}-{K:.0f}-{uuid.uuid4().hex[:4]}"
+    symbol = (f"OPT-{asset}-{'C' if opt_type == 'call' else 'P'}"
+              f"-{K:.0f}-{uuid.uuid4().hex[:4]}")
     result = sidecar.mint_series(
         symbol=symbol,
-        name=f"ETH {opt_type} {K:.0f} exp {expiry_ts}",
+        name=f"{asset} {opt_type} {K:.0f} exp {expiry_ts}",
         option={"type": opt_type, "strike": K, "expiry_ts": expiry_ts, "qty": qty,
+                "asset": asset,
                 **({"strategy_id": args["strategy_id"]} if args.get("strategy_id") else {})},
     )
     token_id = result["token_id"]
     risk.register_exposure(token_id, max_payout)
-    settlement.register_series(token_id, opt_type, K, qty, expiry_ts, symbol)
+    settlement.register_series(token_id, opt_type, K, qty, expiry_ts, symbol, asset)
     return {**result, "symbol": symbol, "expiry_ts": expiry_ts,
             "max_payout_usd": max_payout, "coverage": coverage}
 
@@ -303,12 +324,14 @@ def summarize(name: str, result: dict) -> str:
 
 def build_panel(state: dict) -> dict:
     """Full pricing-panel object per CONTRACTS §3 (whole object every time)."""
+    asset = state.get("asset", "ETH")
     return {
-        "spot": api.get_spot(),
-        "vols": [api.estimate_vol(w) for w in ("24h", "7d", "30d")],
-        "regime": api.get_regime(state["settings"]["regime_bands"]),
+        "asset": asset,
+        "spot": api.get_spot(asset),
+        "vols": [api.estimate_vol(w, asset=asset) for w in ("24h", "7d", "30d")],
+        "regime": api.get_regime(state["settings"]["regime_bands"], asset),
         "rate": api.get_risk_free_rate(),
         "quote": state["last_quote"],
         "strategy": state["last_strategy"],
-        "curve": api.get_vol_curve(),
+        "curve": api.get_vol_curve(asset),
     }

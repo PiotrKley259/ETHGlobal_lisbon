@@ -7,6 +7,7 @@ pricing itself never fetches (OFFLINE_MODE=1 therefore always works).
 """
 from __future__ import annotations
 
+import config
 from graph import subgraph
 
 from .curve import classify_shape, sigma_for_horizon
@@ -37,19 +38,21 @@ list_strategies = _list_strategies
 HISTORY_HOURS = 744
 
 
-def _candles() -> list[Candle]:
+def _candles(asset: str = config.DEFAULT_ASSET) -> list[Candle]:
     return [
         Candle(**c)
-        for c in subgraph.get_price_history(hours=HISTORY_HOURS)["candles"]
+        for c in subgraph.get_price_history(hours=HISTORY_HOURS, asset=asset)["candles"]
     ]
 
 
-def estimate_vol(window: str, estimator: str = "close") -> dict:
-    return _estimate_vol(_candles(), window, estimator).model_dump()
+def estimate_vol(window: str, estimator: str = "close",
+                 asset: str = config.DEFAULT_ASSET) -> dict:
+    return _estimate_vol(_candles(asset), window, estimator).model_dump()
 
 
-def get_regime(bands: dict[str, float] | None = None) -> dict:
-    return _get_regime(_candles(), bands).model_dump()
+def get_regime(bands: dict[str, float] | None = None,
+               asset: str = config.DEFAULT_ASSET) -> dict:
+    return _get_regime(_candles(asset), bands).model_dump()
 
 
 def _curve_points(candles: list[Candle]) -> list[tuple[float, float]]:
@@ -59,10 +62,10 @@ def _curve_points(candles: list[Candle]) -> list[tuple[float, float]]:
     ]
 
 
-def get_vol_curve() -> dict:
+def get_vol_curve(asset: str = config.DEFAULT_ASSET) -> dict:
     """VolCurve per CONTRACTS §1: the three tenor points + the curve's shape.
     This curve is THE source of sigma for all pricing (sigma_for_horizon)."""
-    points = _curve_points(_candles())
+    points = _curve_points(_candles(asset))
     return {
         "points": [{"tenor_days": t, "sigma": s} for t, s in points],
         "shape": classify_shape(points),
@@ -76,13 +79,14 @@ def _sigma_for(T_days: float, candles: list[Candle]) -> tuple[float, str]:
 
 
 def price_option(
-    K: float, T_days: float, type: str, qty: float = 1.0, S: float | None = None
+    K: float, T_days: float, type: str, qty: float = 1.0,
+    S: float | None = None, asset: str = config.DEFAULT_ASSET
 ) -> dict:
     """Quote per CONTRACTS §1. price is total for qty; Greeks are per 1 unit.
-    S=None (the normal case) uses the latest cached spot."""
-    spot = float(S) if S is not None else get_spot()["price"]
+    S=None (the normal case) uses the latest cached spot for the asset."""
+    spot = float(S) if S is not None else get_spot(asset)["price"]
     r_cc = get_risk_free_rate()["rate_cc"]
-    sigma, window = _sigma_for(T_days, _candles())
+    sigma, window = _sigma_for(T_days, _candles(asset))
     unit = bs_price(spot, K, T_days, sigma, r_cc, type)
     greeks = bs_greeks(spot, K, T_days, sigma, r_cc, type)
     return {
@@ -94,12 +98,11 @@ def price_option(
     }
 
 
-def price_strategy(legs: list[dict]) -> dict:
-    """StrategyQuote per CONTRACTS §1; per-leg sigma tenor-matched via
-    select_sigma_window (Stage 4 swaps in sigma_for_horizon here)."""
-    spot = get_spot()["price"]
+def price_strategy(legs: list[dict], asset: str = config.DEFAULT_ASSET) -> dict:
+    """StrategyQuote per CONTRACTS §1; per-leg sigma from the asset's curve."""
+    spot = get_spot(asset)["price"]
     r_cc = get_risk_free_rate()["rate_cc"]
-    candles = _candles()
+    candles = _candles(asset)
     return _price_strategy(
         legs, S=spot, r_cc=r_cc,
         sigma=lambda t_days: _sigma_for(t_days, candles)[0],

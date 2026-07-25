@@ -48,7 +48,7 @@ export function PricingPanel({ panel, onSettingsSaved }: PricingPanelProps) {
 
       {panel?.spot && (
         <div className="panel-row spot-row">
-          <span className="big">ETH ${fmtUsd(panel.spot.price)}</span>
+          <span className="big">{panel.asset ?? "ETH"} ${fmtUsd(panel.spot.price)}</span>
           <span className="dim">{panel.spot.source}</span>
         </div>
       )}

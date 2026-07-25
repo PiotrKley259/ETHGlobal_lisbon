@@ -27,10 +27,10 @@ def reset_registry() -> None:
 
 
 def register_series(token_id: str, opt_type: str, K: float, qty: float,
-                    expiry_ts: int, symbol: str) -> None:
+                    expiry_ts: int, symbol: str, asset: str = "ETH") -> None:
     _registry[token_id] = {
         "token_id": token_id, "type": opt_type, "K": float(K), "qty": float(qty),
-        "expiry_ts": int(expiry_ts), "symbol": symbol,
+        "expiry_ts": int(expiry_ts), "symbol": symbol, "asset": asset,
         "armed": False, "settled": False,
     }
 
@@ -57,7 +57,7 @@ def execute_due(now: float | None = None) -> list[dict]:
     for series in _registry.values():
         if series["settled"] or not series["armed"] or series["expiry_ts"] > now:
             continue
-        spot = api.get_spot()["price"]
+        spot = api.get_spot(series.get("asset", "ETH"))["price"]
         payout = round(_payoff(series["type"], series["K"], series["qty"], spot), 2)
         result = sidecar.execute_settlement(series["token_id"], payout, spot)
         series["settled"] = True

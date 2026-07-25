@@ -7,6 +7,8 @@ export interface Spot {
   source: string;
 }
 
+export type Asset = "ETH" | "WBTC";
+
 export interface Vol {
   sigma_annual: number;
   /** 1-sigma expected move over the window itself — the intuitive headline.
@@ -79,6 +81,8 @@ export interface VolCurve {
 }
 
 export interface PanelState {
+  /** which underlying the panel currently reflects (absent on old payloads) */
+  asset?: Asset;
   spot: Spot | null;
   vols: Vol[] | null;
   regime: Regime | null;

@@ -14,6 +14,15 @@ The same functions are exposed twice from one implementation:
 - as MCP tools in `backend/vol_engine/server.py` (FastMCP) — the demo narrative,
 - as plain Python callables consumed by `backend/agent/tools.py`.
 
+> **Multi-asset addendum (2026-07-25, P1-proposed — P2 ack pending):** every
+> engine data/pricing tool gains an optional `asset: "ETH"|"WBTC"` parameter
+> (default `"ETH"` — all pre-existing shapes unchanged). `get_price_history`/
+> `get_spot` responses and the §3 `panel` object gain an additive `asset`
+> field. Assets come from the registry in `backend/config.py` (Uniswap v3
+> USDC pools; per-pool inversion handled in the adapter — CONTRACTS §6).
+> Mint symbols become `OPT-{ASSET}-{C|P}-{K}-{nonce}` and the option metadata
+> gains `"asset"`.
+
 ### `get_price_history(hours: int = 720) -> PriceHistory`
 ```json
 {"pool": "0x88e6...5640", "hours": 720,
@@ -259,6 +268,13 @@ from Uniswap dev docs):
 - Gotchas: pool address must be **lowercase**; BigDecimals arrive as **strings**
   (parse to float); newest/oldest candle of a window may be a partial hour (drop
   the newest candle for vol estimation).
+
+**WBTC/USDC 0.3% pool** (`0x99ac8ca7087fa4a2a1fb6357269965a2014abc35`,
+$128M TVL — verified live 2026-07-25): token0 = **WBTC**, so this pool is
+**inverted** relative to the ETH pool: `poolHourData` OHLC is WBTC-per-USDC
+(~0.0000156) → USD price = `1/x` with **high/low swapped**; spot reads
+`token1Price` (≈ $63,917). The adapter's `invert` flag in `config.ASSETS`
+handles both orientations; any future asset must record its orientation there.
 
 **Aave v3 mainnet** (`Cd2gEDVeqnjBn1hSeqFMitw8Q1iiyV9FYUZkLNRcL87g`, official
 aave/protocol-subgraphs schema):

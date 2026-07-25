@@ -56,6 +56,19 @@ def test_quote_lands_in_state_and_panel(state):
     assert panel["regime"]["bands"] == state["settings"]["regime_bands"]
 
 
+def test_asset_flows_into_state_and_panel(state):
+    tools.dispatch("get_spot", {"asset": "WBTC"}, state)
+    assert state["asset"] == "WBTC"
+    panel = tools.build_panel(state)
+    assert panel["asset"] == "WBTC"
+    assert panel["spot"]["price"] > 10_000  # BTC scale
+    # sticky: next call without asset stays on WBTC; explicit ETH switches back
+    q = tools.dispatch("price_option", {"K": 60_000, "T_days": 7.0, "type": "put"}, state)
+    assert q["inputs"]["S"] > 10_000
+    tools.dispatch("get_spot", {"asset": "ETH"}, state)
+    assert tools.build_panel(state)["spot"]["price"] < 10_000
+
+
 def test_set_regime_bands_flows_into_regime(state):
     before = tools.dispatch("get_regime", {}, state)
     tools.dispatch("set_regime_bands", {"calm": 0.01, "elevated": 0.02}, state)

@@ -301,6 +301,15 @@ terminal.
    Bearer (details CONTRACTS §6).
 5. - [ ] **(P2)** Long strangle & butterfly mint flow polish; UI styling pass.
 
+### Post-gate feature work (after both demo tags)
+
+- [x] **F1 (P1)** Concise agent: 3-6 key bullets, detail on follow-up.
+- [x] **F2 (P1, contract addendum pending P2 ack)** Multi-asset desk: asset
+  registry (ETH + WBTC/USDC 0.3%), per-pool OHLC inversion in the adapter,
+  asset param on all pricing/mint tools, per-asset curves and panel, WBTC
+  fixtures (744 candles). Live: "protect my bitcoin below $60k" → $47.03 put
+  off WBTC's own contango curve. 86 tests green.
+
 ### Stage 5 — Hardening & submission (H40–H48) · both
 
 - [x] **H.1** `OFFLINE_MODE=1` dry run passed: health flags offline, panel
