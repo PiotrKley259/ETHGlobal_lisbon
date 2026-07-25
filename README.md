@@ -37,29 +37,8 @@ cd ../hedera-sidecar && npm i && npm start      # sidecar :7070 (+ POST /setup o
 cd ../frontend && npm i && npm run dev          # UI
 ```
 
-`OFFLINE_MODE=1` runs the whole desk from committed fixtures — zero network.
+`OFFLINE_MODE=1` runs the whole desk from committed fixtures, zero network.
 Team workflow docs: [`docs/PLAN.md`](docs/PLAN.md) ·
 [`docs/CONTRACTS.md`](docs/CONTRACTS.md) ·
 [`docs/options_desk_summary.md`](docs/options_desk_summary.md).
 
-## Sponsor tracks
-
-- **The Graph** — pricing inputs are entirely subgraph-fed: Uniswap v3
-  `poolHourDatas` (vol + spot) and Aave v3 `Reserve` (financing rate), via the
-  decentralized gateway. The vol engine is also exposed as an MCP server.
-- **Hedera** — three services doing real work: HTS (each option series is a
-  token with terms in metadata), HCS (tamper-proof quote/trade/settlement
-  log), Scheduled Transactions (settlement commitment, HIP-423).
-- **AI** — Claude tool-use agent with a hard compute-nothing rule; the
-  view-to-strategy mapping is the reasoning showcase.
-
-## Honest limitations & path to production
-
-| Today (48h build) | Production path |
-|---|---|
-| Realized vol ≈ pricing vol (no options market to imply from) | Blend implied vol from Deribit/Lyra; add jump/stochastic-vol models |
-| Desk is the sole counterparty; one prefunded treasury | Margined LP vault, collateralized writers, liquidation engine |
-| Payoff computed off-chain by a worker (scheduled tx = commitment) | Oracle-fed settlement contract; the HCS log already makes every step auditable |
-| In-memory exposure ledger & conversation state | Persistent store; signed quotes with expiry |
-| Crash window between transfer & record in the sidecar | Mirror-node reconciliation before retry |
-| Testnet, demo stablecoin | Mainnet, audited contracts, real stablecoin rails |
