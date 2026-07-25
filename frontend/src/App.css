@@ -927,11 +927,12 @@ body {
   text-transform: uppercase;
 }
 
-/* original logo asset placed in the desk header (spec §4.1) */
+/* octopus mascot in the desk header, at native sprite size for crisp pixels */
 .brand-logo {
-  width: 22px;
-  height: 21px;
+  width: 30px;
+  height: 29px;
   display: block;
+  image-rendering: pixelated;
 }
 
 /* dense trading data in legible mono; pixel fonts stay on logo/titles/CTAs */

@@ -126,7 +126,7 @@ function App() {
   const desk = (
     <div className="desk">
       <header className="desk-header">
-        <img src="/favicon.svg" alt="" className="brand-logo" />
+        <img src="/octopus-logo.png" alt="" className="brand-logo" />
         <span className="brand iridescent-text">OptoPuts</span>
         <span
           className={`status-dot ${panel ? "on" : ""}`}
