@@ -4,6 +4,7 @@ import { Chat } from "./components/Chat";
 import type { ChatMessage } from "./components/Chat";
 import { ChainStrip } from "./components/ChainStrip";
 import { OctopusIntro } from "./components/OctopusIntro";
+import { Landing } from "./components/Landing";
 import { PricingPanel } from "./components/PricingPanel";
 import type { ChainEvent, PanelState, SseEvent } from "./types";
 import "./App.css";
@@ -11,7 +12,12 @@ import "./App.css";
 // Three regions per the spec: chat (left, primary), pricing panel (right top),
 // chain activity strip (right bottom). All SSE events funnel through here:
 // chat events feed the message list, `panel` and `chain` feed the right side.
+// Router-free routing: "/" = landing, "/desk" = the desk app. pushState keeps
+// the query string intact so the ?key=... invite flow survives navigation.
+const onDesk = () => window.location.pathname === "/desk";
+
 function App() {
+  const [view, setView] = useState<"landing" | "desk">(onDesk() ? "desk" : "landing");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [busy, setBusy] = useState(false);
   const [panel, setPanel] = useState<PanelState | null>(null);
@@ -26,6 +32,17 @@ function App() {
       .catch(() => {}); // backend not up yet — panel stays empty
   }, []);
   useEffect(hydratePanel, [hydratePanel]);
+
+  useEffect(() => {
+    const onPop = () => setView(onDesk() ? "desk" : "landing");
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
+
+  const enterDesk = () => {
+    window.history.pushState(null, "", `/desk${window.location.search}`);
+    setView("desk");
+  };
 
   const applyEvent = (evt: SseEvent) => {
     switch (evt.event) {
@@ -92,6 +109,10 @@ function App() {
       setBusy(false);
     }
   };
+
+  if (view === "landing") {
+    return <Landing onEnter={enterDesk} />;
+  }
 
   return (
     <div className="app">
