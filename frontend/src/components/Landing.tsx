@@ -26,9 +26,7 @@ export function Landing({ onEnter }: LandingProps) {
         </div>
         <h1>Insurance for your wallet.</h1>
         <p className="hero-body">
-          Price and mint on-chain options from live market data in seconds. You
-          ask in plain English, deterministic code does the math, and the chain
-          keeps the receipts.
+          Price and mint on-chain options from live market data in seconds.
         </p>
         <button className="cta cta-main" onClick={onEnter}>
           <span className="iridescent-text">Try live demo</span>
@@ -119,11 +117,6 @@ export function Landing({ onEnter }: LandingProps) {
           <button className="cta" onClick={onEnter}>
             Open the desk
           </button>
-          <p className="fine-print">
-            ETHGlobal Lisbon build · Hedera testnet — the money is fake, the
-            receipts are real. Public demos may need an invite link
-            (<code>?key=…</code>).
-          </p>
         </section>
       </main>
     </div>

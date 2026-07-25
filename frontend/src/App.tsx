@@ -126,6 +126,7 @@ function App() {
   const desk = (
     <div className="desk">
       <header className="desk-header">
+        <img src="/favicon.svg" alt="" className="brand-logo" />
         <span className="brand iridescent-text">OptoPuts</span>
         <span
           className={`status-dot ${panel ? "on" : ""}`}
@@ -139,14 +140,14 @@ function App() {
           <Chat messages={messages} busy={busy} onSend={handleSend} />
         </section>
         <aside className="right-rail">
-          <details className="region panel-region" open>
-            <summary className="region-title">pricing panel</summary>
+          <section className="region panel-region" aria-label="pricing panel">
+            <header className="region-title">pricing panel</header>
             <PricingPanel panel={panel} onSettingsSaved={hydratePanel} />
-          </details>
-          <details className="region chain-region" open>
-            <summary className="region-title">chain activity</summary>
+          </section>
+          <section className="region chain-region" aria-label="chain activity">
+            <header className="region-title">chain activity</header>
             <ChainStrip events={chainEvents} />
-          </details>
+          </section>
         </aside>
       </div>
     </div>

@@ -901,3 +901,107 @@ body {
     max-height: 40vh;
   }
 }
+
+/* ============ desktop rebalance (docs/frontend_desktop.md) ============ */
+
+/* FIX (spec §4.2/§4.3): flex children default to min-height:auto, so panel
+   content taller than its region (quote row + Greeks + payoff) was clipped
+   by the region's overflow:hidden with no scrollbar. min-height:0 restores
+   the inner scroll containers; the payoff SVG keeps its height. */
+.desk .panel-body,
+.desk .chain-scroll {
+  min-height: 0;
+}
+
+.desk .payoff {
+  flex-shrink: 0;
+}
+
+/* stable right-rail sections (spec §4.4): plain headers, no collapse */
+.desk .region-title {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: var(--px-fg-dim);
+  padding: 8px 12px;
+  border-bottom: 2px solid var(--px-chrome);
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  text-transform: uppercase;
+}
+
+/* original logo asset placed in the desk header (spec §4.1) */
+.brand-logo {
+  width: 22px;
+  height: 21px;
+  display: block;
+}
+
+/* dense trading data in legible mono; pixel fonts stay on logo/titles/CTAs */
+.desk {
+  --mono: "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-family: var(--mono);
+  font-size: 13.5px;
+}
+
+.desk .msg {
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.desk .chat-input input {
+  font-family: var(--mono);
+  font-size: 13.5px;
+}
+
+.desk .chain-scroll {
+  font-family: var(--mono);
+  font-size: 12.5px;
+}
+
+/* ---- responsive tiers (spec §3): no horizontal overflow at any width ---- */
+.desk-body > * {
+  min-width: 0;
+}
+
+/* >=1024 desktop terminal: chat clearly primary, rail capped */
+@media (min-width: 1024px) {
+  .desk-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(340px, 400px);
+  }
+}
+
+/* 768–1023 transitional: chat full-width and dominant on top; the rail
+   stacks below as a complete, readable two-up (panel | chain) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .desk-body {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  .desk .chat-region {
+    min-height: 56vh;
+    flex-shrink: 0;
+  }
+
+  .right-rail {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    overflow: visible;
+  }
+
+  .right-rail .panel-region,
+  .right-rail .chain-region {
+    flex: none;
+    min-height: 0;
+  }
+
+  .desk .panel-body,
+  .desk .chain-scroll {
+    max-height: 44vh;
+  }
+}
