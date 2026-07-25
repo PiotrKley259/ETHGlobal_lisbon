@@ -39,9 +39,9 @@
   <rect x="282" y="150" width="192" height="200" rx="8" fill="#3D0E1E" stroke="#7D2C46" stroke-width="1.4"/>
   <text x="298" y="184" font-size="22" font-weight="600" fill="#D96A88">02</text>
   <text x="298" y="208" font-size="14.5" font-weight="600" fill="#F5E6DC">Measure the market</text>
-  <text x="298" y="232" font-size="10.5" fill="#E9CFC2">Uniswap v3 hourly OHLC</text>
-  <text x="298" y="246" font-size="10.5" fill="#E9CFC2">→ realized-vol curve σ(T)</text>
-  <text x="298" y="260" font-size="10.5" fill="#E9CFC2">Aave v3 USDC borrow → r</text>
+  <text x="298" y="232" font-size="10.5" fill="#E9CFC2">Uniswap v3 hourly OHLC -> </text>
+  <text x="298" y="246" font-size="10.5" fill="#E9CFC2">realized-vol curve σ(T)</text>
+  <text x="298" y="260" font-size="10.5" fill="#E9CFC2">Aave v3 USDC borrow -> r</text>
   <text x="298" y="282" font-size="10.5" fill="#B08894">regime: calm / elevated / stressed</text>
   <text x="298" y="296" font-size="10.5" fill="#B08894">(your thresholds, not ours)</text>
   <text x="298" y="330" font-size="9.5" fill="#D96A88" font-family="SFMono-Regular,Menlo,monospace">The Graph gateway</text>
