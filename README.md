@@ -1,4 +1,4 @@
-# OptoPuts — an insurance for your wallet
+# OptoPuts : an insurance for your wallet 🐙
 
 A mini options desk for ETH. A deterministic Python engine prices European
 cash-settled calls, puts, and multi-leg strategies using **realized volatility
