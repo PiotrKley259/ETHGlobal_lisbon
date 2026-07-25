@@ -1,3 +1,4 @@
+import { Octopus } from "./Octopus";
 import "../landing.css";
 
 interface LandingProps {
@@ -10,27 +11,27 @@ interface LandingProps {
 export function Landing({ onEnter }: LandingProps) {
   return (
     <div className="landing">
-      {/* decorative drift — hidden from AT, frozen under reduced-motion */}
-      <div className="drift" aria-hidden="true">
-        <span className="drift-item d1">🐙</span>
-        <span className="drift-item d2">🪙</span>
-        <span className="drift-item d3">🪙</span>
-        <span className="drift-item d4">🐙</span>
-        <span className="drift-item d5">🪙</span>
-      </div>
-
       <header className="hero">
-        <p className="wordmark">
-          OptoPuts <span aria-hidden="true">🐙</span>
-        </p>
+        <div className="crt px-card">
+          <div className="crt-titlebar">
+            <span className="lights" aria-hidden="true">
+              <span />
+              <span />
+              <span />
+            </span>
+            OPTOPUTS.EXE — desk terminal
+          </div>
+          <Octopus />
+          <p className="wordmark iridescent-text">OptoPuts</p>
+        </div>
         <h1>Insurance for your wallet.</h1>
         <p className="hero-body">
           Price and mint on-chain options from live market data in seconds. You
           ask in plain English, deterministic code does the math, and the chain
           keeps the receipts.
         </p>
-        <button className="cta" onClick={onEnter}>
-          Try live demo
+        <button className="cta cta-main" onClick={onEnter}>
+          <span className="iridescent-text">Try live demo</span>
         </button>
         <p className="trust-row">
           live vols from The Graph · deterministic pricing · on-chain settlement
