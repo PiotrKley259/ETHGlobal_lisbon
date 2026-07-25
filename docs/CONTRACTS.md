@@ -189,7 +189,16 @@ sidecar is the exactly-once boundary for anything that moves money:
 ## 3. Chat wire protocol (FastAPI / frontend)
 
 Single endpoint: `POST /chat` with `{"message": str, "conversation_id": str|null}`.
-Response: `text/event-stream` (SSE). Event types (each `data:` line is one JSON object):
+Response: `text/event-stream` (SSE).
+
+**Deployment gate (opt-in):** if the backend env var `DEMO_KEY` is set (public
+deployments only), `POST /chat` additionally requires the header
+`X-Demo-Key: <value>` and returns 401 without it. When `DEMO_KEY` is unset
+(local dev, mock server, CI) the endpoint is open and behavior is unchanged.
+The frontend picks the key up from a `?key=<value>` URL parameter, stores it in
+`sessionStorage`, scrubs it from the address bar, and sends it as the header.
+The check uses constant-time comparison. Other endpoints stay open (they cost
+nothing and the panel should render for anyone). Event types (each `data:` line is one JSON object):
 
 | event | data | purpose |
 |---|---|---|
@@ -245,6 +254,7 @@ HEDERA_OPERATOR_KEY=          # treasury private key  (sidecar only)
 SIDECAR_URL=http://localhost:7070
 RISK_FREE_RATE_CONSTANT=0.04
 OFFLINE_MODE=0
+DEMO_KEY=                     # optional: when set, POST /chat requires header X-Demo-Key (public deploys)
 ```
 Python reads env only via `backend/config.py`; Node sidecar via its own `dotenv`.
 (The two subgraph IDs are public identifiers, safe to commit.)

@@ -1,0 +1,103 @@
+/* OptoPuts pixel-world design tokens (Design Brief v3).
+   Strict palette — any extra range comes from opacity tints of these five. */
+:root {
+  --px-ink: #0e0004; /* base background / the ink itself */
+  --px-panel: #31081f; /* panel and card backgrounds */
+  --px-chrome: #6b0f1a; /* borders, shadows, muted chrome */
+  --px-accent2: #b91372; /* secondary accent — hover, secondary buttons */
+  --px-accent: #fa198b; /* primary accent — CTA, active, biolum flecks */
+
+  /* readable text = tint variations of palette (near-white pink tints) */
+  --px-fg: #ffeef7; /* fa198b tinted ~95% toward white */
+  --px-fg-dim: #e9bfd4;
+  --px-fg-faint: #b98aa1;
+
+  --font-logo: "Press Start 2P", monospace;
+  --font-head: "Silkscreen", monospace;
+  --font-ui: "DotGothic16", monospace;
+  --font-term: "VT323", monospace;
+
+  /* motion tokens */
+  --t-hover: 140ms;
+  --t-press: 120ms;
+  --t-bob-loop: 2000ms;
+  --t-burst: 180ms;
+  --t-flood: 340ms;
+  --t-recede: 520ms;
+  --ease-burst: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-flood: cubic-bezier(0.22, 0.9, 0.24, 1);
+  --ease-recede: cubic-bezier(0.16, 0.84, 0.32, 1);
+}
+
+.iridescent-text {
+  background: linear-gradient(120deg, #b91372, #fa198b, #6b0f1a, #b91372);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 4s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .iridescent-text {
+    animation: none;
+  }
+}
+
+/* pixel chrome primitives shared by landing + desk */
+.px-card {
+  background: var(--px-panel);
+  border: 2px solid var(--px-chrome);
+  border-radius: 0;
+  box-shadow: 4px 4px 0 rgba(107, 15, 26, 0.55); /* hard offset, no blur — pixel shadow */
+}
+
+.px-btn {
+  appearance: none;
+  font-family: var(--font-logo);
+  font-size: 13px;
+  color: var(--px-fg);
+  background: var(--px-accent);
+  border: 2px solid var(--px-chrome);
+  border-radius: 0;
+  padding: 14px 22px;
+  min-height: 44px;
+  cursor: pointer;
+  box-shadow: 4px 4px 0 var(--px-chrome);
+  transition: transform var(--t-press) steps(2), box-shadow var(--t-press) steps(2),
+    background var(--t-hover) steps(2);
+  image-rendering: pixelated;
+}
+
+.px-btn:hover {
+  background: var(--px-accent2);
+}
+
+.px-btn:active {
+  transform: translate(3px, 3px) scale(1.04, 0.92); /* squash-and-stretch */
+  box-shadow: 1px 1px 0 var(--px-chrome);
+}
+
+:focus-visible {
+  outline: 3px solid var(--px-accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .px-btn {
+    transition: none;
+  }
+  .px-btn:active {
+    transform: none;
+  }
+}

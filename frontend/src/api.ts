@@ -5,6 +5,25 @@ import type { PanelState, Settings, SseEvent } from "./types";
 export const API_BASE: string =
   (import.meta.env.VITE_API_BASE as string | undefined) ?? "http://localhost:8000";
 
+// Public-deploy gate (CONTRACTS §3): a demo key arrives once via ?key=... in
+// the judges' link. Stash it in localStorage (must survive browser restarts —
+// judges reopen the site without the query param) and scrub it from the
+// address bar so it doesn't linger in the visible URL or browser history.
+// Never bake a key into the bundle — anything in the build is public.
+const DEMO_KEY_STORAGE = "optoputs_demo_key";
+
+function demoKey(): string | null {
+  const params = new URLSearchParams(window.location.search);
+  const fromUrl = params.get("key");
+  if (fromUrl) {
+    localStorage.setItem(DEMO_KEY_STORAGE, fromUrl);
+    params.delete("key");
+    const query = params.size > 0 ? `?${params}` : "";
+    window.history.replaceState(null, "", `${window.location.pathname}${query}`);
+  }
+  return localStorage.getItem(DEMO_KEY_STORAGE);
+}
+
 // POST /chat streams text/event-stream (CONTRACTS §3). EventSource can't POST,
 // so parse the stream by hand: blocks separated by blank lines, each with
 // `event:` and `data:` lines.
@@ -14,14 +33,22 @@ export async function streamChat(
   onEvent: (evt: SseEvent) => void,
   signal?: AbortSignal
 ): Promise<void> {
+  const key = demoKey();
   const res = await fetch(`${API_BASE}/chat`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...(key ? { "X-Demo-Key": key } : {}),
+    },
     body: JSON.stringify({ message, conversation_id: conversationId }),
     signal,
   });
   if (!res.ok || !res.body) {
-    throw new Error(`chat request failed: HTTP ${res.status}`);
+    throw new Error(
+      res.status === 401
+        ? "this demo is key-gated — open it via the invite link (with ?key=...)"
+        : `chat request failed: HTTP ${res.status}`
+    );
   }
 
   const reader = res.body.getReader();

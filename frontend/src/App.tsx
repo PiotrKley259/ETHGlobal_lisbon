@@ -3,7 +3,8 @@ import { getPanel, streamChat } from "./api";
 import { Chat } from "./components/Chat";
 import type { ChatMessage } from "./components/Chat";
 import { ChainStrip } from "./components/ChainStrip";
-import { OctopusIntro } from "./components/OctopusIntro";
+import { InkTransition, INK_SEEN_KEY, REDUCED_MOTION } from "./components/InkTransition";
+import { Landing } from "./components/Landing";
 import { PricingPanel } from "./components/PricingPanel";
 import type { ChainEvent, PanelState, SseEvent } from "./types";
 import "./App.css";
@@ -11,7 +12,13 @@ import "./App.css";
 // Three regions per the spec: chat (left, primary), pricing panel (right top),
 // chain activity strip (right bottom). All SSE events funnel through here:
 // chat events feed the message list, `panel` and `chain` feed the right side.
+// Router-free routing: "/" = landing, "/desk" = the desk app. pushState keeps
+// the query string intact so the ?key=... invite flow survives navigation.
+const onDesk = () => window.location.pathname === "/desk";
+
 function App() {
+  const [view, setView] = useState<"landing" | "desk">(onDesk() ? "desk" : "landing");
+  const [inking, setInking] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [busy, setBusy] = useState(false);
   const [panel, setPanel] = useState<PanelState | null>(null);
@@ -26,6 +33,27 @@ function App() {
       .catch(() => {}); // backend not up yet — panel stays empty
   }, []);
   useEffect(hydratePanel, [hydratePanel]);
+
+  useEffect(() => {
+    const onPop = () => setView(onDesk() ? "desk" : "landing");
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
+
+  const gotoDesk = () => {
+    window.history.pushState(null, "", `/desk${window.location.search}`);
+    setView("desk");
+  };
+
+  // The octopus inks the screen on first visit; instant for repeat visitors
+  // and under prefers-reduced-motion (brief v3).
+  const enterDesk = () => {
+    if (REDUCED_MOTION() || localStorage.getItem(INK_SEEN_KEY)) {
+      gotoDesk();
+      return;
+    }
+    setInking(true);
+  };
 
   const applyEvent = (evt: SseEvent) => {
     switch (evt.event) {
@@ -93,22 +121,43 @@ function App() {
     }
   };
 
-  return (
-    <div className="app">
-      <OctopusIntro />
-      <section className="region chat-region">
-        <header className="region-title">OptoPuts · desk chat</header>
-        <Chat messages={messages} busy={busy} onSend={handleSend} />
-      </section>
-      <section className="region panel-region">
-        <header className="region-title">pricing panel</header>
-        <PricingPanel panel={panel} onSettingsSaved={hydratePanel} />
-      </section>
-      <section className="region chain-region">
-        <header className="region-title">chain activity</header>
-        <ChainStrip events={chainEvents} />
-      </section>
+  // Desk (brief v3): header bar → chat pane + collapsible right rail; the
+  // input dock is the sticky bottom of the chat pane (inside Chat).
+  const desk = (
+    <div className="desk">
+      <header className="desk-header">
+        <img src="/favicon.svg" alt="" className="brand-logo" />
+        <span className="brand iridescent-text">OptoPuts</span>
+        <span
+          className={`status-dot ${panel ? "on" : ""}`}
+          role="status"
+          aria-label={panel ? "backend online" : "connecting to backend"}
+        />
+        <span className="net-badge">HEDERA TESTNET</span>
+      </header>
+      <div className="desk-body">
+        <section className="region chat-region" aria-label="desk chat">
+          <Chat messages={messages} busy={busy} onSend={handleSend} />
+        </section>
+        <aside className="right-rail">
+          <section className="region panel-region" aria-label="pricing panel">
+            <header className="region-title">pricing panel</header>
+            <PricingPanel panel={panel} onSettingsSaved={hydratePanel} />
+          </section>
+          <section className="region chain-region" aria-label="chain activity">
+            <header className="region-title">chain activity</header>
+            <ChainStrip events={chainEvents} />
+          </section>
+        </aside>
+      </div>
     </div>
+  );
+
+  return (
+    <>
+      {view === "landing" ? <Landing onEnter={enterDesk} /> : desk}
+      {inking && <InkTransition onCovered={gotoDesk} onDone={() => setInking(false)} />}
+    </>
   );
 }
 

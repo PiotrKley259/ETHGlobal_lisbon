@@ -630,3 +630,378 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .octo-overlay { display: none; }
 }
+
+/* ==================== pixel desk (Design Brief v3) ==================== */
+/* Re-map the desk's legacy tokens onto the strict 5-color pixel palette so
+   every existing component (chips, bars, pills, payoff) inherits it. Regime
+   semantics inside the palette: calm=fg-dim, elevated=accent2, stressed=accent. */
+.desk {
+  --bg: var(--px-ink);
+  --bg-raised: var(--px-panel);
+  --border: var(--px-chrome);
+  --text: var(--px-fg);
+  --text-dim: var(--px-fg-faint);
+  --accent: var(--px-accent);
+  --green: var(--px-fg-dim);
+  --amber: var(--px-accent2);
+  --red: var(--px-accent);
+  --mono: var(--font-term);
+
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--px-ink);
+  color: var(--px-fg);
+  font-family: var(--font-term);
+  font-size: 18px;
+}
+
+/* header bar: brand · status · network badge */
+.desk-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-bottom: 2px solid var(--px-chrome);
+  background: var(--px-panel);
+}
+
+.desk .brand {
+  font-family: var(--font-logo);
+  font-size: 14px;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  background: var(--px-chrome);
+  border: 2px solid var(--px-chrome);
+}
+
+.status-dot.on {
+  background: var(--px-accent);
+  box-shadow: 0 0 8px rgba(250, 25, 139, 0.6);
+}
+
+.net-badge {
+  margin-left: auto;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: var(--px-fg-dim);
+  border: 2px solid var(--px-chrome);
+  padding: 4px 10px;
+  background: rgba(107, 15, 26, 0.3);
+}
+
+/* body: chat pane + right rail */
+.desk-body {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(380px, 1.25fr) minmax(330px, 1fr);
+  gap: 10px;
+  padding: 10px;
+}
+
+.desk .region {
+  background: var(--px-panel);
+  border: 2px solid var(--px-chrome);
+  border-radius: 0;
+  box-shadow: 4px 4px 0 rgba(107, 15, 26, 0.45);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.right-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.right-rail .panel-region {
+  flex: 1.4;
+}
+
+.right-rail .chain-region {
+  flex: 1;
+}
+
+/* collapsible sections: region titles double as toggles */
+.desk summary.region-title {
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: var(--px-fg-dim);
+  padding: 8px 12px;
+  border-bottom: 2px solid var(--px-chrome);
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+.desk summary.region-title::-webkit-details-marker {
+  display: none;
+}
+
+.desk summary.region-title::before {
+  content: "▾ ";
+  color: var(--px-accent);
+  margin-right: 6px;
+}
+
+.desk details:not([open]) summary.region-title::before {
+  content: "▸ ";
+}
+
+.desk details[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+/* chat bubbles per brief: user 6b0f1a tint, assistant 31081f, active fa198b */
+.desk .msg {
+  font-size: 19px;
+  line-height: 1.4;
+}
+
+.desk .msg-user {
+  background: rgba(107, 15, 26, 0.5);
+  border: 2px solid var(--px-chrome);
+  border-radius: 0;
+}
+
+.desk .msg-assistant .msg-text {
+  background: var(--px-panel);
+}
+
+.desk .chip {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  border-radius: 0;
+  border-width: 2px;
+}
+
+.desk .chip-running {
+  color: var(--px-accent);
+  border-color: var(--px-accent);
+}
+
+.desk .chip-done {
+  color: var(--px-fg-dim);
+  border-color: var(--px-accent2);
+}
+
+/* input dock: sticky bottom of the chat pane */
+.desk .chat-input {
+  border-top: 2px solid var(--px-chrome);
+  background: var(--px-panel);
+  padding: 10px;
+  position: sticky;
+  bottom: 0;
+}
+
+.desk .chat-input input {
+  font-family: var(--font-term);
+  font-size: 18px;
+  border: 2px solid var(--px-chrome);
+  border-radius: 0;
+  background: var(--px-ink);
+  min-height: 44px;
+}
+
+.desk .chat-input input:focus {
+  border-color: var(--px-accent);
+}
+
+.desk .chat-input button {
+  font-family: var(--font-logo);
+  font-size: 11px;
+  border-radius: 0;
+  border: 2px solid var(--px-chrome);
+  background: var(--px-accent);
+  color: var(--px-fg);
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.desk .chat-input button:hover:not(:disabled) {
+  background: var(--px-accent2);
+}
+
+/* pixel payoff + gear + settings within palette */
+.desk .payoff-area-profit {
+  fill: rgba(250, 25, 139, 0.22);
+}
+
+.desk .payoff-area-loss {
+  fill: rgba(107, 15, 26, 0.55);
+}
+
+.desk .payoff-line {
+  stroke: var(--px-accent);
+}
+
+.desk .payoff-be {
+  stroke: var(--px-accent2);
+}
+
+.desk .gear {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.desk .settings-menu,
+.desk .greek-cell,
+.desk .vol-track,
+.desk .regime-badge,
+.desk .pill {
+  border-radius: 0;
+}
+
+.desk .chain-scroll {
+  background: var(--px-ink);
+  font-family: var(--font-term);
+  font-size: 16px;
+}
+
+/* responsive: <768 single column, chat first, rail collapsible below */
+@media (max-width: 767px) {
+  .desk-body {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  .desk .chat-region {
+    order: 0;
+    min-height: 62vh;
+    flex-shrink: 0;
+  }
+
+  .right-rail {
+    order: 1;
+    overflow: visible;
+  }
+
+  .right-rail .panel-region,
+  .right-rail .chain-region {
+    flex: none;
+  }
+
+  .desk .chain-scroll,
+  .desk .panel-body {
+    max-height: 40vh;
+  }
+}
+
+/* ============ desktop rebalance (docs/frontend_desktop.md) ============ */
+
+/* FIX (spec §4.2/§4.3): flex children default to min-height:auto, so panel
+   content taller than its region (quote row + Greeks + payoff) was clipped
+   by the region's overflow:hidden with no scrollbar. min-height:0 restores
+   the inner scroll containers; the payoff SVG keeps its height. */
+.desk .panel-body,
+.desk .chain-scroll {
+  min-height: 0;
+}
+
+.desk .payoff {
+  flex-shrink: 0;
+}
+
+/* stable right-rail sections (spec §4.4): plain headers, no collapse */
+.desk .region-title {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: var(--px-fg-dim);
+  padding: 8px 12px;
+  border-bottom: 2px solid var(--px-chrome);
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  text-transform: uppercase;
+}
+
+/* original logo asset placed in the desk header (spec §4.1) */
+.brand-logo {
+  width: 22px;
+  height: 21px;
+  display: block;
+}
+
+/* dense trading data in legible mono; pixel fonts stay on logo/titles/CTAs */
+.desk {
+  --mono: "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-family: var(--mono);
+  font-size: 13.5px;
+}
+
+.desk .msg {
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.desk .chat-input input {
+  font-family: var(--mono);
+  font-size: 13.5px;
+}
+
+.desk .chain-scroll {
+  font-family: var(--mono);
+  font-size: 12.5px;
+}
+
+/* ---- responsive tiers (spec §3): no horizontal overflow at any width ---- */
+.desk-body > * {
+  min-width: 0;
+}
+
+/* >=1024 desktop terminal: chat clearly primary, rail capped */
+@media (min-width: 1024px) {
+  .desk-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(340px, 400px);
+  }
+}
+
+/* 768–1023 transitional: chat full-width and dominant on top; the rail
+   stacks below as a complete, readable two-up (panel | chain) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .desk-body {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  .desk .chat-region {
+    min-height: 56vh;
+    flex-shrink: 0;
+  }
+
+  .right-rail {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    overflow: visible;
+  }
+
+  .right-rail .panel-region,
+  .right-rail .chain-region {
+    flex: none;
+    min-height: 0;
+  }
+
+  .desk .panel-body,
+  .desk .chain-scroll {
+    max-height: 44vh;
+  }
+}
