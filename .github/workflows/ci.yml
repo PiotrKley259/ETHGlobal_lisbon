@@ -2,7 +2,7 @@ name: ci
 
 on:
   push:
-    branches: [main, deploy/live]
+    branches: [main]
   pull_request:
 
 jobs:
@@ -37,3 +37,37 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: docker build -t optoputs .
+
+  # Push-to-deploy: any push to main that passes the three check jobs deploys
+  # both halves. Requires two repo secrets (Settings → Secrets → Actions):
+  #   RAILWAY_TOKEN — Railway project token (project settings → Tokens)
+  #   VERCEL_TOKEN  — Vercel personal token (account settings → Tokens)
+  # Until the secrets exist each step skips with a notice instead of failing.
+  deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [backend, frontend, docker]
+    runs-on: ubuntu-latest
+    concurrency: production-deploy
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy backend + sidecar to Railway
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          if [ -z "$RAILWAY_TOKEN" ]; then
+            echo "::notice::RAILWAY_TOKEN secret not set — skipping backend deploy"
+            exit 0
+          fi
+          npx -y @railway/cli@latest up --service optoputs --detach
+      - name: Deploy frontend to Vercel
+        working-directory: frontend
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: team_IwcdnhTDIPG5bKWZJtNdJ2me
+          VERCEL_PROJECT_ID: prj_9lGShnMUKTIYsC2qYqNh3z5SRCLw
+        run: |
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "::notice::VERCEL_TOKEN secret not set — skipping frontend deploy"
+            exit 0
+          fi
+          npx -y vercel@latest deploy --prod --yes --token "$VERCEL_TOKEN"
