@@ -11,7 +11,7 @@ The same functions are exposed twice from one implementation:
 - as MCP tools in `backend/vol_engine/server.py` (FastMCP) — the demo narrative,
 - as plain Python callables consumed by `backend/agent/tools.py`.
 
-> **Multi-asset addendum (2026-07-25, P1-proposed — P2 ack pending):** every
+> **Multi-asset addendum:** every
 > engine data/pricing tool gains an optional `asset` parameter whose enum is
 > **registry-driven** from `backend/config.py` (currently ETH, WBTC, LINK,
 > UNI, AAVE; default `"ETH"` — all pre-existing shapes unchanged). `get_price_history`/
@@ -108,7 +108,7 @@ long_straddle, long_strangle, long_butterfly, short_straddle`.
  "payoff": {"prices": [2800.0, 2825.0], "pnl": [-96.4, -71.4]},
  "breakevens": [3450.2, 3749.8], "max_profit": 203.6, "max_loss": -96.4}
 ```
-`payoff.prices`: 121 points spanning spot ± 3·σ·√T (min span ±15%). `max_profit`
+`payoff.prices`: 1spanning spot ± 3·σ·√T (min span ±15%). `max_profit`
 may be `null` (unbounded). Named structures are resolved to legs **by the agent**,
 using `list_strategies` — the engine only prices explicit legs.
 
