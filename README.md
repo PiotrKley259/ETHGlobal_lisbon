@@ -1,7 +1,7 @@
 # OptoPuts : an insurance for your wallet 🐙
 
 <p align="center">
-  <img src="docs/octopus-intro.gif" alt="OptoPuts mascot: a pixel-art octopus appears, then vanishes leaving a scatter of glowing ETH crystals" width="480">
+  <img src="docs/octopus-intro.gif" alt="OptoPuts mascot: a pixel-art octopus appears, then vanishes leaving a scatter of glowing pixel coins — ETH, WBTC, LINK, UNI, AAVE" width="480">
 </p>
 
 A mini options desk for ETH. A deterministic Python engine prices European

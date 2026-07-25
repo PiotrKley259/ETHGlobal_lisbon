@@ -583,20 +583,18 @@ body {
   100% { opacity: 0; transform: scale(0); }
 }
 
-/* crystals: outer span holds the scatter position (inline transform),
-   inner svg runs reveal + twinkle + fade so the two never fight */
-.eth-crystal {
+/* coins: outer span holds the scatter position (inline transform),
+   inner svg runs reveal + twinkle + fade so the two never fight.
+   Each coin sets its own `color`, which drives the glow. */
+.pixel-coin {
   position: absolute;
-  left: -12px;
-  top: -19px;
+  left: 0;
+  top: 0;
 }
 
-.eth-crystal-svg {
+.pixel-coin-svg {
   display: block;
-  width: 24px;
-  height: 38px;
-  color: var(--accent);
-  filter: drop-shadow(0 0 6px rgba(88, 166, 255, 0.65));
+  filter: drop-shadow(0 0 6px currentColor);
   opacity: 0;
   animation:
     crystal-reveal 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
@@ -620,8 +618,8 @@ body {
 }
 
 @keyframes crystal-twinkle {
-  from { opacity: 1; filter: drop-shadow(0 0 6px rgba(88, 166, 255, 0.65)); }
-  to { opacity: 0.55; filter: drop-shadow(0 0 12px rgba(88, 166, 255, 0.95)); }
+  from { opacity: 1; }
+  to { opacity: 0.55; }
 }
 
 @keyframes crystal-fade {
