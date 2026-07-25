@@ -196,17 +196,17 @@
     <div class="panelbox"><h3>AI alone can't be trusted</h3><p>An LLM that invents a price is a liability. Nobody should buy protection priced by vibes.</p></div>
     <div class="panelbox"><h3>Settlement is a promise</h3><p>Even a correct quote means little if payout depends on someone remembering to pay you.</p></div>
   </div>
-  <p class="lede"><b>OptoPuts:</b> a chat-driven options desk where <b>the agent computes nothing</b> — deterministic, tested pricing code does the math off live Graph data, and Hedera turns the contract into a token that settles itself.</p>
+  <p class="lede"><b>OptoPuts:</b> a chat-driven options desk where <b>the agent computes nothing</b>. deterministic, tested pricing code does the math off live Graph data, and Hedera turns the contract into a token that settles itself.</p>
 </div></section>
 
 <!-- 03 · LIFE OF A TRADE -->
 <section class="slide" id="s3"><div class="card stack">
   <p class="eyebrow">02 · Life of a trade</p>
-  <h2>English in → audited payout out</h2>
+  <h2>Worries in → audited transactions out</h2>
   <div class="steps">
     <div class="step"><h3>Ask</h3><p>“Protect my ETH below $1,590 for the next 7 days.” Claude parses intent — and only intent.</p></div>
     <div class="step"><h3>Measure</h3><p>Uniswap v3 swap history via The Graph becomes a realized-vol curve; Aave v3 sets the financing rate.</p></div>
-    <div class="step"><h3>Price</h3><p>Deterministic Black–Scholes with full Greeks, breakevens, payoff curve. 92 tests. Zero LLM arithmetic.</p></div>
+    <div class="step"><h3>Price</h3><p>Deterministic Black–Scholes with full Greeks, breakevens, payoff curve. Zero LLM arithmetic.</p></div>
     <div class="step"><h3>Mint</h3><p>On confirm: coverage-gated HTS token per option series. The desk never sells what the treasury can't pay.</p></div>
     <div class="step"><h3>Settle</h3><p>At expiry a worker pays max(0, K−S) in stablecoin — idempotent, logged to HCS, visible on Hashscan.</p></div>
   </div>
@@ -219,10 +219,10 @@
   <h2>The Graph is the load-bearing wall</h2>
   <p class="lede">Every number the desk shows is derived live from the gateway. No Graph, no product.</p>
   <div class="grid2">
-    <div class="panelbox"><h3>Uniswap v3 subgraph</h3><p class="num">Pool swap history → OHLC → <b>realized volatility</b> at 24h / 7d / 30d (Parkinson &amp; close-to-close estimators), annualized + per-window ±moves. Multi-asset: ETH, WBTC — including inverted-pool handling (WBTC/USDC quotes token1).</p><p class="dim" style="margin-top:6px; overflow-wrap:anywhere">ID 5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV</p></div>
-    <div class="panelbox"><h3>Aave v3 subgraph</h3><p class="num">USDC borrow market → continuously-compounded <b>risk-free rate r</b> feeding the pricer, with explicit fallback levels surfaced in the UI.</p><p class="dim" style="margin-top:6px; overflow-wrap:anywhere">ID Cd2gEDVeqnjBn1hSeqFMitw8Q1iiyV9FYUZkLNRcL87g</p></div>
+    <div class="panelbox"><h3>Uniswap v3 subgraph</h3><p class="num">Pool swap history → OHLC → <b>realized volatility</b> at 24h / 7d / 30d , annualized + per-window ± moves. Multi-asset: ETH, WBTC, AAVE, ... — including inverted-pool handling.</p><p class="dim" style="margin-top:6px; overflow-wrap:anywhere"></p></div>
+    <div class="panelbox"><h3>Aave v3 subgraph</h3><p class="num">USDC borrow market → continuously-compounded <b>risk-free rate r</b> feeding the pricer, with explicit fallback levels surfaced in the UI.</p><p class="dim" style="margin-top:6px; overflow-wrap:anywhere"></p></div>
   </div>
-  <div class="panelbox"><h3>The agent reasons over it — it never computes</h3><p>Claude classifies the <b>vol regime</b> (calm / elevated / stressed, percentile vs trailing 30d, user-tunable bands), chooses among 8 strategies to match the user's view, explains Greeks in plain language, and refuses uncovered mints. All arithmetic lives in tested Python tools.</p></div>
+  <div class="panelbox"><h3>The agent reasons over it — it never computes</h3><p>Claude classifies the <b>vol regime</b> (calm / elevated / stressed, percentile vs trailing 30d, user-tunable bands), chooses among 8 strategies to match the user's view, explains Greeks, and refuses uncovered mints. All arithmetic lives in tested Python tools.</p></div>
   <div class="row">
     <span class="chip">Effective use of The Graph · 35%</span>
     <span class="chip">Usefulness &amp; impact · 25%</span>
@@ -250,7 +250,7 @@
     <div class="lane">
       <div class="hop"><span class="dir">①&nbsp;→</span> <b>HTS mint</b> — option series token (e.g. <span class="num">OPT-ETH-C-1850</span>), coverage-checked first</div>
       <div class="hop"><span class="dir">②&nbsp;→</span> <b>Token transfer</b> — buyer receives the option (HIP-904 auto-association, no key custody)</div>
-      <div class="hop"><span class="dir">③&nbsp;⏱</span> <b>Scheduled tx armed</b> — on-chain settlement commitment at creation</div>
+      <div class="hop"><span class="dir">③&nbsp;→</span> <b>Scheduled tx armed</b> — on-chain settlement commitment at creation</div>
       <div class="hop pay"><span class="dir">④&nbsp;→</span> <b>Expiry payout</b> — worker computes max(0,&nbsp;S−K) and pays dUSDC, <b>pay-once idempotent</b></div>
       <div class="hop"><span class="dir">⑤&nbsp;≡</span> <b>Every step → HCS topic <span class="num">0.0.9749905</span></b> — immutable audit trail</div>
     </div>
@@ -285,20 +285,7 @@
   <div class="panelbox"><h3>Why it matters</h3><p>This is the tokenization path for any cash-settled contract — options today; invoices, fund shares, carbon forwards tomorrow. Lifecycle + audit trail is exactly the compliance story HTS was built for.</p></div>
 </div></section>
 
-<!-- 07 · TRUST / ENGINEERING -->
-<section class="slide" id="s7"><div class="card stack">
-  <p class="eyebrow">06 · Why judges can trust the numbers</p>
-  <h2>“The agent computes nothing” is architecture, not a slogan</h2>
-  <div class="grid2">
-    <div class="panelbox"><h3 class="num">92 passing tests</h3><p>Pricing validated against known Black–Scholes values; greeks, strategies, payoffs, regime logic, chain flows.</p></div>
-    <div class="panelbox"><h3>Coverage-gated mints</h3><p>Risk gate reads live treasury balances — a mint whose worst-case payout exceeds cover is refused, and the refusal is final.</p></div>
-    <div class="panelbox"><h3>Idempotent settlement</h3><p>Pay-once per token, keyed in sidecar state; replays return the original tx. Proven live tonight.</p></div>
-    <div class="panelbox"><h3>Deterministic &amp; offline-testable</h3><p>Network-free pricing core; fixtures replace every feed in dev — but the demo runs on the live gateway.</p></div>
-  </div>
-  <p class="lede num">Demo loop: quote → confirm → mint → <b>settled in ~30 seconds</b>, watched live on Hashscan.</p>
-</div></section>
-
-<!-- 08 · QUALIFICATION SCORECARD -->
+<!-- 07 · QUALIFICATION SCORECARD -->
 <section class="slide" id="s8"><div class="card stack">
   <p class="eyebrow">07 · Qualification scorecard</p>
   <h2>Every requirement, answered</h2>
@@ -321,7 +308,7 @@
   </table></div>
 </div></section>
 
-<!-- 09 · CLOSE -->
+<!-- 08 · CLOSE -->
 <section class="slide" id="s9"><div class="card cover stack">
   <img class="octo" alt="" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAdCAYAAAC9pNwMAAABzUlEQVR4nMWVMWrDMBSGf5XuDqUZggMlNGunOlDwBTL6AD1AbuAz+AY+gA+QMUuhS8EQ711cOjQhg0Nwxk7qEolnRZLlxNAftEhP75Pee3picBd3sGGuzlwMOQDUs6TVcLCOnX23gXkVZqgffwEAw899K1w5hNH/jSu0q04RMqbHBOb1LLkY6gLXgblLPl1VRKkWfqszLn0P0+2xU05Nmm6P2nlbjs80WMd4K386r10NvkT57vA/YJO0YFNeusp0W8D8wHkRpVcfIN8dMN8kWo6tc10Nt3Uva473xffZ3Pv+y2muTdp33KY2UOl7CJYLwBJRa6gBt19JJ+WnMoKNzbyPIqMS0WAgvbn0vYZRX0DRgkkUmLxxnx8DFXlSAEmtKC42WMcy3H2HVydjA1mNY7yM7noD0TADhv+4iFIJLX0Ppe9Z25+qfHeQ+4RW42aVq2AZbgoKlguaJ7kuhqr5JhHvWB76+eGpYXPWQKowAyoAwQTlCarTfTCRh6pHiaxcqsbeTXO/mmMu4MOPV9WuUflqgxBrai5V3zDkmAGgUEYdiLCS3Ml1pQ50RcsM863iVZjxIkr56fS023Fl9CpehZnNeSdgl6tTxxeFjOoPpFnSUYs2Ug4AAAAASUVORK5CYII=" />
   <h2 style="margin:0">Watch money move in 30 seconds.</h2>
