@@ -102,5 +102,5 @@
   <!-- footer -->
   <line x1="60" y1="548" x2="1140" y2="548" stroke="#5A1F31" stroke-width="1"/>
   <text x="60" y="580" font-size="12" fill="#E9CFC2">Live data is load-bearing: the panel shows the exact vol, curve and regime that produced every price — the agent can’t hallucinate a number it never computed.</text>
-  <text x="1140" y="608" font-size="9.5" fill="#B08894" text-anchor="end" font-family="SFMono-Regular,Menlo,monospace">OFFLINE_MODE=1 → full demo from fixtures · demo-graph ✓ · demo-full ✓</text>
+  <text x="1140" y="608" font-size="9.5" fill="#B08894" text-anchor="end" font-family="SFMono-Regular,Menlo,monospace">OFFLINE_MODE=1 -> full demo from fixtures · demo-graph ✓ · demo-full ✓</text>
 </svg>
