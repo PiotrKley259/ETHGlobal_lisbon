@@ -270,6 +270,15 @@ body {
   gap: 6px;
 }
 
+/* labeled pricing inputs (strike/expiry/vol, rate, max P/L) — same cell
+   language as the greeks, definitions on hover via the shared strip */
+.quote-specs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 6px;
+  position: relative;
+}
+
 .greeks-grid {
   position: relative; /* anchor for the definition strip */
 }

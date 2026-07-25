@@ -87,9 +87,12 @@ export function PricingPanel({ panel, onSettingsSaved }: PricingPanelProps) {
       )}
 
       {panel?.rate && (
-        <div className="panel-row dim">
-          r = {fmtPct(panel.rate.rate_cc)} cc · {panel.rate.source}
-          {panel.rate.fallback_level > 0 && ` (fallback L${panel.rate.fallback_level})`}
+        <div className="quote-specs">
+          <SpecCell
+            label="rate · r"
+            value={`${fmtPct(panel.rate.rate_cc)}${panel.rate.fallback_level > 0 ? ` · L${panel.rate.fallback_level}` : ""}`}
+            def={`Risk-free rate (r), continuously compounded — the financing leg of the price. Source: ${panel.rate.source}${panel.rate.fallback_level > 0 ? ` (fallback level ${panel.rate.fallback_level})` : ""}.`}
+          />
         </div>
       )}
 
@@ -97,10 +100,24 @@ export function PricingPanel({ panel, onSettingsSaved }: PricingPanelProps) {
         <div className="quote-block">
           <div className="panel-row">
             <span className="big">${fmtUsd(panel.quote.price)}</span>
-            <span className="dim">
-              {panel.quote.inputs.K} K · {panel.quote.inputs.T_days}d · σ{" "}
-              {fmtPct(panel.quote.inputs.sigma)} ({panel.quote.inputs.sigma_source})
-            </span>
+            <span className="dim">premium — what this option costs now</span>
+          </div>
+          <div className="quote-specs">
+            <SpecCell
+              label="strike · K"
+              value={`$${fmtUsd(panel.quote.inputs.K)}`}
+              def="Strike (K) — the price level the option pays out around at expiry."
+            />
+            <SpecCell
+              label="expiry · T"
+              value={`${panel.quote.inputs.T_days}d`}
+              def="Time to expiry (T) — how long the protection or bet runs, in days."
+            />
+            <SpecCell
+              label="vol · σ"
+              value={fmtPct(panel.quote.inputs.sigma)}
+              def={`Volatility (σ) — annualized realized volatility fed into Black–Scholes. Source: ${panel.quote.inputs.sigma_source}.`}
+            />
           </div>
           <GreeksGrid greeks={panel.quote.greeks} />
           {panel.quote.payoff && panel.quote.breakevens && (
@@ -119,11 +136,20 @@ export function PricingPanel({ panel, onSettingsSaved }: PricingPanelProps) {
       {panel?.strategy && (
         <div className="quote-block">
           <div className="panel-row">
-            <span className="big">net {fmtUsd(panel.strategy.net_cost)}</span>
-            <span className="dim">
-              max +{panel.strategy.max_profit === null ? "∞" : fmtUsd(panel.strategy.max_profit)} /{" "}
-              {panel.strategy.max_loss === null ? "−∞ (unbounded)" : fmtUsd(panel.strategy.max_loss)}
-            </span>
+            <span className="big">${fmtUsd(panel.strategy.net_cost)}</span>
+            <span className="dim">net cost of the strategy</span>
+          </div>
+          <div className="quote-specs">
+            <SpecCell
+              label="max profit"
+              value={panel.strategy.max_profit === null ? "+∞" : `$${fmtUsd(panel.strategy.max_profit)}`}
+              def="Best case at expiry. +∞ means the upside is unbounded."
+            />
+            <SpecCell
+              label="max loss"
+              value={panel.strategy.max_loss === null ? "−∞" : `$${fmtUsd(panel.strategy.max_loss)}`}
+              def="Worst case at expiry. −∞ means the downside is unbounded."
+            />
           </div>
           <GreeksGrid greeks={panel.strategy.net_greeks} />
           <PayoffDiagram strategy={panel.strategy} />
@@ -142,6 +168,17 @@ const GREEK_DEFS: Record<string, string> = {
   "Θ": "Theta — time decay: how much value the position gains or loses per calendar day, everything else unchanged. Negative when you own options, positive when you sold them.",
   "ρ": "Rho — sensitivity to the financing rate (per 1.00 of rate). Small for short-dated options; the desk sources the rate from Aave's USDC borrow market.",
 };
+
+// Labeled pricing input/output cell with an instant hover definition,
+// visually consistent with the greeks grid.
+function SpecCell({ label, value, def }: { label: string; value: string; def: string }) {
+  return (
+    <div className="greek-cell spec-cell" data-def={def} aria-label={def}>
+      <span className="dim greek-label">{label}</span>
+      <span>{value}</span>
+    </div>
+  );
+}
 
 function GreeksGrid({ greeks }: { greeks: Greeks }) {
   const cells: [string, number, number][] = [
