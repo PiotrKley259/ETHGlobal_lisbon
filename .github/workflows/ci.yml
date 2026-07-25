@@ -40,8 +40,8 @@ jobs:
 
   # Push-to-deploy: any push to main that passes the three check jobs deploys
   # both halves. Requires two repo secrets (Settings → Secrets → Actions):
-  #   RAILWAY_TOKEN — Railway project token (project settings → Tokens)
-  #   VERCEL_TOKEN  — Vercel personal token (account settings → Tokens)
+  #   OPTOPUTS_RAILWAY — Railway project token (project settings → Tokens)
+  #   OPTOPUTS_VERCEL  — Vercel personal token (account settings → Tokens)
   # Until the secrets exist each step skips with a notice instead of failing.
   deploy:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -52,7 +52,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Deploy backend + sidecar to Railway
         env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_TOKEN: ${{ secrets.OPTOPUTS_RAILWAY }}
         run: |
           if [ -z "$RAILWAY_TOKEN" ]; then
             echo "::notice::RAILWAY_TOKEN secret not set — skipping backend deploy"
@@ -62,7 +62,7 @@ jobs:
       - name: Deploy frontend to Vercel
         working-directory: frontend
         env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_TOKEN: ${{ secrets.OPTOPUTS_VERCEL }}
           VERCEL_ORG_ID: team_IwcdnhTDIPG5bKWZJtNdJ2me
           VERCEL_PROJECT_ID: prj_9lGShnMUKTIYsC2qYqNh3z5SRCLw
         run: |
