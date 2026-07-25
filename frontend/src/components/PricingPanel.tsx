@@ -100,7 +100,9 @@ export function PricingPanel({ panel, onSettingsSaved }: PricingPanelProps) {
         <div className="quote-block">
           <div className="panel-row">
             <span className="big">${fmtUsd(panel.quote.price)}</span>
-            <span className="dim">premium — what this option costs now</span>
+            <span className="dim" title="Premium — what this option costs now.">
+              premium
+            </span>
           </div>
           <div className="quote-specs">
             <SpecCell
@@ -137,7 +139,9 @@ export function PricingPanel({ panel, onSettingsSaved }: PricingPanelProps) {
         <div className="quote-block">
           <div className="panel-row">
             <span className="big">${fmtUsd(panel.strategy.net_cost)}</span>
-            <span className="dim">net cost of the strategy</span>
+            <span className="dim" title="Net cost of the whole strategy — debit if positive, credit if negative.">
+              net cost
+            </span>
           </div>
           <div className="quote-specs">
             <SpecCell
