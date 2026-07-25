@@ -851,7 +851,16 @@ body {
 .desk .gear {
   min-width: 44px;
   min-height: 44px;
-  font-size: 24px; /* match the spot-row headline visually */
+  font-size: 32px;
+}
+
+/* wide enough that both boundary labels stay on one line, inputs aligned */
+.desk .settings-menu {
+  width: 320px;
+}
+
+.desk .settings-row label {
+  white-space: nowrap;
 }
 
 .desk .settings-menu,
