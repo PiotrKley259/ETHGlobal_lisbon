@@ -30,7 +30,7 @@ const protectStrike = (spot: number | null) =>
     : `$${(Math.round((spot * 0.85) / 10) * 10).toLocaleString("en-US")}`;
 
 const starterPrompts = (ethSpot: number | null) => [
-  `Protect my ETH below ${protectStrike(ethSpot)} through next Friday`,
+  `Protect my ETH below ${protectStrike(ethSpot)} for the next 7 days`,
   "Price a WBTC straddle expiring in 7 days",
   "What's the vol regime right now?",
 ];
