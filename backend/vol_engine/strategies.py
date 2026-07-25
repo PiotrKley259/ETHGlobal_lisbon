@@ -18,9 +18,6 @@ _SLOPE_EPS = 1e-6
 GRID_POINTS = 121
 _NICE_STEPS = (0.5, 1.0, 2.5, 5.0, 10.0, 25.0, 50.0)
 
-_SLOPE_EPS = 1e-6
-GRID_POINTS = 121
-
 # Declarative templates: strikes as moneyness (K = m * S), rounded to $10.
 LIBRARY: dict[str, dict] = {
     "long_call": {
