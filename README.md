@@ -44,5 +44,5 @@ cd ../frontend && npm i && npm run dev          # UI
 `OFFLINE_MODE=1` runs the whole desk from committed fixtures, zero network.
 Team workflow docs: [`docs/PLAN.md`](docs/PLAN.md) ·
 [`docs/CONTRACTS.md`](docs/CONTRACTS.md) ·
-[`docs/options_desk_summary.md`](docs/options_desk_summary.md).
+[`docs/options_desk_summary.md`](docs/OPTIONS_DESK_SUMMARY.md).
 
