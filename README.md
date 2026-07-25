@@ -8,7 +8,7 @@ and auto-settled on Hedera testnet** (HTS + HCS + Scheduled Transactions).
 
 > *"Protect my ETH below $1,770 for the next week"* → the agent reads live spot
 > ($1,858), measures 7-day realized vol (37%), checks the regime, prices the
-> put ($8.00), explains why — and on confirmation mints it as an HTS token,
+> put, explains why and on confirmation mints it as an HTS token,
 > logs the trade to HCS, and arms on-chain settlement that pays
 > max(0, K−S) in demo stablecoin at expiry, automatically.
 
