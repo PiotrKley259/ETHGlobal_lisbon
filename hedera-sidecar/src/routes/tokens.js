@@ -108,6 +108,15 @@ tokensRouter.post(
       if (!String(err.message).includes("TOKEN_NOT_ASSOCIATED_TO_ACCOUNT") || to !== "customer") {
         throw err;
       }
+      if (!setup.customer_key) {
+        // External customer (HEDERA_CUSTOMER_ID): we can't sign an associate
+        // for an account whose key we don't hold — it must auto-associate.
+        throw httpError(
+          500,
+          "customer not associated",
+          `account ${setup.customer_id} rejected token ${token_id}; set maxAutomaticTokenAssociations=-1 on it (HIP-904)`
+        );
+      }
       const assoc = await (
         await new TokenAssociateTransaction()
           .setAccountId(recipient)

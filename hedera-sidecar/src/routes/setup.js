@@ -47,24 +47,34 @@ setupRouter.post(
         .execute(client)
     ).getReceipt(client);
 
-    // HIP-904 unlimited auto-association: kills TOKEN_NOT_ASSOCIATED_TO_ACCOUNT
-    // at transfer and at scheduled-execution time.
-    const customerKey = PrivateKey.generateED25519();
-    const accountTx = new AccountCreateTransaction()
-      .setMaxAutomaticTokenAssociations(-1)
-      .setInitialBalance(new Hbar(20));
-    if (typeof accountTx.setKeyWithoutAlias === "function") {
-      accountTx.setKeyWithoutAlias(customerKey.publicKey);
+    // Customer = the option buyer. Preferred: a real account from
+    // HEDERA_CUSTOMER_ID (must have HIP-904 unlimited auto-association — its
+    // key never touches the sidecar). Fallback: create a throwaway demo
+    // account with unlimited auto-association.
+    let customer_id;
+    let customer_key = null;
+    if (config.customerId) {
+      customer_id = config.customerId;
     } else {
-      accountTx.setKey(customerKey.publicKey);
+      const customerKey = PrivateKey.generateED25519();
+      const accountTx = new AccountCreateTransaction()
+        .setMaxAutomaticTokenAssociations(-1)
+        .setInitialBalance(new Hbar(20));
+      if (typeof accountTx.setKeyWithoutAlias === "function") {
+        accountTx.setKeyWithoutAlias(customerKey.publicKey);
+      } else {
+        accountTx.setKey(customerKey.publicKey);
+      }
+      const accountRx = await (await accountTx.execute(client)).getReceipt(client);
+      customer_id = accountRx.accountId.toString();
+      customer_key = customerKey.toStringDer(); // demo-only: lets /tokens/transfer sign an explicit associate fallback
     }
-    const accountRx = await (await accountTx.execute(client)).getReceipt(client);
 
     const setup = {
       stablecoin_id: tokenRx.tokenId.toString(),
       topic_id: topicRx.topicId.toString(),
-      customer_id: accountRx.accountId.toString(),
-      customer_key: customerKey.toStringDer(), // demo-only: lets /tokens/transfer sign an explicit associate fallback
+      customer_id,
+      customer_key,
       network: config.network,
       created_at: Math.floor(Date.now() / 1000),
     };
