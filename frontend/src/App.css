@@ -32,35 +32,6 @@ body {
   padding: 10px;
 }
 
-/* Narrow screens: the two-column desk needs ~750px — below that, stack the
-   regions and let the page scroll instead of crushing the panels. */
-@media (max-width: 860px) {
-  .app {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto;
-    grid-template-areas:
-      "chat"
-      "panel"
-      "chain";
-    height: auto;
-    min-height: 100dvh;
-  }
-
-  .chat-region {
-    height: 72dvh;
-    min-height: 320px;
-  }
-
-  .chain-region {
-    max-height: 40dvh;
-  }
-
-  /* 16px stops iOS Safari from zooming the page on input focus */
-  .chat-input input {
-    font-size: 16px;
-  }
-}
-
 .region {
   background: var(--bg-raised);
   border: 1px solid var(--border);
@@ -936,6 +907,11 @@ body {
   .desk .chain-scroll,
   .desk .panel-body {
     max-height: 40vh;
+  }
+
+  /* 16px stops iOS Safari from zooming the page on input focus */
+  .desk .chat-input input {
+    font-size: 16px;
   }
 }
 
