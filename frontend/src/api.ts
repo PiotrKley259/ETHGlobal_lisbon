@@ -6,21 +6,22 @@ export const API_BASE: string =
   (import.meta.env.VITE_API_BASE as string | undefined) ?? "http://localhost:8000";
 
 // Public-deploy gate (CONTRACTS §3): a demo key arrives once via ?key=... in
-// the judges' link. Stash it in sessionStorage and scrub it from the address
-// bar so it doesn't linger in the visible URL or browser history. Never bake
-// a key into the bundle — anything in the build is public.
+// the judges' link. Stash it in localStorage (must survive browser restarts —
+// judges reopen the site without the query param) and scrub it from the
+// address bar so it doesn't linger in the visible URL or browser history.
+// Never bake a key into the bundle — anything in the build is public.
 const DEMO_KEY_STORAGE = "optoputs_demo_key";
 
 function demoKey(): string | null {
   const params = new URLSearchParams(window.location.search);
   const fromUrl = params.get("key");
   if (fromUrl) {
-    sessionStorage.setItem(DEMO_KEY_STORAGE, fromUrl);
+    localStorage.setItem(DEMO_KEY_STORAGE, fromUrl);
     params.delete("key");
     const query = params.size > 0 ? `?${params}` : "";
     window.history.replaceState(null, "", `${window.location.pathname}${query}`);
   }
-  return sessionStorage.getItem(DEMO_KEY_STORAGE);
+  return localStorage.getItem(DEMO_KEY_STORAGE);
 }
 
 // POST /chat streams text/event-stream (CONTRACTS §3). EventSource can't POST,
