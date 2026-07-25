@@ -41,6 +41,7 @@ ASSETS: dict[str, dict] = {
 }
 DEFAULT_ASSET = "ETH"
 SIDECAR_URL = os.getenv("SIDECAR_URL", "http://localhost:7070")
+DEMO_KEY = os.getenv("DEMO_KEY", "")  # when set, POST /chat requires X-Demo-Key (CONTRACTS §3)
 RISK_FREE_RATE_CONSTANT = float(os.getenv("RISK_FREE_RATE_CONSTANT", "0.04"))
 OFFLINE_MODE = os.getenv("OFFLINE_MODE", "0") == "1"
 

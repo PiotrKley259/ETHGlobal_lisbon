@@ -11,11 +11,12 @@ from __future__ import annotations
 
 import asyncio
 import json
+import secrets
 import uuid
 from contextlib import asynccontextmanager
 
 import uvicorn
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
@@ -59,7 +60,10 @@ def _sse(event: str, data) -> str:
 
 
 @app.post("/chat")
-async def chat(req: ChatRequest):
+async def chat(req: ChatRequest, x_demo_key: str | None = Header(default=None)):
+    # Opt-in public-deploy gate (CONTRACTS §3): only /chat costs money.
+    if config.DEMO_KEY and not secrets.compare_digest(x_demo_key or "", config.DEMO_KEY):
+        raise HTTPException(401, "missing or invalid X-Demo-Key")
     conv_id = req.conversation_id or uuid.uuid4().hex[:12]
     messages = _conversations.setdefault(conv_id, [])
     messages.append({"role": "user", "content": req.message})
