@@ -7,10 +7,10 @@
   --px-accent2: #b91372; /* secondary accent — hover, secondary buttons */
   --px-accent: #fa198b; /* primary accent — CTA, active, biolum flecks */
 
-  /* readable text = tint variations of palette (near-white pink tints) */
-  --px-fg: #ffeef7; /* fa198b tinted ~95% toward white */
-  --px-fg-dim: #e9bfd4;
-  --px-fg-faint: #b98aa1;
+  /* readable text = white across all tiers (hierarchy via size/weight only) */
+  --px-fg: #ffeef7;
+  --px-fg-dim: #fff;
+  --px-fg-faint: #fff;
 
   --font-logo: "Press Start 2P", monospace;
   --font-head: "Silkscreen", monospace;

@@ -827,13 +827,17 @@ body {
   background: var(--px-accent2);
 }
 
-/* pixel payoff + gear + settings within palette */
+/* payoff: dark chart well so profit/loss read as conventional green/red */
+.desk .payoff {
+  background: var(--px-panel);
+}
+
 .desk .payoff-area-profit {
-  fill: rgba(250, 25, 139, 0.22);
+  fill: rgba(63, 185, 80, 0.4);
 }
 
 .desk .payoff-area-loss {
-  fill: rgba(107, 15, 26, 0.55);
+  fill: rgba(248, 81, 73, 0.45);
 }
 
 .desk .payoff-line {
