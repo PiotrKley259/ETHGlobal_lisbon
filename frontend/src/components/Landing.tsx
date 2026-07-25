@@ -50,7 +50,7 @@ export function Landing({ onEnter }: LandingProps) {
         <section id="how" className="how" aria-labelledby="how-title">
           <h2 id="how-title">How it works</h2>
           <p className="how-intro">
-            From plain-English request to on-chain settlement, every step is
+            From text request to on-chain settlement, every step is
             verifiable. The agent computes nothing — it explains; tested code
             does the math.
           </p>
