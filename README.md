@@ -31,9 +31,11 @@ twice.
 
 ```bash
 cp .env.example .env       # fill: ANTHROPIC_API_KEY, GRAPH_API_KEY, Hedera creds
-cd backend && uv sync && uv run pytest          # 78 tests
+cd backend && uv sync && uv run pytest          # 86 tests
 uv run uvicorn app:app --port 8000              # backend (or: python mock_server.py)
-cd ../hedera-sidecar && npm i && npm run dev    # sidecar :7070 (+ POST /setup once)
+cd ../hedera-sidecar && npm i && npm start      # sidecar :7070 (+ POST /setup once)
+                                                # (npm start, NOT run dev — the
+                                                #  watcher restarts on state.json)
 cd ../frontend && npm i && npm run dev          # UI
 ```
 
