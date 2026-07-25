@@ -60,7 +60,7 @@ export function Chat({ messages, busy, connected, ethSpot, onSend }: ChatProps) 
           <div className="chat-empty">
             <div className="boot-log" aria-hidden="true">
               <span className="boot-title">OPTOPUTS DESK v1.0</span>
-              <span>&gt; vol engine ....... deterministic Black–Scholes</span>
+              <span>&gt; vol engine ....... deterministic Black-Scholes</span>
               <span>&gt; market data ...... {connected ? "live · The Graph" : "connecting…"}</span>
               <span>&gt; settlement ....... Hedera testnet</span>
               <span>

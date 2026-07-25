@@ -21,7 +21,7 @@ export function ChainStrip({ events }: { events: ChainEvent[] }) {
   return (
     <div className="chain-scroll" ref={scrollRef}>
       {events.length === 0 && (
-        <p className="placeholder">no on-chain activity yet — mint an option to see it here</p>
+        <p className="placeholder">no on-chain activity yet; mint an option to see it here</p>
       )}
       {events.map((evt, i) => (
         <div key={i} className="chain-row">

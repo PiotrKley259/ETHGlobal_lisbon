@@ -19,7 +19,7 @@ export function Landing({ onEnter }: LandingProps) {
               <span />
               <span />
             </span>
-            OPTOPUTS.EXE — desk terminal
+            OPTOPUTS.EXE: desk terminal
           </div>
           <Octopus />
           <p className="wordmark iridescent-text">OptoPuts</p>
@@ -51,7 +51,7 @@ export function Landing({ onEnter }: LandingProps) {
           <h2 id="how-title">How it works</h2>
           <p className="how-intro">
             From text request to on-chain settlement, every step is
-            verifiable. The agent computes nothing — it explains; tested code
+            verifiable. The agent computes nothing: it explains; tested code
             does the math.
           </p>
           <ol className="steps">
@@ -69,7 +69,7 @@ export function Landing({ onEnter }: LandingProps) {
               <h3>Measure the market</h3>
               <p>
                 Uniswap v3 trade history becomes a realized-vol curve; Aave sets
-                the rate; the regime reads calm, elevated, or stressed — your
+                the rate; the regime reads calm, elevated, or stressed: your
                 thresholds, not ours.
               </p>
               <p className="step-stack">The Graph gateway</p>
@@ -79,7 +79,7 @@ export function Landing({ onEnter }: LandingProps) {
               <h3>Price it in code</h3>
               <p>
                 Black–Scholes with full Greeks, single legs or eight strategies,
-                payoff curves and breakevens. No vibes-based pricing — the AI
+                payoff curves and breakevens. No vibes-based pricing: the AI
                 never touches the arithmetic.
               </p>
               <p className="step-stack">pure math · MCP</p>
@@ -98,7 +98,7 @@ export function Landing({ onEnter }: LandingProps) {
               <span className="step-num" aria-hidden="true">05</span>
               <h3>Settle automatically</h3>
               <p>
-                At expiry a worker pays max(0, K−S) in demo stablecoin —
+                At expiry a worker pays max(0, K−S) in demo stablecoin:
                 idempotent. The whole trail sits on Hashscan for anyone to
                 audit.
               </p>

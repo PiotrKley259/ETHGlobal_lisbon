@@ -977,11 +977,18 @@ body {
 }
 
 .desk .gear {
-  min-width: 44px;
-  min-height: 44px;
-  font-size: 40px;
-  top: 0;
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  min-height: 34px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  font-size: 19px;
+  line-height: 1;
+  top: 3px;
   right: 8px;
+  z-index: 2;
 }
 
 /* wide enough that both boundary labels stay on one line, inputs aligned */

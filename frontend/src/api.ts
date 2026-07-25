@@ -46,7 +46,7 @@ export async function streamChat(
   if (!res.ok || !res.body) {
     throw new Error(
       res.status === 401
-        ? "this demo is key-gated — open it via the invite link (with ?key=...)"
+        ? "this demo is key-gated: open it via the invite link (with ?key=...)"
         : `chat request failed: HTTP ${res.status}`
     );
   }

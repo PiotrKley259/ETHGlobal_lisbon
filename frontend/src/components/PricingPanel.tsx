@@ -44,7 +44,7 @@ export function PricingPanel({ panel, onSettingsSaved }: PricingPanelProps) {
         <SettingsMenu onSaved={onSettingsSaved} onClose={() => setSettingsOpen(false)} />
       )}
 
-      {!panel && <p className="placeholder">no data yet — ask the desk for a quote</p>}
+      {!panel && <p className="placeholder">no data yet; ask the desk for a quote</p>}
 
       {panel?.spot && (
         <div className="panel-row spot-row">
@@ -91,7 +91,7 @@ export function PricingPanel({ panel, onSettingsSaved }: PricingPanelProps) {
           <SpecCell
             label="rate · r"
             value={`${fmtPct(panel.rate.rate_cc)}${panel.rate.fallback_level > 0 ? ` · L${panel.rate.fallback_level}` : ""}`}
-            def={`Risk-free rate (r), continuously compounded — the financing leg of the price. Source: ${panel.rate.source}${panel.rate.fallback_level > 0 ? ` (fallback level ${panel.rate.fallback_level})` : ""}.`}
+            def={`Risk-free rate (r), continuously compounded: the financing leg of the price. Source: ${panel.rate.source}${panel.rate.fallback_level > 0 ? ` (fallback level ${panel.rate.fallback_level})` : ""}.`}
           />
         </div>
       )}
@@ -100,7 +100,7 @@ export function PricingPanel({ panel, onSettingsSaved }: PricingPanelProps) {
         <div className="quote-block">
           <div className="panel-row">
             <span className="big">${fmtUsd(panel.quote.price)}</span>
-            <span className="dim" title="Premium — what this option costs now.">
+            <span className="dim" title="Premium: what this option costs now.">
               premium
             </span>
           </div>
@@ -108,17 +108,17 @@ export function PricingPanel({ panel, onSettingsSaved }: PricingPanelProps) {
             <SpecCell
               label="strike · K"
               value={`$${fmtUsd(panel.quote.inputs.K)}`}
-              def="Strike (K) — the price level the option pays out around at expiry."
+              def="Strike (K): the price level the option pays out around at expiry."
             />
             <SpecCell
               label="expiry · T"
               value={`${panel.quote.inputs.T_days}d`}
-              def="Time to expiry (T) — how long the protection or bet runs, in days."
+              def="Time to expiry (T): how long the protection or bet runs, in days."
             />
             <SpecCell
               label="vol · σ"
               value={fmtPct(panel.quote.inputs.sigma)}
-              def={`Volatility (σ) — annualized realized volatility fed into Black–Scholes. Source: ${panel.quote.inputs.sigma_source}.`}
+              def={`Volatility (σ): annualized realized volatility fed into Black-Scholes. Source: ${panel.quote.inputs.sigma_source}.`}
             />
           </div>
           <GreeksGrid greeks={panel.quote.greeks} />
@@ -139,7 +139,7 @@ export function PricingPanel({ panel, onSettingsSaved }: PricingPanelProps) {
         <div className="quote-block">
           <div className="panel-row">
             <span className="big">${fmtUsd(panel.strategy.net_cost)}</span>
-            <span className="dim" title="Net cost of the whole strategy — debit if positive, credit if negative.">
+            <span className="dim" title="Net cost of the whole strategy: debit if positive, credit if negative.">
               net cost
             </span>
           </div>
@@ -166,11 +166,11 @@ export function PricingPanel({ panel, onSettingsSaved }: PricingPanelProps) {
 // plain-language definitions, hover tooltips; units match CONTRACTS §1
 // (vega per 1.00 of vol, theta per calendar day, rho per 1.00 of rate)
 const GREEK_DEFS: Record<string, string> = {
-  "Δ": "Delta — how much the option price changes when the underlying moves $1. Also reads as directional exposure: Δ −0.25 behaves like being short a quarter unit.",
-  "Γ": "Gamma — how fast delta itself changes per $1 move in the underlying (the curvature of the position). High gamma = exposure flips quickly near the strike.",
-  "ν": "Vega — how much the price changes if annualized volatility moves by 1.00 (i.e. 100 percentage points). Divide by 100 for the effect of a 1-point vol move.",
-  "Θ": "Theta — time decay: how much value the position gains or loses per calendar day, everything else unchanged. Negative when you own options, positive when you sold them.",
-  "ρ": "Rho — sensitivity to the financing rate (per 1.00 of rate). Small for short-dated options; the desk sources the rate from Aave's USDC borrow market.",
+  "Δ": "Delta: how much the option price changes when the underlying moves $1. Also reads as directional exposure: Δ −0.25 behaves like being short a quarter unit.",
+  "Γ": "Gamma: how fast delta itself changes per $1 move in the underlying (the curvature of the position). High gamma = exposure flips quickly near the strike.",
+  "ν": "Vega: how much the price changes if annualized volatility moves by 1.00 (i.e. 100 percentage points). Divide by 100 for the effect of a 1-point vol move.",
+  "Θ": "Theta: time decay; how much value the position gains or loses per calendar day, everything else unchanged. Negative when you own options, positive when you sold them.",
+  "ρ": "Rho: sensitivity to the financing rate (per 1.00 of rate). Small for short-dated options; the desk sources the rate from Aave's USDC borrow market.",
 };
 
 // Labeled pricing input/output cell with an instant hover definition,
