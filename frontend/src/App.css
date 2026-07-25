@@ -715,7 +715,7 @@ body {
 }
 
 .right-rail .panel-region {
-  flex: 1.4;
+  flex: 2.4; /* pricing panel clearly taller than the chain log */
 }
 
 .right-rail .chain-region {
@@ -804,7 +804,7 @@ body {
   font-size: 18px;
   border: 2px solid var(--px-chrome);
   border-radius: 0;
-  background: var(--px-ink);
+  background: var(--px-well);
   min-height: 44px;
 }
 
@@ -862,7 +862,7 @@ body {
 }
 
 .desk .chain-scroll {
-  background: var(--px-ink);
+  background: var(--px-panel); /* same surface as the console pane */
   font-family: var(--font-term);
   font-size: 16px;
 }

@@ -2,6 +2,7 @@
    Strict palette — any extra range comes from opacity tints of these five. */
 :root {
   --px-ink: #b8506e; /* base background / the ink itself */
+  --px-well: #240610; /* recessed surfaces: inputs, logs, panel interiors */
   --px-panel: #31081f; /* panel and card backgrounds */
   --px-chrome: #6b0f1a; /* borders, shadows, muted chrome */
   --px-accent2: #b91372; /* secondary accent — hover, secondary buttons */
