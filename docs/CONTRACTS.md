@@ -138,8 +138,7 @@ Every success response includes `hashscan_url` where a chain entity was touched.
 | `POST /settlement/execute` | `{"token_id": "0.0.x", "payout_usd": 233.70, "spot_at_expiry": 3833.7}` | `{"tx_id", "hashscan_url", "paid_usd": 233.70}` |
 | `GET /treasury/balances` | — | `{"hbar": 100.0, "stablecoin_usd": 50000.0}` |
 
-**Settlement model (be honest about it, incl. in README):** a Hedera Scheduled
-Transaction fixes its transfer amount at creation (confirmed — the inner
+**Settlement model :** a Hedera Scheduled Transaction fixes its transfer amount at creation (confirmed — the inner
 `SchedulableTransactionBody` is immutable), so it cannot compute `max(0, S−K)` at
 expiry. `/settlement/schedule` arms an on-chain scheduled transfer as the
 settlement commitment; at expiry the backend settlement worker computes the payoff
@@ -187,7 +186,7 @@ sidecar is the exactly-once boundary for anything that moves money:
 
 ---
 
-## 3. Chat wire protocol (FastAPI ⇄ frontend)
+## 3. Chat wire protocol (FastAPI / frontend)
 
 Single endpoint: `POST /chat` with `{"message": str, "conversation_id": str|null}`.
 Response: `text/event-stream` (SSE). Event types (each `data:` line is one JSON object):
@@ -259,7 +258,7 @@ Gateway endpoint: `https://gateway.thegraph.com/api/<GRAPH_API_KEY>/subgraphs/id
 **Uniswap v3 mainnet** (`5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV`, the official one
 from Uniswap dev docs):
 - Pool `0x88e6…5640`: token0 = **USDC** (6 dec), token1 = **WETH** (18 dec).
-- **`token0Price` ≈ ETH price in USD (~3000-scale) and `PoolHourData.open/high/low/close`
+- **`token0Price` ≈ ETH price in USD (~1000-scale) and `PoolHourData.open/high/low/close`
   track `token0Price` — values are already decimal-adjusted ETH/USD. NO inversion.**
   (Verified in subgraph mapping code: `poolHourData.open = pool.token0Price`.)
 - History query: `poolHourDatas(first: 720, orderBy: periodStartUnix,
