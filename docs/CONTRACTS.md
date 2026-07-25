@@ -1,8 +1,5 @@
 # OptoPuts — Interface Contracts (FROZEN)
 
-> **Rule:** these interfaces are the seams between the two lanes. Code on either side
-> may change freely; **these shapes may not** change without both people agreeing
-> (edit this file together, in one commit, before changing any code that depends on it).
 > Everything is JSON. All timestamps are unix seconds UTC. All prices are USD floats.
 > All vols are annualized decimals (0.62 = 62%). All tenors `T_days` are float days.
 
