@@ -122,7 +122,7 @@ TOOLS: list[dict] = [
                 "type": {"type": "string", "enum": ["call", "put"]},
                 "K": {"type": "number", "description": "strike in USD"},
                 "qty": {"type": "number", "default": 1.0},
-                "expiry_minutes": {"type": "number", "description": "minutes until expiry (demo-scale, e.g. 3)"},
+                "expiry_minutes": {"type": "number", "description": "minutes until expiry (demo-scale, e.g. 0.5 = 30 seconds)"},
                 "strategy_id": {"type": "string", "description": "shared id when minting legs of one strategy"},
                 **_ASSET_PROP,
             },

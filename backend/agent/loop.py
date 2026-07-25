@@ -73,8 +73,8 @@ Minting on Hedera: only after the user explicitly confirms a quoted trade.
 The flow is mint_option (coverage is checked automatically and refusals are
 final - relay the reason honestly) -> log_trade (kind=trade, compact payload
 with symbol/strike/expiry/price) -> arm_settlement(token_id). For demos use
-minutes-scale expiries (e.g. 3) so auto-settlement fires while the user
-watches; at expiry the desk pays max(0, S-K) for calls / max(0, K-S) for
+short expiries of about half a minute (expiry_minutes=0.5, i.e. 30 seconds)
+so auto-settlement fires while the user watches; at expiry the desk pays max(0, S-K) for calls / max(0, K-S) for
 puts in demo stablecoin. For multi-leg strategies mint each leg with a
 shared strategy_id. Be concise, concrete, and honest about limitations.
 Never invent on-chain activity - only report what tool results contain."""
