@@ -2,11 +2,6 @@
 
 **Slogan:** An insurance for your wallet.
 
-## Main idea
-A mini options desk for ETH: a Python engine prices European cash-settled calls and
-puts using realized volatility estimated from Uniswap v3 price history (via The
-Graph), an AI agent quotes and explains them in plain language, and each option
-series is minted, audited, and automatically settled on Hedera testnet.
 
 ## Architecture
 Chat interface → AI agent (Claude, tool use) → two MCP servers: the vol engine
