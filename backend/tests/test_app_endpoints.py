@@ -44,3 +44,28 @@ def test_settings_roundtrip_updates_panel_bands():
 def test_settings_validation():
     r = client.post("/settings", json={"regime_bands": {"calm": 0.9, "elevated": 0.2}})
     assert r.status_code == 422
+
+
+async def _no_turn(messages, state):  # stub agent loop so /chat never hits Anthropic
+    if False:
+        yield
+
+
+def test_chat_gate_blocks_without_key(monkeypatch):
+    monkeypatch.setattr(config, "DEMO_KEY", "sekrit")
+    assert client.post("/chat", json={"message": "hi"}).status_code == 401
+    r = client.post("/chat", json={"message": "hi"}, headers={"X-Demo-Key": "wrong"})
+    assert r.status_code == 401
+
+
+def test_chat_gate_passes_with_key(monkeypatch):
+    monkeypatch.setattr(config, "DEMO_KEY", "sekrit")
+    monkeypatch.setattr(app_module, "run_turn", _no_turn)
+    r = client.post("/chat", json={"message": "hi"}, headers={"X-Demo-Key": "sekrit"})
+    assert r.status_code == 200
+
+
+def test_chat_open_when_no_demo_key(monkeypatch):
+    monkeypatch.setattr(config, "DEMO_KEY", "")
+    monkeypatch.setattr(app_module, "run_turn", _no_turn)
+    assert client.post("/chat", json={"message": "hi"}).status_code == 200
