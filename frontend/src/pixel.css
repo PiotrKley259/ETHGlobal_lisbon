@@ -1,7 +1,7 @@
 /* OptoPuts pixel-world design tokens (Design Brief v3).
    Strict palette — any extra range comes from opacity tints of these five. */
 :root {
-  --px-ink: #f46d94; /* base background / the ink itself */
+  --px-ink: #b8506e; /* base background / the ink itself */
   --px-panel: #31081f; /* panel and card backgrounds */
   --px-chrome: #6b0f1a; /* borders, shadows, muted chrome */
   --px-accent2: #b91372; /* secondary accent — hover, secondary buttons */
