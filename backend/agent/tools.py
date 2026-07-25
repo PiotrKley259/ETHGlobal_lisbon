@@ -10,6 +10,7 @@ import time
 import uuid
 from typing import Any
 
+import config
 from vol_engine import api
 
 from . import risk, settlement, sidecar
@@ -17,8 +18,8 @@ from . import risk, settlement, sidecar
 _ASSET_PROP = {
     "asset": {
         "type": "string",
-        "enum": ["ETH", "WBTC"],
-        "description": "underlying (default ETH; WBTC when the user says bitcoin/BTC)",
+        "enum": sorted(config.ASSETS),
+        "description": "underlying (default ETH; WBTC when the user says bitcoin/BTC; LINK/UNI/AAVE by name)",
     }
 }
 

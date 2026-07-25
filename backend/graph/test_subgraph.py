@@ -103,6 +103,37 @@ def test_unknown_asset_raises():
         subgraph.get_spot(asset="DOGE")
 
 
+def test_weth_cross_assets_priced_in_usd():
+    # LINK/UNI/AAVE candles are WETH-quoted and crossed with ETH/USD
+    eth_spot = subgraph.get_spot()["price"]
+    for asset, lo, hi in (("LINK", 2, 100), ("UNI", 0.5, 50), ("AAVE", 20, 1000)):
+        s = subgraph.get_spot(asset=asset)
+        assert lo < s["price"] < hi, f"{asset} spot {s['price']} not USD-scale"
+        h = subgraph.get_price_history(hours=744, asset=asset)
+        closes = [c["close"] for c in h["candles"]]
+        assert len(closes) > 550  # sparse hours dropped; dt-normalized vol handles gaps
+        assert all(lo / 4 < c < hi * 4 for c in closes)
+        ts = [c["ts"] for c in h["candles"]]
+        assert ts == sorted(ts)
+        # spot must equal (token in WETH) x (ETH in USD) from the fixtures
+        raw = subgraph._load_fixture(
+            f"spot{subgraph._asset_cfg(asset)['fixture_suffix']}.json")
+        assert s["price"] == pytest.approx(
+            float(raw["pool"]["token1Price"]) * eth_spot, rel=1e-9)
+
+
+def test_cross_candle_math_synthetic(monkeypatch):
+    # token/WETH raw candle (token0Price = token-per-WETH = 140) with ETH at
+    # $2,000 must produce a $14.29 close: 1/140 * 2000
+    raw = {"periodStartUnix": 1_700_000_000, "open": "140", "high": "150",
+           "low": "130", "close": "140", "volumeUSD": "9"}
+    in_weth = subgraph._to_usd_candle(raw, invert=True)
+    usd_close = in_weth["close"] * 2000.0
+    assert usd_close == pytest.approx(2000.0 / 140.0)
+    assert in_weth["high"] == pytest.approx(1 / 130)  # 1/low
+    assert in_weth["low"] == pytest.approx(1 / 150)   # 1/high
+
+
 def test_inversion_math_exact():
     raw = {"periodStartUnix": 1, "open": "0.00002", "high": "0.00004",
            "low": "0.00001", "close": "0.000025", "volumeUSD": "5"}
