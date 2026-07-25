@@ -3,7 +3,7 @@ import { getPanel, streamChat } from "./api";
 import { Chat } from "./components/Chat";
 import type { ChatMessage } from "./components/Chat";
 import { ChainStrip } from "./components/ChainStrip";
-import { InkTransition, INK_SEEN_KEY, REDUCED_MOTION } from "./components/InkTransition";
+import { InkTransition, REDUCED_MOTION } from "./components/InkTransition";
 import { Landing } from "./components/Landing";
 import { PricingPanel } from "./components/PricingPanel";
 import type { ChainEvent, PanelState, SseEvent } from "./types";
@@ -50,10 +50,10 @@ function App() {
     setView("landing");
   };
 
-  // The octopus inks the screen on first visit; instant for repeat visitors
-  // and under prefers-reduced-motion (brief v3).
+  // The octopus inks the screen on every entry (~1s, skippable); instant
+  // under prefers-reduced-motion.
   const enterDesk = () => {
-    if (REDUCED_MOTION() || localStorage.getItem(INK_SEEN_KEY)) {
+    if (REDUCED_MOTION()) {
       gotoDesk();
       return;
     }

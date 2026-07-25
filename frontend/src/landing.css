@@ -333,61 +333,61 @@
   color: var(--px-fg-dim);
 }
 
-/* ---------- ink transition (burst → flood → recede) ---------- */
+/* ---------- ink transition: 8-bit tile dissolve ---------- */
 .ink {
   position: fixed;
   inset: 0;
   z-index: 100;
   pointer-events: none;
-  animation: ink-recede var(--t-recede) var(--ease-recede) 520ms forwards;
 }
 
-.ink-burst {
+.ink-grid {
   position: absolute;
   inset: 0;
-  overflow: hidden;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(7, 1fr);
 }
 
-.blob {
-  position: absolute;
-  left: 50%;
-  top: 55%;
-  width: 60px;
-  height: 52px;
+/* each tile snaps in (scatter order), then snaps out top-down — steps(1)
+   only, no easing curves: this is pixel art. Delays set inline per tile. */
+.ink-tile {
   background: var(--px-ink);
-  /* irregular pixel-noise silhouette, not a clean circle */
-  clip-path: polygon(
-    0% 35%, 12% 30%, 15% 12%, 32% 18%, 40% 0%, 55% 14%, 70% 5%, 78% 24%,
-    100% 30%, 90% 48%, 100% 68%, 82% 74%, 84% 95%, 62% 88%, 48% 100%,
-    35% 84%, 14% 92%, 18% 70%, 0% 62%
-  );
-  transform: translate(-50%, -50%) scale(0.2);
-  animation: blob-burst var(--t-burst) var(--ease-burst) forwards;
+  opacity: 0;
+  animation:
+    tile-in 60ms steps(1) forwards,
+    tile-out 60ms steps(1) forwards;
 }
 
-.b1 { animation-delay: 0ms; --blob-scale: 9; }
-.b2 { left: 38%; top: 42%; width: 44px; animation-delay: 20ms; --blob-scale: 11; }
-.b3 { left: 63%; top: 47%; width: 52px; animation-delay: 35ms; --blob-scale: 10; }
-.b4 { left: 45%; top: 66%; width: 38px; animation-delay: 12ms; --blob-scale: 12; }
-.b5 { left: 57%; top: 30%; width: 46px; animation-delay: 28ms; --blob-scale: 10; }
-
-@keyframes blob-burst {
+@keyframes tile-in {
   to {
-    transform: translate(-50%, -50%) scale(var(--blob-scale, 10)) rotate(8deg);
+    opacity: 1;
   }
 }
 
-.ink-flood {
-  position: absolute;
-  inset: 0;
-  background: var(--px-ink);
-  opacity: 0;
-  animation: ink-flood var(--t-flood) var(--ease-flood) 180ms forwards;
+@keyframes tile-out {
+  to {
+    opacity: 0;
+  }
 }
 
-@keyframes ink-flood {
-  to {
+/* bioluminescent flecks glow while the screen is covered */
+.ink-flecks {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  animation: flecks-window 700ms steps(1) 300ms forwards;
+}
+
+@keyframes flecks-window {
+  0% {
     opacity: 1;
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
   }
 }
 
@@ -412,16 +412,6 @@
   50% { transform: translate(6px, -12px); opacity: 0.9; }
 }
 
-/* top-down wipe: ink drains off the glass, desk already mounted beneath */
-@keyframes ink-recede {
-  from {
-    clip-path: inset(0 0 0 0);
-  }
-  to {
-    clip-path: inset(100% 0 0 0);
-  }
-}
-
 .ink-skip {
   pointer-events: auto;
   position: absolute;
@@ -441,14 +431,11 @@
 /* ---------- motion & responsive ---------- */
 @media (prefers-reduced-motion: reduce) {
   .octopus,
-  .blob,
-  .ink-flood,
+  .ink-tile,
+  .ink-flecks,
   .fleck,
   .ink {
     animation: none;
-  }
-  .ink-flood {
-    opacity: 1;
   }
   .cta {
     transition: none;

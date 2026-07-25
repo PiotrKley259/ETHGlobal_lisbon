@@ -2,19 +2,23 @@ import { useEffect, useRef } from "react";
 
 interface InkTransitionProps {
   onCovered: () => void; // fire when screen is fully inked → swap view under it
-  onDone: () => void; // fire when recede ends → unmount overlay
+  onDone: () => void; // fire when the drain ends → unmount overlay
 }
 
 export const REDUCED_MOTION = () =>
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-export const INK_SEEN_KEY = "optoputs_ink_seen";
+const COLS = 12;
+const ROWS = 7;
+const COVERED_MS = 450; // all tiles opaque by here → swap the view beneath
+const DONE_MS = 1000; // last tile drained
 
-// Octopus defense sequence (brief v3): burst 180ms → flood 340ms → recede
-// 520ms, 1040ms total. The desk is mounted at "covered" (520ms), so the CTA
-// is interactive the instant recede begins — the overlay stops catching
-// pointer events at that point. Skippable; instant on repeat visits and under
-// prefers-reduced-motion (handled by the caller via shouldInk()).
+// 8-bit ink transition: the screen fills with chunky pixel tiles in a
+// scattered order (steps() timing, no easing curves — this is pixel art),
+// holds a beat with bioluminescent flecks, then drains top-down row by row.
+// Plays on every "Try demo" click; the desk mounts at cover so it is
+// interactive the moment the drain starts. Reduced-motion skips it entirely
+// (handled by the caller).
 export function InkTransition({ onCovered, onDone }: InkTransitionProps) {
   const covered = useRef(false);
   const timers = useRef<number[]>([]);
@@ -33,26 +37,31 @@ export function InkTransition({ onCovered, onDone }: InkTransitionProps) {
       window.setTimeout(() => {
         covered.current = true;
         onCovered();
-      }, 520), // burst 180 + flood 340
-      window.setTimeout(onDone, 1040), // + recede 520
+      }, COVERED_MS),
+      window.setTimeout(onDone, DONE_MS),
     ];
-    localStorage.setItem(INK_SEEN_KEY, "1");
     return () => timers.current.forEach(clearTimeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const tiles = Array.from({ length: COLS * ROWS }, (_, i) => {
+    const row = Math.floor(i / COLS);
+    // deterministic pseudo-random scatter for fill; top-down jittered drain
+    const delayIn = (((i * 7919) % 13) / 13) * 0.3;
+    const delayOut = 0.5 + row * 0.05 + (((i * 104729) % 7) / 7) * 0.06;
+    return (
+      <span
+        key={i}
+        className="ink-tile"
+        style={{ animationDelay: `${delayIn.toFixed(3)}s, ${delayOut.toFixed(3)}s` }}
+      />
+    );
+  });
+
   return (
     <div className="ink" role="presentation">
-      {/* irregular pixel-noise blobs erupting from center-ish */}
-      <div className="ink-burst">
-        <span className="blob b1" />
-        <span className="blob b2" />
-        <span className="blob b3" />
-        <span className="blob b4" />
-        <span className="blob b5" />
-      </div>
-      {/* full flood with bioluminescent flecks */}
-      <div className="ink-flood">
+      <div className="ink-grid">{tiles}</div>
+      <div className="ink-flecks">
         <span className="fleck f1" />
         <span className="fleck f2" />
         <span className="fleck f3" />
