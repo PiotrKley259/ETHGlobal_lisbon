@@ -24,6 +24,22 @@ AAVE_SUBGRAPH_ID = os.getenv(
 ETH_USDC_POOL = os.getenv(
     "ETH_USDC_POOL", "0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640"
 ).lower()
+
+# Asset registry: every Uniswap v3 <TOKEN>/USDC pool the desk quotes.
+# `invert` says whether poolHourData OHLC (which tracks token0Price) must be
+# flipped to get USD: False when USDC is token0 (candles already USD, e.g.
+# ETH), True when the token is token0 (candles are TOKEN-per-USDC, e.g. WBTC
+# pool 0x99ac... where close ~0.0000156 -> 1/close ~= $63,917). Verified
+# live 2026-07-25; see CONTRACTS §6.
+ASSETS: dict[str, dict] = {
+    "ETH": {"pool": ETH_USDC_POOL, "invert": False, "fixture_suffix": ""},
+    "WBTC": {
+        "pool": "0x99ac8ca7087fa4a2a1fb6357269965a2014abc35",
+        "invert": True,
+        "fixture_suffix": "_wbtc",
+    },
+}
+DEFAULT_ASSET = "ETH"
 SIDECAR_URL = os.getenv("SIDECAR_URL", "http://localhost:7070")
 RISK_FREE_RATE_CONSTANT = float(os.getenv("RISK_FREE_RATE_CONSTANT", "0.04"))
 OFFLINE_MODE = os.getenv("OFFLINE_MODE", "0") == "1"

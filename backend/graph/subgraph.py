@@ -55,54 +55,72 @@ def _gateway(subgraph_id: str, query: str) -> dict:
 
 # --- pool data ---------------------------------------------------------------
 
-def _history_query(hours: int) -> str:
+def _asset_cfg(asset: str) -> dict:
+    if asset not in config.ASSETS:
+        raise ValueError(f"unknown asset {asset!r}; desk quotes {sorted(config.ASSETS)}")
+    return config.ASSETS[asset]
+
+
+def _history_query(pool: str, hours: int) -> str:
     return (
         f'{{ poolHourDatas(first: {hours}, orderBy: periodStartUnix, '
-        f'orderDirection: desc, where: {{ pool: "{config.ETH_USDC_POOL}" }}) '
+        f'orderDirection: desc, where: {{ pool: "{pool}" }}) '
         f'{{ periodStartUnix open high low close volumeUSD }} }}'
     )
 
 
-def get_price_history(hours: int = 720) -> dict:
-    """Trailing hourly OHLC candles, ascending by ts (CONTRACTS §1)."""
-    key = f"history:{hours}"
+def _to_usd_candle(c: dict, invert: bool) -> dict:
+    """Raw poolHourData -> USD candle. When the pool's token0 is the asset
+    (invert=True), OHLC is TOKEN-per-USDC: flip with 1/x AND swap high/low
+    (the max of the reciprocal is the reciprocal of the min)."""
+    o, h, lo, cl = (float(c[k]) for k in ("open", "high", "low", "close"))
+    if invert:
+        o, h, lo, cl = 1.0 / o, 1.0 / lo, 1.0 / h, 1.0 / cl
+    return {
+        "ts": int(c["periodStartUnix"]),
+        "open": o, "high": h, "low": lo, "close": cl,
+        "volume_usd": float(c["volumeUSD"]),
+    }
+
+
+def get_price_history(hours: int = 720, asset: str = config.DEFAULT_ASSET) -> dict:
+    """Trailing hourly USD OHLC candles, ascending by ts (CONTRACTS §1)."""
+    cfg = _asset_cfg(asset)
+    key = f"history:{asset}:{hours}"
     if (hit := _cache_get(key)) is not None:
         return hit
     if config.OFFLINE_MODE:
-        raw = _load_fixture("pool_hour_datas.json")["poolHourDatas"][:hours]
+        raw = _load_fixture(
+            f"pool_hour_datas{cfg['fixture_suffix']}.json")["poolHourDatas"][:hours]
     else:
-        raw = _gateway(config.UNISWAP_SUBGRAPH_ID, _history_query(hours))["poolHourDatas"]
-    candles = [
-        {
-            "ts": int(c["periodStartUnix"]),
-            "open": float(c["open"]),
-            "high": float(c["high"]),
-            "low": float(c["low"]),
-            "close": float(c["close"]),
-            "volume_usd": float(c["volumeUSD"]),
-        }
-        for c in reversed(raw)  # gateway returns desc; contract wants asc
-    ]
+        raw = _gateway(config.UNISWAP_SUBGRAPH_ID,
+                       _history_query(cfg["pool"], hours))["poolHourDatas"]
+    candles = [_to_usd_candle(c, cfg["invert"]) for c in reversed(raw)]
     return _cache_put(key, HISTORY_TTL_S, {
-        "pool": config.ETH_USDC_POOL, "hours": hours, "candles": candles,
+        "pool": cfg["pool"], "asset": asset, "hours": hours, "candles": candles,
     })
 
 
-_SPOT_QUERY = (
-    f'{{ pool(id: "{config.ETH_USDC_POOL}") {{ token0Price }} '
-    f'_meta {{ block {{ timestamp }} }} }}'
-)
+def _spot_query(pool: str) -> str:
+    return (
+        f'{{ pool(id: "{pool}") {{ token0Price token1Price }} '
+        f'_meta {{ block {{ timestamp }} }} }}'
+    )
 
 
-def get_spot() -> dict:
-    """Latest pool price. token0Price is already ETH in USD for this pool
-    (verified — no inversion; CONTRACTS §6)."""
-    if (hit := _cache_get("spot")) is not None:
+def get_spot(asset: str = config.DEFAULT_ASSET) -> dict:
+    """Latest pool price in USD. Non-inverted pools (USDC = token0) read
+    token0Price directly; inverted pools read token1Price (CONTRACTS §6)."""
+    cfg = _asset_cfg(asset)
+    key = f"spot:{asset}"
+    if (hit := _cache_get(key)) is not None:
         return hit
-    data = _load_fixture("spot.json") if config.OFFLINE_MODE \
-        else _gateway(config.UNISWAP_SUBGRAPH_ID, _SPOT_QUERY)
-    return _cache_put("spot", SPOT_TTL_S, {
-        "price": float(data["pool"]["token0Price"]),
+    data = _load_fixture(f"spot{cfg['fixture_suffix']}.json") if config.OFFLINE_MODE \
+        else _gateway(config.UNISWAP_SUBGRAPH_ID, _spot_query(cfg["pool"]))
+    price_field = "token1Price" if cfg["invert"] else "token0Price"
+    return _cache_put(key, SPOT_TTL_S, {
+        "price": float(data["pool"][price_field]),
+        "asset": asset,
         "ts": int(data["_meta"]["block"]["timestamp"]),
         "source": "uniswap-v3-subgraph",
     })

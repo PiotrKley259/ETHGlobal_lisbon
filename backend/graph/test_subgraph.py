@@ -76,6 +76,44 @@ def test_apr_to_cc_known_value():
     assert subgraph.apr_to_cc(0.0) == 0.0
 
 
+# --- multi-asset (WBTC pool is inverted: OHLC is WBTC-per-USDC) --------------
+
+def test_wbtc_history_inverted_to_usd():
+    h = subgraph.get_price_history(hours=744, asset="WBTC")
+    assert h["asset"] == "WBTC" and len(h["candles"]) == 744
+    last = h["candles"][-1]
+    assert 10_000 < last["close"] < 1_000_000  # USD scale, not 0.0000156
+    for c in h["candles"]:
+        assert c["high"] >= c["low"]  # inversion must swap high/low
+
+
+def test_wbtc_spot_reads_token1_price():
+    s = subgraph.get_spot(asset="WBTC")
+    assert s["asset"] == "WBTC"
+    assert s["price"] == pytest.approx(63_917, rel=0.01)
+
+
+def test_eth_still_default_and_uninverted():
+    assert subgraph.get_spot()["asset"] == "ETH"
+    assert subgraph.get_spot()["price"] == pytest.approx(1858.67, abs=0.5)
+
+
+def test_unknown_asset_raises():
+    with pytest.raises(ValueError, match="unknown asset"):
+        subgraph.get_spot(asset="DOGE")
+
+
+def test_inversion_math_exact():
+    raw = {"periodStartUnix": 1, "open": "0.00002", "high": "0.00004",
+           "low": "0.00001", "close": "0.000025", "volumeUSD": "5"}
+    c = subgraph._to_usd_candle(raw, invert=True)
+    assert c["open"] == pytest.approx(50_000)
+    assert c["high"] == pytest.approx(100_000)   # 1/low
+    assert c["low"] == pytest.approx(25_000)     # 1/high
+    assert c["close"] == pytest.approx(40_000)
+    assert subgraph._to_usd_candle(raw, invert=False)["open"] == pytest.approx(0.00002)
+
+
 # --- fallback chain (online mode, each network layer faked) -----------------
 
 FRED_CSV = "DATE,DGS1MO\n2026-07-22,4.35\n2026-07-23,4.40\n2026-07-24,.\n"
