@@ -103,6 +103,16 @@ export function PricingPanel({ panel, onSettingsSaved }: PricingPanelProps) {
             </span>
           </div>
           <GreeksGrid greeks={panel.quote.greeks} />
+          {panel.quote.payoff && panel.quote.breakevens && (
+            <PayoffDiagram
+              strategy={{
+                payoff: panel.quote.payoff,
+                breakevens: panel.quote.breakevens,
+                max_profit: panel.quote.max_profit ?? null,
+                max_loss: panel.quote.max_loss ?? null,
+              }}
+            />
+          )}
         </div>
       )}
 

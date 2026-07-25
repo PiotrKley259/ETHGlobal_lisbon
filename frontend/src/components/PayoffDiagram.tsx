@@ -1,4 +1,4 @@
-import type { StrategyQuote } from "../types";
+import type { PayoffCurve } from "../types";
 
 const W = 320;
 const H = 170;
@@ -10,7 +10,7 @@ const fmt = (x: number) =>
 // B2.3 — the "options for non-experts" money shot: P/L at expiry vs terminal
 // ETH price from payoff.prices/pnl, profit green / loss red, breakevens and
 // max P/L marked. Hand-rolled SVG so it renders instantly.
-export function PayoffDiagram({ strategy }: { strategy: StrategyQuote }) {
+export function PayoffDiagram({ strategy }: { strategy: PayoffCurve }) {
   const { prices, pnl } = strategy.payoff;
   if (prices.length < 2 || pnl.length !== prices.length) return null;
 

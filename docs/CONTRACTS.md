@@ -87,6 +87,9 @@ Baseline ships `constant` (0.04); Aave is Stage 4. **Never fetched inside pricin
  "greeks": {"delta": -0.18, "gamma": 0.0004, "vega": 3.1, "theta": -8.2, "rho": -0.9}}
 ```
 Greeks per 1 unit: vega per 1.00 vol pt, theta per day, rho per 1.00 rate pt.
+**Additive (2026-07-25):** single-option Quotes also carry `payoff`,
+`breakevens`, `max_profit`, `max_loss` (same shapes as StrategyQuote,
+buyer's side) so the panel draws a P&L curve for single legs too.
 
 ### `list_strategies() -> [StrategyDef]`
 ```json

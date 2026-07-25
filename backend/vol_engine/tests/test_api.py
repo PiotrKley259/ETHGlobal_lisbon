@@ -25,6 +25,15 @@ def test_price_option_full_quote_shape():
     assert set(q["greeks"]) == {"delta", "gamma", "vega", "theta", "rho"}
 
 
+def test_single_quote_carries_its_payoff_curve():
+    q = api.price_option(K=1700.0, T_days=21.0, type="put")
+    assert len(q["payoff"]["prices"]) == 121
+    unit = q["price"] / q["qty"]
+    assert q["breakevens"][0] == pytest.approx(1700.0 - unit, rel=0.01)
+    assert q["max_loss"] == pytest.approx(-unit, abs=1e-6)  # premium paid
+    assert q["max_profit"] > 0  # put floor at S_T=0
+
+
 def test_price_option_qty_scales_price_not_greeks():
     q1 = api.price_option(K=1860.0, T_days=7.0, type="call", qty=1.0)
     q3 = api.price_option(K=1860.0, T_days=7.0, type="call", qty=3.0)

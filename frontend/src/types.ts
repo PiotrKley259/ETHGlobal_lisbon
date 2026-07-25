@@ -46,7 +46,15 @@ export interface Greeks {
   rho: number;
 }
 
-export interface Quote {
+/** what the payoff diagram needs — carried by strategies AND single quotes */
+export interface PayoffCurve {
+  payoff: { prices: number[]; pnl: number[] };
+  breakevens: number[];
+  max_profit: number | null;
+  max_loss: number | null; // null = unbounded
+}
+
+export interface Quote extends Partial<PayoffCurve> {
   price: number;
   qty: number;
   inputs: {
@@ -60,14 +68,10 @@ export interface Quote {
   greeks: Greeks;
 }
 
-export interface StrategyQuote {
+export interface StrategyQuote extends PayoffCurve {
   net_cost: number;
   net_greeks: Greeks;
   legs: Quote[];
-  payoff: { prices: number[]; pnl: number[] };
-  breakevens: number[];
-  max_profit: number | null;
-  max_loss: number | null; // null = unbounded (e.g. short straddle)
 }
 
 export interface VolCurvePoint {

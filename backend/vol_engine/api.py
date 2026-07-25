@@ -89,12 +89,22 @@ def price_option(
     sigma, window = _sigma_for(T_days, _candles(asset))
     unit = bs_price(spot, K, T_days, sigma, r_cc, type)
     greeks = bs_greeks(spot, K, T_days, sigma, r_cc, type)
+    # single quotes carry their own P&L curve (buyer's side) so the panel can
+    # draw the hockey-stick without any client-side math — additive fields
+    single_leg = _price_strategy(
+        [{"type": type, "side": "long", "K": K, "T_days": T_days, "qty": qty}],
+        S=spot, r_cc=r_cc, sigma=sigma,
+    )
     return {
         "price": unit * qty,
         "qty": qty,
         "inputs": {"S": spot, "K": K, "T_days": T_days, "r_cc": r_cc,
                    "sigma": sigma, "sigma_source": window},
         "greeks": greeks.model_dump(),
+        "payoff": single_leg["payoff"],
+        "breakevens": single_leg["breakevens"],
+        "max_profit": single_leg["max_profit"],
+        "max_loss": single_leg["max_loss"],
     }
 
 
