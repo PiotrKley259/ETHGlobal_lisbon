@@ -81,6 +81,7 @@
   height: 100%;
   display: block;
   image-rendering: pixelated;
+  object-fit: contain; /* mascot sprite is ~square; don't stretch into the 8:7 box */
 }
 
 .octo-alert {
