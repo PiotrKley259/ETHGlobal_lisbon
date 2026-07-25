@@ -19,19 +19,6 @@ body {
   font-size: 13px;
 }
 
-.app {
-  display: grid;
-  grid-template-columns: minmax(380px, 1.2fr) minmax(340px, 1fr);
-  grid-template-rows: 1.6fr 1fr;
-  grid-template-areas:
-    "chat panel"
-    "chat chain";
-  gap: 10px;
-  height: 100vh;
-  height: 100dvh; /* mobile browser chrome shrinks the real viewport */
-  padding: 10px;
-}
-
 .region {
   background: var(--bg-raised);
   border: 1px solid var(--border);
@@ -40,10 +27,6 @@ body {
   flex-direction: column;
   overflow: hidden;
 }
-
-.chat-region { grid-area: chat; }
-.panel-region { grid-area: panel; }
-.chain-region { grid-area: chain; }
 
 .region-title {
   padding: 8px 12px;
