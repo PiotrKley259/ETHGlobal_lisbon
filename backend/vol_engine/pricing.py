@@ -72,9 +72,17 @@ def bs_greeks(
     T = T_days / DAYS_PER_YEAR
     if T_days == 0 or sigma <= 0:
         sign = 1.0 if opt_type == "call" else -1.0
-        itm = sign * (S - K) > 0
-        delta = sign * (1.0 if itm else 0.0)
-        return Greeks(delta=delta, gamma=0.0, vega=0.0, theta=0.0, rho=0.0)
+        disc = math.exp(-r_cc * T)
+        itm = sign * (S - K * disc) > 0
+        if not itm:
+            return Greeks(delta=0.0, gamma=0.0, vega=0.0, theta=0.0, rho=0.0)
+        return Greeks(
+            delta=sign,
+            gamma=0.0,
+            vega=0.0,
+            theta=-sign * r_cc * K * disc / DAYS_PER_YEAR,
+            rho=sign * K * T * disc,
+        )
 
     d1, d2 = _d1_d2(S, K, T, sigma, r_cc)
     disc = math.exp(-r_cc * T)
