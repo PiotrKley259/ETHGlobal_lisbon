@@ -15,14 +15,9 @@ and auto-settled on Hedera testnet** (HTS + HCS + Scheduled Transactions).
 
 ## Architecture
 
-```
-Browser (React) ── POST /chat (SSE) ──► FastAPI backend
-  chat | pricing panel | chain strip      └─ Claude agent (tool use)
-                                              ├─ vol engine (pure math + MCP server)
-                                              ├─ Graph adapter ──► Uniswap v3 / Aave v3 subgraphs
-                                              └─ HTTP ──► Hedera sidecar (Node + Hiero SDK)
-                                                            HTS mint · HCS log · Scheduled settle
-```
+<p align="center">
+  <img src="docs/architecture.svg" alt="OptoPuts architecture: React UI talks SSE to the FastAPI agent core, where the Claude agent-octopus reaches into the vol engine, the Graph adapter (Uniswap v3 + Aave v3 subgraphs), and the Hedera sidecar (HTS mint, HCS log, scheduled settlement); a settlement worker pays max(0, K−S) at expiry." width="100%">
+</p>
 
 Settlement model (honest version): a Hedera **Scheduled Transaction cannot
 compute max(0, S−K) at expiry** — its amount is fixed at creation. So the
