@@ -99,8 +99,8 @@ export function Landing({ onEnter }: LandingProps) {
               <h3>Settle automatically</h3>
               <p>
                 At expiry a worker pays max(0, K−S) in demo stablecoin —
-                idempotent, so the desk can never pay twice. The whole trail
-                sits on Hashscan for anyone to audit.
+                idempotent. The whole trail sits on Hashscan for anyone to
+                audit.
               </p>
               <p className="step-stack">Hedera scheduled tx</p>
             </li>
