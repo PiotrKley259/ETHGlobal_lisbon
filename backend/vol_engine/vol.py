@@ -49,7 +49,15 @@ def estimate_vol(candles: list[Candle], window: str, estimator: str = "close") -
         sigma = _parkinson(candles[-hours:])
         n_obs = hours
 
-    return Vol(sigma_annual=sigma, window=window, estimator=estimator, n_obs=n_obs)
+    return Vol(
+        sigma_annual=sigma,
+        # the intuitive number: 1-sigma move over the window's own length
+        # (e.g. 33% annualized -> ±1.7% over a day)
+        sigma_period=sigma * math.sqrt(hours / 8760.0),
+        window=window,
+        estimator=estimator,
+        n_obs=n_obs,
+    )
 
 
 def _validate_bands(bands: dict[str, float]) -> dict[str, float]:

@@ -29,9 +29,13 @@ Candles ascending by `ts`. Source: Uniswap v3 ETH/USDC 0.05% `poolHourDatas`.
 
 ### `estimate_vol(window: "24h"|"7d"|"30d", estimator: "close"|"parkinson" = "close") -> Vol`
 ```json
-{"sigma_annual": 0.62, "window": "7d", "estimator": "close", "n_obs": 168}
+{"sigma_annual": 0.62, "sigma_period": 0.086, "window": "7d",
+ "estimator": "close", "n_obs": 168}
 ```
-Annualization factor: `sqrt(8760)` on hourly log returns.
+Annualization factor: `sqrt(8760)` on hourly log returns. `sigma_period`
+(additive field, 2026-07-24, P1-proposed) = `sigma_annual * sqrt(hours/8760)`:
+the 1-sigma expected move over the window's own length — the intuitive number
+the panel headlines (annualized stays the unit for pricing and bar heights).
 
 ### `get_vol_curve() -> VolCurve`   *(stretch — Stage 4)*
 ```json

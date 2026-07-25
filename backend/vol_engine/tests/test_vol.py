@@ -47,6 +47,14 @@ def test_close_to_close_recovers_known_sigma():
     assert v.window == "30d" and v.estimator == "close" and v.n_obs == 720
 
 
+def test_sigma_period_is_window_scaled_annual():
+    candles = gbm_candles(721, 0.5)
+    for window, hours in (("24h", 24), ("7d", 168), ("30d", 720)):
+        v = estimate_vol(candles, window)
+        assert v.sigma_period == pytest.approx(
+            v.sigma_annual * math.sqrt(hours / 8760), rel=1e-12)
+
+
 def test_windows_use_correct_observation_counts():
     candles = gbm_candles(721, 0.5)
     assert estimate_vol(candles, "24h", "close").n_obs == 24

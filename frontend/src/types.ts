@@ -9,6 +9,9 @@ export interface Spot {
 
 export interface Vol {
   sigma_annual: number;
+  /** 1-sigma expected move over the window itself — the intuitive headline.
+   *  Optional: absent in older fixtures (mock scripts); derive as fallback. */
+  sigma_period?: number;
   window: "24h" | "7d" | "30d";
   estimator: "close" | "parkinson";
   n_obs: number;

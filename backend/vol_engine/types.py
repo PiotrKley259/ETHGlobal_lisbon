@@ -17,6 +17,7 @@ class Candle(BaseModel):
 
 class Vol(BaseModel):
     sigma_annual: float
+    sigma_period: float  # 1-sigma expected move over the window itself (display)
     window: str  # "24h" | "7d" | "30d"
     estimator: str  # "close" | "parkinson"
     n_obs: int

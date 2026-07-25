@@ -12,6 +12,12 @@ const fmtUsd = (x: number) =>
   x.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const fmtPct = (x: number) => `${(x * 100).toFixed(1)}%`;
 
+const WINDOW_HOURS: Record<string, number> = { "24h": 24, "7d": 168, "30d": 720 };
+// 1-sigma move over the window itself — served by the backend; derived here
+// only for older payloads (mock fixtures) that predate sigma_period.
+const periodMove = (v: { sigma_annual: number; sigma_period?: number; window: string }) =>
+  v.sigma_period ?? v.sigma_annual * Math.sqrt((WINDOW_HOURS[v.window] ?? 24) / 8760);
+
 // B2.2 — live pricing panel: spot, vol term-structure bars, regime badge with
 // active bands in the tooltip, rate source line, and on a quote the price +
 // Greeks grid. Renders whatever the panel event carries — nulls collapse.
@@ -50,15 +56,22 @@ export function PricingPanel({ panel, onSettingsSaved }: PricingPanelProps) {
       {panel?.vols && panel.vols.length > 0 && (
         <div className="vol-bars">
           {panel.vols.map((v) => (
-            <div key={v.window} className="vol-bar-row" title={`${v.estimator}, n=${v.n_obs}`}>
+            <div
+              key={v.window}
+              className="vol-bar-row"
+              title={`typical ±move over ${v.window} · ${fmtPct(v.sigma_annual)} annualized · ${v.estimator}, n=${v.n_obs}`}
+            >
               <span className="vol-label">{v.window}</span>
               <div className="vol-track">
+                {/* bar heights stay ANNUALIZED so the term-structure shape
+                    (contango/backwardation) remains readable */}
                 <div
                   className="vol-fill"
                   style={{ width: `${(v.sigma_annual / maxSigma) * 100}%` }}
                 />
               </div>
-              <span className="vol-value">{fmtPct(v.sigma_annual)}</span>
+              <span className="vol-value">±{fmtPct(periodMove(v))}</span>
+              <span className="dim vol-annualized">{fmtPct(v.sigma_annual)} ann.</span>
             </div>
           ))}
         </div>
