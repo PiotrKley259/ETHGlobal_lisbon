@@ -1,8 +1,5 @@
 # OptoPuts — Interface Contracts (FROZEN)
 
-> **Rule:** these interfaces are the seams between the two lanes. Code on either side
-> may change freely; **these shapes may not** change without both people agreeing
-> (edit this file together, in one commit, before changing any code that depends on it).
 > Everything is JSON. All timestamps are unix seconds UTC. All prices are USD floats.
 > All vols are annualized decimals (0.62 = 62%). All tenors `T_days` are float days.
 
@@ -14,7 +11,7 @@ The same functions are exposed twice from one implementation:
 - as MCP tools in `backend/vol_engine/server.py` (FastMCP) — the demo narrative,
 - as plain Python callables consumed by `backend/agent/tools.py`.
 
-> **Multi-asset addendum (2026-07-25, P1-proposed — P2 ack pending):** every
+> **Multi-asset addendum:** every
 > engine data/pricing tool gains an optional `asset` parameter whose enum is
 > **registry-driven** from `backend/config.py` (currently ETH, WBTC, LINK,
 > UNI, AAVE; default `"ETH"` — all pre-existing shapes unchanged). `get_price_history`/
@@ -111,7 +108,7 @@ long_straddle, long_strangle, long_butterfly, short_straddle`.
  "payoff": {"prices": [2800.0, 2825.0], "pnl": [-96.4, -71.4]},
  "breakevens": [3450.2, 3749.8], "max_profit": 203.6, "max_loss": -96.4}
 ```
-`payoff.prices`: 121 points spanning spot ± 3·σ·√T (min span ±15%). `max_profit`
+`payoff.prices`: 1spanning spot ± 3·σ·√T (min span ±15%). `max_profit`
 may be `null` (unbounded). Named structures are resolved to legs **by the agent**,
 using `list_strategies` — the engine only prices explicit legs.
 
@@ -141,8 +138,7 @@ Every success response includes `hashscan_url` where a chain entity was touched.
 | `POST /settlement/execute` | `{"token_id": "0.0.x", "payout_usd": 233.70, "spot_at_expiry": 3833.7}` | `{"tx_id", "hashscan_url", "paid_usd": 233.70}` |
 | `GET /treasury/balances` | — | `{"hbar": 100.0, "stablecoin_usd": 50000.0}` |
 
-**Settlement model (be honest about it, incl. in README):** a Hedera Scheduled
-Transaction fixes its transfer amount at creation (confirmed — the inner
+**Settlement model :** a Hedera Scheduled Transaction fixes its transfer amount at creation (confirmed — the inner
 `SchedulableTransactionBody` is immutable), so it cannot compute `max(0, S−K)` at
 expiry. `/settlement/schedule` arms an on-chain scheduled transfer as the
 settlement commitment; at expiry the backend settlement worker computes the payoff
@@ -190,7 +186,7 @@ sidecar is the exactly-once boundary for anything that moves money:
 
 ---
 
-## 3. Chat wire protocol (FastAPI ⇄ frontend)
+## 3. Chat wire protocol (FastAPI / frontend)
 
 Single endpoint: `POST /chat` with `{"message": str, "conversation_id": str|null}`.
 Response: `text/event-stream` (SSE).
@@ -272,7 +268,7 @@ Gateway endpoint: `https://gateway.thegraph.com/api/<GRAPH_API_KEY>/subgraphs/id
 **Uniswap v3 mainnet** (`5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV`, the official one
 from Uniswap dev docs):
 - Pool `0x88e6…5640`: token0 = **USDC** (6 dec), token1 = **WETH** (18 dec).
-- **`token0Price` ≈ ETH price in USD (~3000-scale) and `PoolHourData.open/high/low/close`
+- **`token0Price` ≈ ETH price in USD (~1000-scale) and `PoolHourData.open/high/low/close`
   track `token0Price` — values are already decimal-adjusted ETH/USD. NO inversion.**
   (Verified in subgraph mapping code: `poolHourData.open = pool.token0Price`.)
 - History query: `poolHourDatas(first: 720, orderBy: periodStartUnix,

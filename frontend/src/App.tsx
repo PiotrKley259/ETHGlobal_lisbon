@@ -3,6 +3,7 @@ import { getPanel, streamChat } from "./api";
 import { Chat } from "./components/Chat";
 import type { ChatMessage } from "./components/Chat";
 import { ChainStrip } from "./components/ChainStrip";
+import { OctopusIntro } from "./components/OctopusIntro";
 import { PricingPanel } from "./components/PricingPanel";
 import type { ChainEvent, PanelState, SseEvent } from "./types";
 import "./App.css";
@@ -94,6 +95,7 @@ function App() {
 
   return (
     <div className="app">
+      <OctopusIntro />
       <section className="region chat-region">
         <header className="region-title">OptoPuts · desk chat</header>
         <Chat messages={messages} busy={busy} onSend={handleSend} />

@@ -1,5 +1,9 @@
 # OptoPuts : an insurance for your wallet 🐙
 
+<p align="center">
+  <img src="docs/octopus-intro.gif" alt="OptoPuts mascot: a pixel-art octopus appears, then vanishes leaving a scatter of glowing pixel coins — ETH, WBTC, LINK, UNI, AAVE" width="960">
+</p>
+
 A mini options desk for ETH. A deterministic Python engine prices European
 cash-settled calls, puts, and multi-leg strategies using **realized volatility
 measured from Uniswap v3 trade history** (The Graph); a Claude agent quotes and
@@ -38,7 +42,3 @@ cd ../frontend && npm i && npm run dev          # UI
 ```
 
 `OFFLINE_MODE=1` runs the whole desk from committed fixtures, zero network.
-Team workflow docs: [`docs/PLAN.md`](docs/PLAN.md) ·
-[`docs/CONTRACTS.md`](docs/CONTRACTS.md) ·
-[`docs/options_desk_summary.md`](docs/options_desk_summary.md).
-
