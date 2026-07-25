@@ -237,6 +237,18 @@
   gap: 16px;
 }
 
+/* desktop: the five steps read as one left-to-right pipeline */
+@media (min-width: 1024px) {
+  .steps {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .step p {
+    font-size: 13.5px;
+  }
+}
+
 .step {
   background: var(--px-panel);
   border: 2px solid var(--px-chrome);
