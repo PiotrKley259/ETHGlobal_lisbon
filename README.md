@@ -16,7 +16,7 @@ and auto-settled on Hedera testnet** (HTS + HCS + Scheduled Transactions).
 ## Architecture
 
 <p align="center">
-  <img src="docs/architecture.svg" alt="OptoPuts architecture: React UI talks SSE to the FastAPI agent core, where the Claude agent-octopus reaches into the vol engine, the Graph adapter (Uniswap v3 + Aave v3 subgraphs), and the Hedera sidecar (HTS mint, HCS log, scheduled settlement); a settlement worker pays max(0, K−S) at expiry." width="100%">
+  <img src="docs/architecture.svg" alt="Life of a trade: 01 ask in English (React chat, SSE) → 02 measure the market (The Graph: Uniswap vol curve, Aave rate, regime) → 03 price it in code (Black–Scholes, strategies — the agent computes nothing) → 04 mint on confirm (coverage-gated HTS + HCS + scheduled settlement) → 05 settle itself (worker pays max(0, K−S), idempotent). Below: the on-chain trail — token, trade record, armed settlement, payout — all on Hashscan." width="100%">
 </p>
 
 The scheduled transfer is the on-chain settlement *commitment*; at expiry a
