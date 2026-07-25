@@ -58,7 +58,28 @@ jobs:
     concurrency: production-deploy
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      # Redeploying the backend recreates the Hedera stablecoin/topic/customer
+      # from scratch every time (Railway's container fs is ephemeral, so
+      # state.json can't survive) — each redeploy funds a brand-new customer
+      # account from the treasury. Only worth doing when backend-relevant
+      # files actually changed; a pure frontend/docs commit must not burn
+      # testnet HBAR for nothing.
+      - name: Check for backend-relevant changes
+        id: backend_diff
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          if [ -z "$BEFORE_SHA" ] || [ "$BEFORE_SHA" = "0000000000000000000000000000000000000000" ] || ! git cat-file -e "$BEFORE_SHA" 2>/dev/null; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          elif git diff --quiet "$BEFORE_SHA" HEAD -- backend hedera-sidecar fixtures Dockerfile deploy .github/workflows/ci.yml; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
       - name: Deploy backend + sidecar to Railway
+        if: steps.backend_diff.outputs.changed == 'true'
         env:
           RAILWAY_TOKEN: ${{ secrets.OPTOPUTS_RAILWAY }}
         run: |
@@ -67,6 +88,9 @@ jobs:
             exit 0
           fi
           npx -y @railway/cli@latest up --service optoputs --detach
+      - name: Skip backend deploy (no backend-relevant changes)
+        if: steps.backend_diff.outputs.changed == 'false'
+        run: echo "::notice::No backend/sidecar/fixtures/Dockerfile changes — skipping Railway redeploy to avoid burning testnet HBAR"
       - name: Deploy frontend to Vercel
         working-directory: frontend
         env:

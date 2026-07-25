@@ -59,7 +59,10 @@ setupRouter.post(
       const customerKey = PrivateKey.generateED25519();
       const accountTx = new AccountCreateTransaction()
         .setMaxAutomaticTokenAssociations(-1)
-        .setInitialBalance(new Hbar(20));
+        // 3 HBAR covers the customer's own demo-lifetime tx fees; keeping
+        // this low matters because every backend redeploy re-funds a fresh
+        // customer account from the treasury (ephemeral container fs).
+        .setInitialBalance(new Hbar(3));
       if (typeof accountTx.setKeyWithoutAlias === "function") {
         accountTx.setKeyWithoutAlias(customerKey.publicKey);
       } else {

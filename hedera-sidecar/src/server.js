@@ -46,9 +46,14 @@ app.use(tokensRouter);
 app.use(hcsRouter);
 app.use(settlementRouter);
 
-// Errors: non-2xx with {"error", "detail"} per CONTRACTS §2.
+// Errors: non-2xx with {"error", "detail"} per CONTRACTS §2. Only httpError()
+// sets a genuine numeric HTTP status; Hedera SDK errors (PrecheckStatusError,
+// ReceiptStatusError, …) carry their own `.status`, which is a Hedera Status
+// *object* (not an int) — passing that straight to res.status() crashes
+// Express itself, masking the real Hedera error. Guard for a real integer.
 app.use((err, _req, res, _next) => {
-  res.status(err.status || 500).json({
+  const httpStatus = Number.isInteger(err.status) ? err.status : 500;
+  res.status(httpStatus).json({
     error: err.message || "internal error",
     detail: err.detail || String(err.stack || err),
   });
