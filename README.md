@@ -12,26 +12,6 @@ and auto-settled on Hedera testnet** (HTS + HCS + Scheduled Transactions).
 > logs the trade to HCS, and arms on-chain settlement that pays
 > max(0, K−S) in demo stablecoin at expiry, automatically.
 
-## Why it's interesting
-
-- **The agent computes nothing.** Every number comes from tested Python
-  (78 unit tests, Black–Scholes verified against textbook values). Claude
-  parses intent, orchestrates tools, explains, and triggers chain actions —
-  the UI shows the tool calls and the pricing panel updates from the same
-  data that produced the quote, live.
-- **The vol term structure is load-bearing.** 24h/7d/30d realized vols define
-  a curve; pricing interpolates **linear in variance-time (σ²·T)** and clamps
-  flat outside the observed range. Right now the curve is in contango
-  (33%→37%→53%), so a 3-day option costs **33% less** than the 30d headline
-  vol would suggest — and the agent says so.
-- **Internally consistent financing rate.** Options settle in stablecoin, so
-  r is the **USDC variable borrow rate from Aave v3** (ray→APR→ln(1+r)),
-  falling back to FRED DGS1MO, then a constant — the fallback level is
-  surfaced in every quote.
-- **A desk, not a toy.** Treasury coverage gate (per-series cap + open-exposure
-  ledger, fails closed), view-to-strategy reasoning ("profit from calm" →
-  *short* straddle vs "protect against a break" → *long* straddle — opposites
-  the agent disambiguates), payoff diagrams with breakevens and max P/L.
 
 ## Architecture
 
