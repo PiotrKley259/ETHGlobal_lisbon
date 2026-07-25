@@ -45,6 +45,11 @@ function App() {
     setView("desk");
   };
 
+  const gotoLanding = () => {
+    window.history.pushState(null, "", `/${window.location.search}`);
+    setView("landing");
+  };
+
   // The octopus inks the screen on first visit; instant for repeat visitors
   // and under prefers-reduced-motion (brief v3).
   const enterDesk = () => {
@@ -126,8 +131,10 @@ function App() {
   const desk = (
     <div className="desk">
       <header className="desk-header">
-        <img src="/octopus-logo.png" alt="" className="brand-logo" />
-        <span className="brand iridescent-text">OptoPuts</span>
+        <button className="brand-home" onClick={gotoLanding} aria-label="Go to landing page">
+          <img src="/octopus-logo.png" alt="" className="brand-logo" />
+          <span className="brand iridescent-text">OptoPuts</span>
+        </button>
         <span
           className={`status-dot ${panel ? "on" : ""}`}
           role="status"
