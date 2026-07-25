@@ -333,7 +333,7 @@
   color: var(--px-fg-dim);
 }
 
-/* ---------- ink transition: 8-bit tile dissolve ---------- */
+/* ---------- ink transition: black ink washing off ---------- */
 .ink {
   position: fixed;
   inset: 0;
@@ -341,29 +341,28 @@
   pointer-events: none;
 }
 
+/* the whole sheet of ink snaps in as one */
 .ink-grid {
   position: absolute;
   inset: 0;
   display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  grid-template-rows: repeat(7, 1fr);
-}
-
-/* each tile snaps in radially from the splat origin, then drains with a
-   one-frame downward smear — steps() only, no easing curves. Delays are set
-   inline per tile. */
-.ink-tile {
-  background: var(--px-ink);
+  grid-template-columns: repeat(16, 1fr);
+  grid-template-rows: repeat(9, 1fr);
   opacity: 0;
-  animation:
-    tile-in 60ms steps(1) forwards,
-    tile-out 90ms steps(2) forwards;
+  animation: grid-in 160ms steps(2) forwards;
 }
 
-@keyframes tile-in {
+@keyframes grid-in {
   to {
     opacity: 1;
   }
+}
+
+/* each tile washes off with a one-frame downward smear; per-tile delays
+   (inline) make the columns drain unevenly, like ink sliding off glass */
+.ink-tile {
+  background: var(--px-ink);
+  animation: tile-out 100ms steps(2) forwards;
 }
 
 @keyframes tile-out {
@@ -373,151 +372,12 @@
   }
   50% {
     opacity: 0.6;
-    transform: translateY(40%);
+    transform: translateY(45%);
   }
   100% {
     opacity: 0;
-    transform: translateY(90%);
+    transform: translateY(95%);
   }
-}
-
-/* pixel droplets flying ahead of the splatter wave */
-.ink-droplets {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-}
-
-.ink-drop {
-  position: absolute;
-  left: 50%;
-  top: 58%;
-  width: 8px;
-  height: 8px;
-  background: var(--px-ink);
-  /* irregular pixel cluster, not a dot */
-  box-shadow:
-    8px 4px 0 var(--px-ink),
-    -6px 10px 0 var(--px-ink),
-    4px -8px 0 var(--px-ink),
-    14px 12px 0 var(--px-ink);
-  animation: drop-fly 300ms steps(3) forwards;
-}
-
-@keyframes drop-fly {
-  0% {
-    transform: translate(0, 0);
-    opacity: 1;
-  }
-  100% {
-    transform: translate(var(--dx, 20vmin), var(--dy, -20vmin));
-    opacity: 1;
-  }
-}
-
-/* the culprit, caught in the dark for a beat */
-.ink-octo {
-  position: absolute;
-  left: 50%;
-  top: 44%;
-  transform: translate(-50%, -50%) scale(1.15);
-  opacity: 0;
-  animation: octo-flash 460ms steps(1) 120ms forwards;
-}
-
-.ink-octo .octopus {
-  margin: 0;
-  width: 96px;
-  height: 84px;
-  animation: none;
-}
-
-@keyframes octo-flash {
-  0% {
-    opacity: 0;
-  }
-  20% {
-    opacity: 1;
-  }
-  85% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-
-/* hanging drips retracting off the top edge as the last touch */
-.ink-drips {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-}
-
-.ink-driphang {
-  position: absolute;
-  top: 0;
-  width: 2.2%;
-  background: var(--px-ink);
-  transform-origin: top;
-  opacity: 0; /* invisible until its retract starts (fill-backwards via 0% frame) */
-  animation: drip-retract 300ms steps(4) forwards;
-}
-
-@keyframes drip-retract {
-  0% {
-    opacity: 1;
-    transform: scaleY(1);
-  }
-  60% {
-    opacity: 1;
-    transform: scaleY(0.45);
-  }
-  100% {
-    opacity: 0;
-    transform: scaleY(0);
-  }
-}
-
-/* bioluminescent flecks glow while the screen is covered */
-.ink-flecks {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  animation: flecks-window 700ms steps(1) 300ms forwards;
-}
-
-@keyframes flecks-window {
-  0% {
-    opacity: 1;
-  }
-  60% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-
-.fleck {
-  position: absolute;
-  width: 5px;
-  height: 5px;
-  background: var(--px-accent);
-  opacity: 0.55;
-  animation: fleck-drift 1400ms ease-in-out infinite;
-}
-
-.f1 { left: 18%; top: 30%; }
-.f2 { left: 71%; top: 22%; animation-delay: -300ms; }
-.f3 { left: 44%; top: 58%; width: 4px; height: 4px; animation-delay: -600ms; }
-.f4 { left: 83%; top: 66%; animation-delay: -900ms; }
-.f5 { left: 30%; top: 78%; width: 3px; height: 3px; animation-delay: -450ms; }
-.f6 { left: 58%; top: 40%; animation-delay: -150ms; }
-
-@keyframes fleck-drift {
-  0%, 100% { transform: translate(0, 0); opacity: 0.55; }
-  50% { transform: translate(6px, -12px); opacity: 0.9; }
 }
 
 .ink-skip {
@@ -539,12 +399,8 @@
 /* ---------- motion & responsive ---------- */
 @media (prefers-reduced-motion: reduce) {
   .octopus,
+  .ink-grid,
   .ink-tile,
-  .ink-flecks,
-  .ink-drop,
-  .ink-octo,
-  .ink-driphang,
-  .fleck,
   .ink {
     animation: none;
   }
