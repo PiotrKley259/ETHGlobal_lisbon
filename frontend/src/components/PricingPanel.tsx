@@ -154,7 +154,12 @@ function GreeksGrid({ greeks }: { greeks: Greeks }) {
   return (
     <div className="greeks-grid">
       {cells.map(([label, value, dp]) => (
-        <div key={label} className="greek-cell" title={GREEK_DEFS[label]}>
+        <div
+          key={label}
+          className="greek-cell"
+          data-def={GREEK_DEFS[label]}
+          aria-label={GREEK_DEFS[label]}
+        >
           <span className="dim greek-label">{label}</span>
           <span>{value.toFixed(dp)}</span>
         </div>

@@ -279,6 +279,10 @@ body {
   gap: 6px;
 }
 
+.greeks-grid {
+  position: relative; /* anchor for the definition strip */
+}
+
 .greek-cell {
   display: flex;
   flex-direction: column;
@@ -291,9 +295,33 @@ body {
   cursor: help; /* hover shows the greek's definition */
 }
 
+.greek-cell:hover {
+  border-color: #4a5768;
+}
+
 .greek-label {
   text-decoration: underline dotted;
   text-underline-offset: 2px;
+}
+
+/* instant definition strip: spans the whole grid so it never overflows
+   the panel, appears with no delay on hover of any cell */
+.greek-cell:hover::after {
+  content: attr(data-def);
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(100% + 6px);
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 11px;
+  line-height: 1.45;
+  white-space: normal;
+  z-index: 20;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+  pointer-events: none;
 }
 
 /* settings menu (B2.2b) */
