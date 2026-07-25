@@ -19,14 +19,27 @@ const CRYSTALS = [
   { x: 55, y: -5, scale: 0.6, delay: 0.25 },
 ];
 
+// Pixel-art Ethereum diamond on a 12x19 grid: per-row column spans
+// [first, last], split at the centre into a dark and a light facet.
+const CRYSTAL_TOP: [number, number][] = [
+  [5, 6], [5, 6], [4, 7], [4, 7], [3, 8], [3, 8], [2, 9], [2, 9],
+  [1, 10], [0, 11], [2, 9], [4, 7], [5, 6],
+];
+const CRYSTAL_BOTTOM: [number, number][] = [[0, 11], [2, 9], [3, 8], [4, 7], [5, 6]];
+
 function EthCrystal() {
-  // Stylised Ethereum diamond: two facet pairs with different opacities.
+  const rows = [
+    ...CRYSTAL_TOP.map(([a, b], r) => ({ a, b, y: r, left: 0.55, right: 0.85 })),
+    ...CRYSTAL_BOTTOM.map(([a, b], r) => ({ a, b, y: r + 14, left: 0.45, right: 0.7 })),
+  ];
   return (
-    <svg viewBox="0 0 24 38" className="eth-crystal-svg" aria-hidden="true">
-      <polygon points="12,0 22,19 12,25" fill="currentColor" opacity="0.85" />
-      <polygon points="12,0 2,19 12,25" fill="currentColor" opacity="0.55" />
-      <polygon points="12,28 22,22 12,38" fill="currentColor" opacity="0.7" />
-      <polygon points="12,28 2,22 12,38" fill="currentColor" opacity="0.45" />
+    <svg viewBox="0 0 12 19" className="eth-crystal-svg" shapeRendering="crispEdges" aria-hidden="true">
+      {rows.map(({ a, b, y, left, right }) => (
+        <g key={y}>
+          <rect x={a} y={y} width={6 - a} height={1} fill="currentColor" opacity={left} />
+          <rect x={6} y={y} width={b - 5} height={1} fill="currentColor" opacity={right} />
+        </g>
+      ))}
     </svg>
   );
 }
