@@ -16,6 +16,19 @@ import "./App.css";
 // the query string intact so the ?key=... invite flow survives navigation.
 const onDesk = () => window.location.pathname === "/desk";
 
+// Mint celebration sound. Safe to call freely: by the time a mint lands the
+// user has interacted (typed/clicked), so autoplay policy allows it; failures
+// (muted tab, blocked autoplay) are swallowed.
+function playMintSfx() {
+  try {
+    const audio = new Audio("/sfx-mint.mp3");
+    audio.volume = 0.6;
+    void audio.play().catch(() => {});
+  } catch {
+    /* no audio support — fine */
+  }
+}
+
 function App() {
   const [view, setView] = useState<"landing" | "desk">(onDesk() ? "desk" : "landing");
   const [inking, setInking] = useState(false);
@@ -87,6 +100,7 @@ function App() {
         setPanel(evt.data);
         break;
       case "chain":
+        if (evt.data.kind === "mint" && evt.data.status === "ok") playMintSfx();
         setChainEvents((evts) => {
           // Append-only log; a `paid` event also flips this label's earlier
           // `armed` rows so the status pill transitions in place (B2.4).

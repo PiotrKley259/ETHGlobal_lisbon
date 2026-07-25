@@ -333,7 +333,7 @@
   color: var(--px-fg-dim);
 }
 
-/* ---------- ink transition: black ink washing off ---------- */
+/* ---------- ink transition: sprayed on, washed off ---------- */
 .ink {
   position: fixed;
   inset: 0;
@@ -341,7 +341,53 @@
   pointer-events: none;
 }
 
-/* the whole sheet of ink snaps in as one */
+/* --- spray: irregular pixel splats stamping across the page --- */
+.ink-splats {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* one splat = a chunky pixel cluster (box-shadow art on a 6px cell),
+   scaled and rotated per instance via CSS vars set inline */
+.ink-splat {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: var(--px-ink);
+  box-shadow:
+    6px 0 0 var(--px-ink),
+    12px 6px 0 var(--px-ink),
+    -6px 6px 0 var(--px-ink),
+    0 12px 0 var(--px-ink),
+    6px -6px 0 var(--px-ink),
+    -12px 0 0 var(--px-ink),
+    18px -6px 0 var(--px-ink),
+    -6px -12px 0 var(--px-ink),
+    12px 18px 0 var(--px-ink),
+    -18px 12px 0 var(--px-ink),
+    0 -18px 0 var(--px-ink),
+    24px 6px 0 var(--px-ink);
+  opacity: 0;
+  transform: rotate(var(--r, 0deg)) scale(var(--s, 3));
+  animation:
+    splat-stamp 40ms steps(1) var(--d, 0s) forwards,
+    splat-hide 40ms steps(1) 580ms forwards;
+}
+
+@keyframes splat-stamp {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes splat-hide {
+  to {
+    opacity: 0;
+  }
+}
+
+/* --- the ink sheet: seals full coverage under the splats --- */
 .ink-grid {
   position: absolute;
   inset: 0;
@@ -349,7 +395,7 @@
   grid-template-columns: repeat(16, 1fr);
   grid-template-rows: repeat(9, 1fr);
   opacity: 0;
-  animation: grid-in 160ms steps(2) forwards;
+  animation: grid-in 90ms steps(2) 280ms forwards;
 }
 
 @keyframes grid-in {
@@ -358,8 +404,8 @@
   }
 }
 
-/* each tile washes off with a one-frame downward smear; per-tile delays
-   (inline) make the columns drain unevenly, like ink sliding off glass */
+/* --- wash-off: each chunk smears one frame downward as it lets go;
+   per-tile delays (inline) drain the columns unevenly --- */
 .ink-tile {
   background: var(--px-ink);
   animation: tile-out 100ms steps(2) forwards;
@@ -377,6 +423,36 @@
   100% {
     opacity: 0;
     transform: translateY(95%);
+  }
+}
+
+/* --- rivulets racing down the glass behind the receding ink --- */
+.ink-runners {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.ink-runner {
+  position: absolute;
+  top: 0;
+  background: var(--px-ink);
+  opacity: 0;
+  transform: translateY(-100%);
+  animation: runner-fall 420ms steps(8) forwards;
+}
+
+@keyframes runner-fall {
+  0% {
+    opacity: 0.9;
+    transform: translateY(-100%);
+  }
+  80% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(115vh);
   }
 }
 
@@ -399,8 +475,10 @@
 /* ---------- motion & responsive ---------- */
 @media (prefers-reduced-motion: reduce) {
   .octopus,
+  .ink-splat,
   .ink-grid,
   .ink-tile,
+  .ink-runner,
   .ink {
     animation: none;
   }
