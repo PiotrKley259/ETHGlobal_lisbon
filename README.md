@@ -1,5 +1,9 @@
 # OptoPuts : an insurance for your wallet 🐙
 
+<p align="center">
+  <img src="docs/octopus-intro.gif" alt="OptoPuts mascot: a pixel-art octopus appears, then vanishes leaving a scatter of glowing ETH crystals" width="480">
+</p>
+
 A mini options desk for ETH. A deterministic Python engine prices European
 cash-settled calls, puts, and multi-leg strategies using **realized volatility
 measured from Uniswap v3 trade history** (The Graph); a Claude agent quotes and
