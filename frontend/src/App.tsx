@@ -137,7 +137,7 @@ function App() {
       </header>
       <div className="desk-body">
         <section className="region chat-region" aria-label="desk chat">
-          <Chat messages={messages} busy={busy} onSend={handleSend} />
+          <Chat messages={messages} busy={busy} connected={panel !== null} onSend={handleSend} />
         </section>
         <aside className="right-rail">
           <section className="region panel-region" aria-label="pricing panel">
