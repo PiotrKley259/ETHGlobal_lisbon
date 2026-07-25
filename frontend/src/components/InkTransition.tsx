@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { Octopus } from "./Octopus";
 
 interface InkTransitionProps {
   onCovered: () => void; // fire when screen is fully inked → swap view under it
@@ -8,17 +9,24 @@ interface InkTransitionProps {
 export const REDUCED_MOTION = () =>
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-const COLS = 12;
-const ROWS = 7;
-const COVERED_MS = 450; // all tiles opaque by here → swap the view beneath
-const DONE_MS = 1000; // last tile drained
+const COLS = 16;
+const ROWS = 9;
+const COVERED_MS = 460; // splatter fully opaque → swap the view beneath
+const DONE_MS = 1350; // last drip retracted
 
-// 8-bit ink transition: the screen fills with chunky pixel tiles in a
-// scattered order (steps() timing, no easing curves — this is pixel art),
-// holds a beat with bioluminescent flecks, then drains top-down row by row.
-// Plays on every "Try demo" click; the desk mounts at cover so it is
-// interactive the moment the drain starts. Reduced-motion skips it entirely
-// (handled by the caller).
+// deterministic pseudo-random in [0,1) from an integer — same pattern every
+// run, so the demo machine behaves exactly like rehearsal
+const jitter = (i: number, salt: number) => ((i * salt) % 997) / 997;
+
+// Octopus ink attack, in pixel language:
+//   1. splatter — chunky tiles snap in RADIALLY from the octopus (center-low),
+//      with flying pixel droplets ahead of the wave
+//   2. blackout — bioluminescent flecks drift; the octopus itself flashes
+//      in the dark like a culprit caught in torchlight
+//   3. drain — ink slides off the glass top-down in uneven, streaky columns,
+//      then a few hanging drips retract off the top edge
+// steps() timing everywhere — no easing curves, this is pixel art. The desk
+// mounts at cover (460ms) so it is interactive the moment the drain starts.
 export function InkTransition({ onCovered, onDone }: InkTransitionProps) {
   const covered = useRef(false);
   const timers = useRef<number[]>([]);
@@ -45,10 +53,17 @@ export function InkTransition({ onCovered, onDone }: InkTransitionProps) {
   }, []);
 
   const tiles = Array.from({ length: COLS * ROWS }, (_, i) => {
+    const col = i % COLS;
     const row = Math.floor(i / COLS);
-    // deterministic pseudo-random scatter for fill; top-down jittered drain
-    const delayIn = (((i * 7919) % 13) / 13) * 0.3;
-    const delayOut = 0.5 + row * 0.05 + (((i * 104729) % 7) / 7) * 0.06;
+    // radial fill: distance from the splat origin (center, slightly low —
+    // where the octopus sits) drives the delay, plus per-tile jitter
+    const dx = (col + 0.5) / COLS - 0.5;
+    const dy = (row + 0.5) / ROWS - 0.62;
+    const dist = Math.sqrt(dx * dx + dy * dy) / 0.78; // ~0..1
+    const delayIn = dist * 0.26 + jitter(i, 7919) * 0.07;
+    // streaky drain: columns clear at uneven speeds (ink sliding off glass)
+    const delayOut =
+      0.56 + jitter(col, 104729) * 0.14 + row * 0.034 + jitter(i, 31) * 0.05;
     return (
       <span
         key={i}
@@ -58,9 +73,40 @@ export function InkTransition({ onCovered, onDone }: InkTransitionProps) {
     );
   });
 
+  const droplets = Array.from({ length: 9 }, (_, i) => {
+    const angle = (i / 9) * Math.PI * 2 + jitter(i, 13) * 0.9;
+    const reach = 34 + jitter(i, 41) * 28; // vh-ish reach
+    return (
+      <span
+        key={i}
+        className="ink-drop"
+        style={
+          {
+            "--dx": `${(Math.cos(angle) * reach).toFixed(1)}vmin`,
+            "--dy": `${(Math.sin(angle) * reach * 0.8 - 6).toFixed(1)}vmin`,
+            animationDelay: `${(jitter(i, 61) * 0.08).toFixed(3)}s`,
+          } as React.CSSProperties
+        }
+      />
+    );
+  });
+
+  const drips = Array.from({ length: 7 }, (_, i) => (
+    <span
+      key={i}
+      className="ink-driphang"
+      style={{
+        left: `${(6 + i * 13 + jitter(i, 89) * 8).toFixed(1)}%`,
+        height: `${(6 + jitter(i, 53) * 11).toFixed(1)}vh`,
+        animationDelay: `${(0.98 + jitter(i, 23) * 0.16).toFixed(3)}s`,
+      }}
+    />
+  ));
+
   return (
     <div className="ink" role="presentation">
       <div className="ink-grid">{tiles}</div>
+      <div className="ink-droplets">{droplets}</div>
       <div className="ink-flecks">
         <span className="fleck f1" />
         <span className="fleck f2" />
@@ -68,7 +114,11 @@ export function InkTransition({ onCovered, onDone }: InkTransitionProps) {
         <span className="fleck f4" />
         <span className="fleck f5" />
         <span className="fleck f6" />
+        <span className="ink-octo">
+          <Octopus />
+        </span>
       </div>
+      <div className="ink-drips">{drips}</div>
       <button className="ink-skip" onClick={skip}>
         Skip animation
       </button>

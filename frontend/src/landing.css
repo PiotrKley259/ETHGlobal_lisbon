@@ -349,14 +349,15 @@
   grid-template-rows: repeat(7, 1fr);
 }
 
-/* each tile snaps in (scatter order), then snaps out top-down — steps(1)
-   only, no easing curves: this is pixel art. Delays set inline per tile. */
+/* each tile snaps in radially from the splat origin, then drains with a
+   one-frame downward smear — steps() only, no easing curves. Delays are set
+   inline per tile. */
 .ink-tile {
   background: var(--px-ink);
   opacity: 0;
   animation:
     tile-in 60ms steps(1) forwards,
-    tile-out 60ms steps(1) forwards;
+    tile-out 90ms steps(2) forwards;
 }
 
 @keyframes tile-in {
@@ -366,8 +367,115 @@
 }
 
 @keyframes tile-out {
-  to {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 0.6;
+    transform: translateY(40%);
+  }
+  100% {
     opacity: 0;
+    transform: translateY(90%);
+  }
+}
+
+/* pixel droplets flying ahead of the splatter wave */
+.ink-droplets {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.ink-drop {
+  position: absolute;
+  left: 50%;
+  top: 58%;
+  width: 8px;
+  height: 8px;
+  background: var(--px-ink);
+  /* irregular pixel cluster, not a dot */
+  box-shadow:
+    8px 4px 0 var(--px-ink),
+    -6px 10px 0 var(--px-ink),
+    4px -8px 0 var(--px-ink),
+    14px 12px 0 var(--px-ink);
+  animation: drop-fly 300ms steps(3) forwards;
+}
+
+@keyframes drop-fly {
+  0% {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--dx, 20vmin), var(--dy, -20vmin));
+    opacity: 1;
+  }
+}
+
+/* the culprit, caught in the dark for a beat */
+.ink-octo {
+  position: absolute;
+  left: 50%;
+  top: 44%;
+  transform: translate(-50%, -50%) scale(1.15);
+  opacity: 0;
+  animation: octo-flash 460ms steps(1) 120ms forwards;
+}
+
+.ink-octo .octopus {
+  margin: 0;
+  width: 96px;
+  height: 84px;
+  animation: none;
+}
+
+@keyframes octo-flash {
+  0% {
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* hanging drips retracting off the top edge as the last touch */
+.ink-drips {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.ink-driphang {
+  position: absolute;
+  top: 0;
+  width: 2.2%;
+  background: var(--px-ink);
+  transform-origin: top;
+  opacity: 0; /* invisible until its retract starts (fill-backwards via 0% frame) */
+  animation: drip-retract 300ms steps(4) forwards;
+}
+
+@keyframes drip-retract {
+  0% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+  60% {
+    opacity: 1;
+    transform: scaleY(0.45);
+  }
+  100% {
+    opacity: 0;
+    transform: scaleY(0);
   }
 }
 
@@ -433,6 +541,9 @@
   .octopus,
   .ink-tile,
   .ink-flecks,
+  .ink-drop,
+  .ink-octo,
+  .ink-driphang,
   .fleck,
   .ink {
     animation: none;
