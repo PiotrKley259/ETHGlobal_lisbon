@@ -19,7 +19,7 @@ and auto-settled on Hedera testnet** (HTS + HCS + Scheduled Transactions).
 
 ## Pitch deck
 
-<p align="center"><b><a href="https://optoputs.vercel.app/pitch-deck.html">&#9654;&#65039; Present live &mdash; arrow keys / swipe to slide</a></b> &middot; <a href="docs/pitch-deck.html">deck source</a></p>
+<p align="center"><b><a href="https://optoputs.vercel.app/pitch-deck.html">&#9654;&#65039; </a></p>
 
 <p align="center"><img src="docs/deck-slides/slide-1.png" alt="Slide 1 — cover: OptoPuts, insurance for your wallet; The Graph AI and Hedera HTS bounty chips" width="100%"></p>
 <p align="center"><img src="docs/deck-slides/slide-2.png" alt="Slide 2 — the problem: options are opaque, AI alone can't be trusted, settlement is a promise" width="100%"></p>
