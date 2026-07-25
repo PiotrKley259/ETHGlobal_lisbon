@@ -130,7 +130,6 @@ def price_strategy(
             "greeks": greeks.model_dump(),
         })
 
-    # payoff grid: spot +/- max(3 sigma sqrt(T), 15%, beyond the widest strike)
     t_ref = max(leg["T_days"] for leg in legs)
     sig_ref = sigma_of(t_ref)
     span = max(3.0 * sig_ref * (t_ref / 365.0) ** 0.5 * S, 0.15 * S,
@@ -159,12 +158,6 @@ def price_strategy(
     if pnls[-1] == 0.0:
         breakevens.append(prices[-1])
 
-    # extremes: the payoff is piecewise linear with kinks only at strikes,
-    # so true extremes occur at a strike or at an edge — evaluate there
-    # exactly instead of trusting the display grid. Edge slopes are exact
-    # beyond the outermost strikes: upward at the top edge -> unbounded
-    # profit; downward -> unbounded loss. On the low edge extrapolate to
-    # S_T = 0, which is the true floor.
     kinks = sorted({leg["K"] for leg in legs})
     candidates = [pnl(k) for k in kinks] + [pnls[0], pnls[-1]]
     slope_hi = (pnls[-1] - pnls[-2]) / step
