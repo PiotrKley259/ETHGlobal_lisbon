@@ -288,6 +288,12 @@ body {
   border-radius: 4px;
   padding: 4px 2px;
   font-size: 12px;
+  cursor: help; /* hover shows the greek's definition */
+}
+
+.greek-label {
+  text-decoration: underline dotted;
+  text-underline-offset: 2px;
 }
 
 /* settings menu (B2.2b) */
