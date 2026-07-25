@@ -132,6 +132,14 @@
   }
   .ledger b { color: var(--accent); }
 
+  /* scorecard: flat checklists — rules, not nested boxes */
+  .scoregrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 10px 40px; }
+  .scorecol { display: flex; flex-direction: column; }
+  .scorehead { margin: 0 0 4px; color: var(--accent); font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; font-size: 14px; }
+  .req { display: flex; gap: 10px; padding: 9px 0; border-bottom: 1px dotted var(--chrome); font-size: 13.5px; line-height: 1.45; }
+  .req:last-child { border-bottom: none; }
+  .req p { margin: 0; }
+  .req .tick { color: var(--green); font-weight: 700; }
   .steps { counter-reset: step; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
   .step { background: var(--panel); border: 2px solid var(--chrome); padding: 14px; }
   .step::before {
@@ -289,23 +297,25 @@
 <section class="slide" id="s8"><div class="card stack">
   <p class="eyebrow">07 · Qualification scorecard</p>
   <h2>Every requirement, answered</h2>
-  <div class="tablewrap"><table>
-    <tr><th style="width:52%">The Graph — requirement</th><th>How OptoPuts meets it</th></tr>
-    <tr><td>Load-bearing source of blockchain data</td><td class="num">Vol curve, regime, spot &amp; rate all derived from Uniswap v3 + Aave v3 subgraphs</td></tr>
-    <tr><td>Live data from a Graph provider — no mocks</td><td>Gateway queries at demo time; fixtures exist for dev only</td></tr>
-    <tr><td>AI reasons over / acts on the data</td><td>Regime classification, strategy selection, coverage-gated on-chain actions</td></tr>
-    <tr><td>Public repo + 2–4 min demo video</td><td>Repo public; scripted 30-second settle loop makes the video</td></tr>
-    <tr><td>Describe subgraphs / endpoints used</td><td>Both subgraph IDs documented (slide 03 + README)</td></tr>
-  </table></div>
-  <div class="tablewrap"><table>
-    <tr><th style="width:52%">Hedera HTS — requirement</th><th>How OptoPuts meets it</th></tr>
-    <tr><td>Create / manage / interact via HTS</td><td>Token per option series + demo stablecoin, via SDK</td></tr>
-    <tr><td>Deploy &amp; demonstrate on testnet</td><td class="num">Live: dUSDC 0.0.9749902 · topic 0.0.9749905 · real $21.88 settlement</td></tr>
-    <tr><td>Public repo, Hashscan-verifiable</td><td>Every mint, schedule and payout links to Hashscan from the desk UI</td></tr>
-    <tr><td>≤5-min video with lifecycle operation</td><td>Create → configure → transfer → scheduled settlement in one take</td></tr>
-    <tr><td>Extra: Scheduled Transactions</td><td class="ok">✓ settlement commitment</td></tr>
-    <tr><td>Extra: external data for pricing</td><td class="ok">✓ The Graph feeds</td></tr>
-  </table></div>
+  <div class="scoregrid">
+    <div class="scorecol">
+      <p class="scorehead">🏆 The Graph</p>
+      <div class="req"><span class="tick">✓</span><p><b>Load-bearing blockchain data</b> — vol curve, regime, spot &amp; rate all derived from Uniswap v3 + Aave v3 subgraphs</p></div>
+      <div class="req"><span class="tick">✓</span><p><b>Live gateway, no mocks</b> — fixtures are for dev only; the demo queries live</p></div>
+      <div class="req"><span class="tick">✓</span><p><b>AI reasons over the data</b> — regime classification, strategy selection, coverage-gated on-chain actions</p></div>
+      <div class="req"><span class="tick">✓</span><p><b>Public repo + 2–4 min video</b> — the 30-second settle loop makes the video</p></div>
+      <div class="req"><span class="tick">✓</span><p><b>Subgraphs documented</b> — slide 03 + README</p></div>
+    </div>
+    <div class="scorecol">
+      <p class="scorehead">🪙 Hedera HTS</p>
+      <div class="req"><span class="tick">✓</span><p><b>Create / manage via HTS</b> — one token per option series + demo stablecoin, via SDK</p></div>
+      <div class="req"><span class="tick">✓</span><p><b>Live on testnet</b> — dUSDC 0.0.9749902 · topic 0.0.9749905 · real $21.88 settlement</p></div>
+      <div class="req"><span class="tick">✓</span><p><b>Hashscan-verifiable</b> — every mint, schedule and payout links out from the desk UI</p></div>
+      <div class="req"><span class="tick">✓</span><p><b>≤5-min lifecycle video</b> — create → transfer → scheduled settlement in one take</p></div>
+      <div class="req"><span class="tick">✓</span><p><b>Extra: Scheduled Transactions</b> — the settlement commitment</p></div>
+      <div class="req"><span class="tick">✓</span><p><b>Extra: external pricing data</b> — The Graph feeds</p></div>
+    </div>
+  </div>
 </div></section>
 
 <!-- 08 · CLOSE -->
