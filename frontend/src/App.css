@@ -848,10 +848,21 @@ body {
   stroke: var(--px-accent2);
 }
 
+/* gear rides in the region title bar: anchor to the region, not the body */
+.desk .panel-region {
+  position: relative;
+}
+
+.desk .panel-body {
+  position: static;
+}
+
 .desk .gear {
   min-width: 44px;
   min-height: 44px;
   font-size: 32px;
+  top: 0;
+  right: 8px;
 }
 
 /* wide enough that both boundary labels stay on one line, inputs aligned */
