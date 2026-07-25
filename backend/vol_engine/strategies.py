@@ -12,7 +12,11 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
-from .pricing import bs_greeks, bs_price
+from .pricing import DAYS_PER_YEAR, bs_greeks, bs_price
+
+_SLOPE_EPS = 1e-6
+GRID_POINTS = 121
+_NICE_STEPS = (0.5, 1.0, 2.5, 5.0, 10.0, 25.0, 50.0)
 
 _SLOPE_EPS = 1e-6
 GRID_POINTS = 121
@@ -74,15 +78,34 @@ def list_strategies() -> list[dict]:
     ]
 
 
+def _strike_step(S: float, moneyness: list[float]) -> float:
+    """Largest increment that still keeps distinct template strikes
+    apart. Two values at least one step apart can never round to the same
+    multiple, so step <= the tightest gap is sufficient. 0.0 => don't round."""
+    uniq = sorted(set(moneyness))
+    if len(uniq) < 2:
+        return max((s for s in _NICE_STEPS if s <= 0.05 * S), default=0.0)
+    gap = min(b - a for a, b in zip(uniq, uniq[1:])) * S
+    return max((s for s in _NICE_STEPS if s <= gap), default=0.0)
+
+
 def resolve_named(name: str, S: float, T_days: float) -> list[dict]:
     """Turn a library template into explicit legs at the current spot."""
     if name not in LIBRARY:
         raise ValueError(f"unknown strategy {name!r}; see list_strategies()")
-    return [
-        {"type": t, "side": side, "K": round(m * S / 10) * 10.0,
+    if S <= 0:
+        raise ValueError(f"spot must be > 0, got {S}")
+    template = LIBRARY[name]["template"]
+    step = _strike_step(S, [m for _, _, m, _ in template])
+    legs = [
+        {"type": t, "side": side,
+         "K": (round(m * S / step) * step) if step else (m * S),
          "T_days": T_days, "qty": float(qty)}
-        for t, side, m, qty in LIBRARY[name]["template"]
+        for t, side, m, qty in template
     ]
+    if len({leg["K"] for leg in legs}) != len({m for _, _, m, _ in template}):
+        raise ValueError(f"strike rounding collapsed legs of {name!r} at S={S}")
+    return legs
 
 
 def _validate_leg(leg: dict) -> None:
@@ -90,8 +113,15 @@ def _validate_leg(leg: dict) -> None:
         raise ValueError(f"leg type must be call/put, got {leg.get('type')!r}")
     if leg.get("side") not in ("long", "short"):
         raise ValueError(f"leg side must be long/short, got {leg.get('side')!r}")
-    if not leg.get("K") or leg["K"] <= 0 or leg.get("T_days", -1) < 0:
-        raise ValueError(f"leg needs K > 0 and T_days >= 0: {leg}")
+    K = leg.get("K")
+    if not isinstance(K, (int, float)) or K <= 0:
+        raise ValueError(f"leg needs a numeric K > 0, got {K!r}")
+    T = leg.get("T_days")
+    if not isinstance(T, (int, float)) or T < 0:
+        raise ValueError(f"leg needs a numeric T_days >= 0, got {T!r}")
+    qty = leg.get("qty", 1.0)
+    if not isinstance(qty, (int, float)) or qty <= 0:
+        raise ValueError(f"leg qty must be > 0 (use side='short'), got {qty!r}")
 
 
 def _intrinsic(opt_type: str, K: float, s_t: float) -> float:
@@ -105,11 +135,21 @@ def price_strategy(
     sigma: float | Callable[[float], float],
 ) -> dict:
     """Price an explicit basket of legs. `sigma` is a flat vol or a callable
-    sigma(T_days) (the Stage-4 term-structure hook plugs in there)."""
+    sigma(T_days) (the Stage-4 term-structure hook plugs in there).
+
+    All legs must share one expiry: the payoff curve, breakevens and max
+    profit/loss are terminal-intrinsic quantities, defined only at a single T.
+    Greeks are summed across legs.
+    """
     if not legs:
         raise ValueError("strategy needs at least one leg")
     for leg in legs:
         _validate_leg(leg)
+    if len({float(leg["T_days"]) for leg in legs}) > 1:
+        raise ValueError(
+            "payoff/breakevens assume a single expiry; multi-expiry legs "
+            "(calendars/diagonals) are not supported yet"
+        )
     sigma_of = sigma if callable(sigma) else (lambda _t: sigma)
 
     priced, net_cost = [], 0.0
@@ -130,9 +170,10 @@ def price_strategy(
             "greeks": greeks.model_dump(),
         })
 
+    # payoff grid: spot +/- max(3 sigma sqrt(T), 15%, beyond the widest strike)
     t_ref = max(leg["T_days"] for leg in legs)
     sig_ref = sigma_of(t_ref)
-    span = max(3.0 * sig_ref * (t_ref / 365.0) ** 0.5 * S, 0.15 * S,
+    span = max(3.0 * sig_ref * (t_ref / DAYS_PER_YEAR) ** 0.5 * S, 0.15 * S,
                1.3 * max(abs(leg["K"] - S) for leg in legs))
     lo, hi = max(S - span, 0.0), S + span
     step = (hi - lo) / (GRID_POINTS - 1)
@@ -148,18 +189,26 @@ def price_strategy(
 
     pnls = [pnl(p) for p in prices]
 
-    breakevens = []
-    for i in range(len(prices) - 1):
-        y0, y1 = pnls[i], pnls[i + 1]
-        if y0 == 0.0:
-            breakevens.append(prices[i])
-        elif y0 * y1 < 0:
-            breakevens.append(prices[i] - y0 * (prices[i + 1] - prices[i]) / (y1 - y0))
-    if pnls[-1] == 0.0:
-        breakevens.append(prices[-1])
-
+    # The payoff is piecewise linear with kinks only at strikes, so both the
+    # roots and the extremes are exact on the kink partition. Never read them
+    # off the display grid, whose segments can straddle a kink.
     kinks = sorted({leg["K"] for leg in legs})
-    candidates = [pnl(k) for k in kinks] + [pnls[0], pnls[-1]]
+    nodes = sorted({lo, hi, *(k for k in kinks if lo < k < hi)})
+
+    breakevens = []
+    for a, b in zip(nodes, nodes[1:]):
+        ya, yb = pnl(a), pnl(b)
+        if ya == 0.0:
+            breakevens.append(a)
+        elif ya * yb < 0.0:
+            breakevens.append(a - ya * (b - a) / (yb - ya))
+    if pnl(nodes[-1]) == 0.0:
+        breakevens.append(nodes[-1])
+
+    # Edge slopes are exact beyond the outermost strikes: upward at the top
+    # edge -> unbounded profit; downward -> unbounded loss. On the low edge
+    # extrapolate to S_T = 0, which is the true floor.
+    candidates = [pnl(n) for n in nodes]
     slope_hi = (pnls[-1] - pnls[-2]) / step
     slope_lo = (pnls[1] - pnls[0]) / step
     at_zero = pnls[0] + slope_lo * (0.0 - prices[0])
