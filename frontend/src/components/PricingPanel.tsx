@@ -112,7 +112,7 @@ export function PricingPanel({ panel, onSettingsSaved }: PricingPanelProps) {
             <span className="big">net {fmtUsd(panel.strategy.net_cost)}</span>
             <span className="dim">
               max +{panel.strategy.max_profit === null ? "∞" : fmtUsd(panel.strategy.max_profit)} /{" "}
-              {fmtUsd(panel.strategy.max_loss)}
+              {panel.strategy.max_loss === null ? "−∞ (unbounded)" : fmtUsd(panel.strategy.max_loss)}
             </span>
           </div>
           <GreeksGrid greeks={panel.strategy.net_greeks} />

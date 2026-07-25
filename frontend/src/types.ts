@@ -67,7 +67,7 @@ export interface StrategyQuote {
   payoff: { prices: number[]; pnl: number[] };
   breakevens: number[];
   max_profit: number | null;
-  max_loss: number;
+  max_loss: number | null; // null = unbounded (e.g. short straddle)
 }
 
 export interface VolCurvePoint {
