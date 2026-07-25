@@ -443,6 +443,29 @@ body {
   font-family: var(--mono);
 }
 
+.payoff-axis {
+  stroke: var(--text-dim);
+  stroke-width: 1;
+}
+
+.payoff-grid {
+  stroke: var(--border);
+  stroke-width: 0.5;
+  opacity: 0.55;
+}
+
+.payoff-axis-title {
+  fill: var(--text-dim);
+  font-size: 8.5px;
+  letter-spacing: 0.4px;
+}
+
+.payoff-be-label {
+  fill: var(--amber);
+  font-size: 9px;
+  font-family: var(--mono);
+}
+
 /* chain activity strip (B2.4) */
 .chain-scroll {
   flex: 1;
