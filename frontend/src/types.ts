@@ -7,7 +7,7 @@ export interface Spot {
   source: string;
 }
 
-export type Asset = "ETH" | "WBTC";
+export type Asset = string; // registry-driven server-side (ETH, WBTC, LINK, UNI, AAVE, ...)
 
 export interface Vol {
   sigma_annual: number;

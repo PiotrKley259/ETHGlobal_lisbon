@@ -15,8 +15,9 @@ The same functions are exposed twice from one implementation:
 - as plain Python callables consumed by `backend/agent/tools.py`.
 
 > **Multi-asset addendum (2026-07-25, P1-proposed — P2 ack pending):** every
-> engine data/pricing tool gains an optional `asset: "ETH"|"WBTC"` parameter
-> (default `"ETH"` — all pre-existing shapes unchanged). `get_price_history`/
+> engine data/pricing tool gains an optional `asset` parameter whose enum is
+> **registry-driven** from `backend/config.py` (currently ETH, WBTC, LINK,
+> UNI, AAVE; default `"ETH"` — all pre-existing shapes unchanged). `get_price_history`/
 > `get_spot` responses and the §3 `panel` object gain an additive `asset`
 > field. Assets come from the registry in `backend/config.py` (Uniswap v3
 > USDC pools; per-pool inversion handled in the adapter — CONTRACTS §6).
@@ -278,6 +279,18 @@ $128M TVL — verified live 2026-07-25): token0 = **WBTC**, so this pool is
 (~0.0000156) → USD price = `1/x` with **high/low swapped**; spot reads
 `token1Price` (≈ $63,917). The adapter's `invert` flag in `config.ASSETS`
 handles both orientations; any future asset must record its orientation there.
+
+**WETH-quoted asset pools** (verified live 2026-07-25 — all have the asset
+as token0, so candles are asset-per-WETH → invert, then **cross with the
+same-hour ETH/USDC close** to get USD; close-to-close returns compose
+exactly, intra-hour high/low are an approximation):
+- LINK/WETH 0.3% `0xa6cc3c2531fdaa6ae1a3ca84c2855806728693e8` ($53M TVL, 16% sparse hours)
+- UNI/WETH 0.3% `0x1d42064fc4beb5f8aaf85f4617ae8b3b5b8bd801` ($31M TVL, 2% sparse)
+- AAVE/WETH 0.3% `0x5ab53ee1d50eef2c1dd3d5402789cd27bb52c1bb` ($11M TVL, 4% sparse)
+Sparse pools are handled by the gap-aware vol estimator (returns weighted by
+Σr²/Σdt over a TIME window). **DOGE rejected**: the only pool (WDOGE/WETH,
+$17M) trades 14% of hours — 744 candles span 7.5 months; realized vol from
+it would be meaningless.
 
 **Aave v3 mainnet** (`Cd2gEDVeqnjBn1hSeqFMitw8Q1iiyV9FYUZkLNRcL87g`, official
 aave/protocol-subgraphs schema):

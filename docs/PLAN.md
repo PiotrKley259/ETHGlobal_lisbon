@@ -310,6 +310,11 @@ terminal.
   fixtures (744 candles). Live: "protect my bitcoin below $60k" → $47.03 put
   off WBTC's own contango curve. 86 tests green.
 
+- [x] **F3 (P1)** Asset expansion by pool depth: LINK/UNI/AAVE added via
+  WETH-cross pricing (asset/WETH × ETH/USD); vol estimator upgraded to
+  time-windowed Σr²/Σdt (gap-aware, exact for contiguous data); DOGE
+  rejected on data (86% sparse). Registry-driven tool enums + prompt.
+
 ### Stage 5 — Hardening & submission (H40–H48) · both
 
 - [x] **H.1** `OFFLINE_MODE=1` dry run passed: health flags offline, panel
